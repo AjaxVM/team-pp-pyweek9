@@ -1,0 +1,10 @@
+This game is under the LGPL license.
+You can get a copy of the license from:
+
+http://www.gnu.org/copyleft/lesser.html
+
+Copyright (c) 2009 Matthew <RB[0]> Roe and team "[insert name]":
+http://pyweek.org/e/robo-solo/
+
+
+Exceptions:
