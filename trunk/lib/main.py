@@ -238,6 +238,8 @@ def play_level(level, player_data): #TODO: add controls for player data, like we
     target = pyggel.image.Image(data.image_path("target.png"), pos=(320-32, 240-32))
     scene.add_2d(target)
 
+    event.update() #so the camera doesn't wig out the first time...
+
     while 1:
         clock.tick(999)
         pyggel.view.set_title("FPS: %s"%clock.get_fps())
