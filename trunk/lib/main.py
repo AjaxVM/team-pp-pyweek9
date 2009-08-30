@@ -4,6 +4,68 @@ from pyggel import *
 
 import data
 
+class LevelData(object):
+    """WIP - for pathfinding and such later!"""
+    def __init__(self, data):
+        self.data = data
+
+class VertDoor(pyggel.geometry.Cube):
+    def __init__(self, size, _tex, _pos):
+        pyggel.geometry.Cube.__init__(self, size, texture=_tex, pos=_pos)
+        self.scale = (0.25, 0.8, 1)
+        x, y, z = _pos
+        self.sphere = pyggel.geometry.Sphere(1, (x,size/2,z),
+                                             colorize=(0,1,0,1))
+        self.band = pyggel.geometry.Cube(size/5, pos=(x,size/2,z),
+                                         colorize=(0.75,0,0.75,1))
+        self.band.scale = (1.5,2,5)
+        self.hide = False
+
+        self.off_height = 0
+        self.orig_pos = _pos
+
+    def picked(self):
+        self.hide = True
+        self.outline = True
+
+    def render(self, camera=None):
+        if self.hide:
+            self.sphere.colorize = (0,1,0,1)
+            self.band.colorize = (0.75,0,0.75,1)
+            if abs(camera.posx-self.pos[0]) + abs(camera.posz-self.pos[2]) > 15:
+                self.hide = False
+                self.sphere.colorize = (0.25,0.25,0.25,1)
+                self.band.colorize = (0.2,0.2,0.2,1)
+                self.off_height -= 0.1
+            else:
+                self.off_height += 0.1
+        else:
+            self.sphere.colorize = (0.25,0.25,0.25,1)
+            self.band.colorize = (0.2,0.2,0.2,1)
+            self.outline = False
+            self.off_height -= 0.1
+        if self.off_height < 0:
+            self.off_height = 0
+
+        self.pos = self.orig_pos[0], self.orig_pos[1]+self.off_height, self.orig_pos[2]
+        pyggel.geometry.Cube.render(self, camera)
+        self.sphere.render(camera)
+        self.band.render(camera)
+
+class HorzDoor(VertDoor, pyggel.geometry.Cube):
+    def __init__(self, size, _tex, _pos):
+        pyggel.geometry.Cube.__init__(self, size, texture=_tex, pos=_pos)
+        self.scale = (1, 0.8, 0.25)
+        x, y, z = _pos
+        self.sphere = pyggel.geometry.Sphere(1, (x,size/2,z),
+                                             colorize=(0,1,0,1))
+        self.band = pyggel.geometry.Cube(size/5, pos=(x,size/2,z),
+                                         colorize=(0.75,0,0.75,1))
+        self.band.scale = (5,2,1.5)
+        self.hide = False
+
+        self.off_height = 0
+        self.orig_pos = _pos
 
 def get_geoms(level):
     tsize = 5.0
@@ -23,11 +85,11 @@ def get_geoms(level):
     static = []
     dynamic = []
 
-##    commands = [i.strip() for i in _data.split()]
     commands = _data.split(":")
     commands = [i.strip() for i in commands if i]
     tile_set = "dungeon"
     fog_color = (1,1,1)
+    map_grid = None
 
     for i in xrange(0, len(commands), 2):
         com = commands[i]
@@ -37,8 +99,8 @@ def get_geoms(level):
         if com == "fog_color":
             fog_color = tuple(map(float, val.split(",")))
         if com == "map":
-            GRID = []
             val = val.split()
+            map_grid = val
             height = len(val)
             width = len(val[0])
             mwh = max((width, height))
@@ -54,12 +116,19 @@ def get_geoms(level):
                 for x in xrange(width):
                     cur = val[height-1-y][x]
                     wall_tex = pyggel.data.Texture(data.image_path(tile_set+"_"+"wall.png")) #will want a few different later!
+                    door_tex = pyggel.data.Texture(data.image_path(tile_set+"_"+"door.png"))
                     if cur == "#":
                         cube = pyggel.geometry.Cube(tsize,
                                                     texture=wall_tex,
                                                     pos=(x*tsize,0,y*tsize))
                         static.append(cube)
-    return pyggel.misc.StaticObjectGroup(static), fog_color, tile_set
+                    if cur == "|":
+                        dynamic.append(VertDoor(tsize, door_tex, (x*tsize, -tsize/11, y*tsize)))
+                    if cur == "_":
+                        dynamic.append(HorzDoor(tsize, door_tex, (x*tsize, -tsize/11, y*tsize)))
+    return (pyggel.misc.StaticObjectGroup(static), dynamic,
+            fog_color, tile_set,
+            LevelData(map_grid))
 
 def main():
     pyggel.init()
@@ -70,13 +139,16 @@ def main():
                                   (0,0,0), True)
 
     scene = pyggel.scene.Scene()
+    scene.pick = True
     scene.add_light(light)
 
-    static, fog_color, tile_set = get_geoms("level1.txt")
+    static, dynamic, fog_color, tile_set, level_data = get_geoms("level1.txt")
     pyggel.view.set_fog_color(fog_color)
     pyggel.view.set_fog_depth(5, 60)
     pyggel.view.set_background_color(fog_color[:3])
+    static.pickable = True
     scene.add_3d(static)
+    scene.add_3d(dynamic)
 
     clock = pygame.time.Clock()
     event = pyggel.event.Handler()
@@ -108,5 +180,9 @@ def main():
             camera.roty *= -1
 
         pyggel.view.clear_screen()
-        scene.render(camera)
+
+        pick = scene.render(camera)
+        if hasattr(pick, "picked"):
+            pick.picked()
+
         pyggel.view.refresh_screen()

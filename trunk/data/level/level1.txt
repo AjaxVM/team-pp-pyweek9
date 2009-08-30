@@ -41,7 +41,7 @@ dungeon
 //# - is a wall
 //, - is blank
 //_ - is a "vertical" door
-//| - is a horisontal door
+//| - is a horizontal door
 //$ - is a possible boost item (health, ammo, etc.) location
 //& - is a possible special weapon location
 //1,2,3,4,5,6,7,8,9,0 - are locations for different kinds of units
