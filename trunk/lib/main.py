@@ -48,7 +48,7 @@ class VertDoor(pyggel.geometry.Cube):
         if self.hide:
             self.sphere.colorize = (0,1,0,1)
             self.band.colorize = (0.75,0,0.75,1)
-            if abs(camera.posx-self.pos[0]) + abs(camera.posz-self.pos[2]) > 15:
+            if pyggel.math3d.get_distance((camera.posx, 0, camera.posz), (self.pos[0], 0, self.pos[2])) > self.size*2:
                 self.hide = False
                 self.sphere.colorize = (0.25,0.25,0.25,1)
                 self.band.colorize = (0.2,0.2,0.2,1)
@@ -61,8 +61,8 @@ class VertDoor(pyggel.geometry.Cube):
             self.off_height -= 0.1
         if self.off_height < 0:
             self.off_height = 0
-        if self.off_height > self.size:
-            self.off_height = self.size
+        if self.off_height > self.size-self.size/4:
+            self.off_height = self.size-self.size/4
 
         self.pos = self.orig_pos[0], self.orig_pos[1]+self.off_height, self.orig_pos[2]
         pyggel.geometry.Cube.render(self, camera)
@@ -177,27 +177,32 @@ def main():
     clock = pygame.time.Clock()
     event = pyggel.event.Handler()
 
+    #set up target:
+    pygame.event.set_grab(1)
+    pygame.mouse.set_visible(0)
+
+    target = pyggel.image.Image(data.image_path("target.png"), pos=(320-32, 240-32))
+    scene.add_2d(target)
+
     while 1:
         clock.tick(999)
         pyggel.view.set_title("FPS: %s"%clock.get_fps())
 
         event.update()
-        if event.quit:
+        if K_ESCAPE in event.keyboard.hit:
             pyggel.quit()
             return None
 
-        if K_LEFT in event.keyboard.active:
-            camera.roty -= .5
-        if K_RIGHT in event.keyboard.active:
-            camera.roty += .5
+        if event.mouse.motion[0]:
+            camera.roty += event.mouse.motion[0] * 0.1
 
         do_move = False
-        if K_UP in event.keyboard.active:
+        if "w" in event.keyboard.active:
             camera.roty *= -1
             new = pyggel.math3d.move_with_rotation((0,0,0), camera.get_rotation(), 0.05)
             future = pyggel.math3d.move_with_rotation((0,0,0), camera.get_rotation(), 1.25)
             do_move = True
-        if K_DOWN in event.keyboard.active:
+        if "s" in event.keyboard.active:
             camera.roty *= -1
             new = pyggel.math3d.move_with_rotation((0,0,0), camera.get_rotation(), -0.05)
             future = pyggel.math3d.move_with_rotation((0,0,0), camera.get_rotation(), -1.25)
@@ -214,7 +219,7 @@ def main():
 
         pyggel.view.clear_screen()
 
-        pick = scene.render(camera)
+        pick = scene.render(camera, (320,240)) #make sure we only pick the center!
         if hasattr(pick, "picked"):
             pick.picked()
         else:
