@@ -2,7 +2,7 @@
 import pyggel
 from pyggel import *
 
-import data
+import data, hud
 
 class LevelData(object):
     """WIP - for pathfinding and such later!"""
@@ -26,7 +26,7 @@ class VertDoor(pyggel.geometry.Cube):
 
     def picked(self):
         self.hide = True
-        self.outline = True
+        self.game_hud.set_hover_status("door")
 
     def render(self, camera=None):
         if self.hide:
@@ -42,7 +42,6 @@ class VertDoor(pyggel.geometry.Cube):
         else:
             self.sphere.colorize = (0.25,0.25,0.25,1)
             self.band.colorize = (0.2,0.2,0.2,1)
-            self.outline = False
             self.off_height -= 0.1
         if self.off_height < 0:
             self.off_height = 0
@@ -150,6 +149,11 @@ def main():
     scene.add_3d(static)
     scene.add_3d(dynamic)
 
+    game_hud = hud.Hud()
+    scene.add_2d(game_hud)
+    for i in dynamic:
+        i.game_hud = game_hud
+
     clock = pygame.time.Clock()
     event = pyggel.event.Handler()
 
@@ -184,5 +188,7 @@ def main():
         pick = scene.render(camera)
         if hasattr(pick, "picked"):
             pick.picked()
+        else:
+            game_hud.set_hover_status(None)
 
         pyggel.view.refresh_screen()
