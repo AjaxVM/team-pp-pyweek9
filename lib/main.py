@@ -6,11 +6,24 @@ import data, hud
 
 class LevelData(object):
     """WIP - for pathfinding and such later!"""
-    def __init__(self, data):
+    def __init__(self, data, tsize):
         self.data = data
+        self.height = len(data)
+        self.width = len(data[0])
+        self.tsize = tsize
 
     def get_data_at(self, x, y):
-        return self.data[y][len(self.data[y])-1-x]
+        try:
+            return self.data[self.height-1-y][x]
+        except:
+            return ""
+
+    def convert_pos(self, x, y):
+        return (int(pyggel.math3d.safe_div(x+self.tsize/2, self.tsize)),
+                int(pyggel.math3d.safe_div(y+self.tsize/2, self.tsize)))
+
+    def get_at_uncon(self, x, y):
+        return self.get_data_at(*self.convert_pos(x, y))
 
 class VertDoor(pyggel.geometry.Cube):
     def __init__(self, size, _tex, _pos):
@@ -132,7 +145,7 @@ def get_geoms(level):
                         dynamic.append(HorzDoor(tsize, door_tex, (x*tsize, -tsize/11, y*tsize)))
     return (pyggel.misc.StaticObjectGroup(static), dynamic,
             fog_color, tile_set,
-            LevelData(map_grid))
+            LevelData(map_grid, tsize))
 
 def main():
     pyggel.init()
@@ -145,6 +158,8 @@ def main():
     scene = pyggel.scene.Scene()
     scene.pick = True
     scene.add_light(light)
+
+    collidable = ["#"] #TODO: add other collidables!
 
     static, dynamic, fog_color, tile_set, level_data = get_geoms("level1.txt")
     pyggel.view.set_fog_color(fog_color)
@@ -175,17 +190,26 @@ def main():
             camera.roty -= .5
         if K_RIGHT in event.keyboard.active:
             camera.roty += .5
+
+        do_move = False
         if K_UP in event.keyboard.active:
             camera.roty *= -1
-            camera.set_pos(pyggel.math3d.move_with_rotation(camera.get_pos(),
-                                                            camera.get_rotation(),
-                                                            0.05))
-            camera.roty *= -1
+            new = pyggel.math3d.move_with_rotation((0,0,0), camera.get_rotation(), 0.05)
+            future = pyggel.math3d.move_with_rotation((0,0,0), camera.get_rotation(), 1.25)
+            do_move = True
         if K_DOWN in event.keyboard.active:
             camera.roty *= -1
-            camera.set_pos(pyggel.math3d.move_with_rotation(camera.get_pos(),
-                                                            camera.get_rotation(),
-                                                            -0.05))
+            new = pyggel.math3d.move_with_rotation((0,0,0), camera.get_rotation(), -0.05)
+            future = pyggel.math3d.move_with_rotation((0,0,0), camera.get_rotation(), -1.25)
+            do_move = True
+
+        if do_move:
+            x = camera.posx + future[0]
+            y = camera.posz + future[2]
+            if not level_data.get_at_uncon(x, camera.posz) in collidable:
+                camera.set_pos((camera.posx+new[0], camera.posy, camera.posz))
+            if not level_data.get_at_uncon(camera.posx, y) in collidable:
+                camera.set_pos((camera.posx, camera.posy, camera.posz+new[2]))
             camera.roty *= -1
 
         pyggel.view.clear_screen()

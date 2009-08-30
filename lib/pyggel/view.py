@@ -284,7 +284,9 @@ def set3d():
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
     glViewport(0,0,*screen_size)
-    gluPerspective(45, 1.0*screen_size[0]/screen_size[1], 0.1, 100.0)
+    #Pyweek change, set back view behind user!
+    #Pyweek change, set back view to 65 instead of 100
+    gluPerspective(45, 1.0*screen_size[0]/screen_size[1], 0.01, 65.0)
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
     glEnable(GL_DEPTH_TEST)
