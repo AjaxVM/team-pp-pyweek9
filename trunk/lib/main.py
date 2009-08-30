@@ -86,7 +86,7 @@ class HorzDoor(VertDoor, pyggel.geometry.Cube):
 
 def get_geoms(level):
     tsize = 5.0
-    fname = data.level_path(level)
+    fname = data.level_path("level%s.txt"%level)
 
     _data = []
     for line in open(fname):
@@ -107,6 +107,8 @@ def get_geoms(level):
     tile_set = "dungeon"
     fog_color = (1,1,1)
     map_grid = None
+
+    camera_pos = (2,0,2)
 
     for i in xrange(0, len(commands), 2):
         com = commands[i]
@@ -143,13 +145,14 @@ def get_geoms(level):
                         dynamic.append(VertDoor(tsize, door_tex, (x*tsize, -tsize/11, y*tsize)))
                     if cur == "_":
                         dynamic.append(HorzDoor(tsize, door_tex, (x*tsize, -tsize/11, y*tsize)))
+                    if cur == "*":
+                        camera_pos = x*tsize, 0, y*tsize
     return (pyggel.misc.StaticObjectGroup(static), dynamic,
+            camera_pos,
             fog_color, tile_set,
             LevelData(map_grid, tsize))
 
-def main():
-    pyggel.init()
-
+def play_level(level=1): #TODO: add controls for player data, like weapon, stats, etc.!
     camera = pyggel.camera.LookFromCamera((10,0,10))
     light = pyggel.light.Light((0,100,0), (0.5,0.5,0.5,1),
                                   (1,1,1,1), (50,50,50,10),
@@ -161,7 +164,8 @@ def main():
 
     collidable = ["#"] #TODO: add other collidables!
 
-    static, dynamic, fog_color, tile_set, level_data = get_geoms("level1.txt")
+    static, dynamic, camera_pos, fog_color, tile_set, level_data = get_geoms(1)
+    camera.set_pos(camera_pos)
     pyggel.view.set_fog_color(fog_color)
     pyggel.view.set_fog_depth(5, 60)
     pyggel.view.set_background_color(fog_color[:3])
@@ -190,7 +194,6 @@ def main():
 
         event.update()
         if K_ESCAPE in event.keyboard.hit:
-            pyggel.quit()
             return None
 
         if event.mouse.motion[0]:
@@ -226,3 +229,11 @@ def main():
             game_hud.set_hover_status(None)
 
         pyggel.view.refresh_screen()
+
+def main():
+    pyggel.init()
+
+    play_level(1)
+
+    pyggel.quit()
+    return None
