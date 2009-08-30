@@ -248,7 +248,7 @@ def play_level(level, player_data): #TODO: add controls for player data, like we
     scene.pick = False
     game_hud.visible = False
     scene.render(camera) #make sure we only pick the center!
-    do_transition_in(transition_buffer)
+    do_transition(transition_buffer, False)
     game_hud.visible = True
     scene.pick = True
     scene.render_buffer = None
@@ -321,17 +321,25 @@ def play_level(level, player_data): #TODO: add controls for player data, like we
                 scene.remove_3d(pick)
                 game_hud.update_feathers(have_feathers, len(feathers))
 
-def do_transition_out(buf):
+def do_transition(buf, out=True):
     pyggel.view.set_lighting(False) #for now...
+    glClearColor(0,0,0,0)
     tex = buf.texture
     tex.bind()
     glPushMatrix()
-    scale = 1.1
+    if out:
+        scale = 1.1
+    else:
+        scale = 0
     rot = 0
 
     for i in xrange(500):
-        scale -= 1.1/500
-        rot += 360.0/500
+        if out:
+            scale -= 1.1/500
+            rot += 360.0/500
+        else:
+            scale += 1.1/500
+            rot -= 360.0/500
         pyggel.view.set3d()
         pyggel.view.clear_screen()
 
@@ -351,37 +359,7 @@ def do_transition_out(buf):
         pyggel.view.refresh_screen()
     glPopMatrix()
     pyggel.view.set_lighting(True)
-
-def do_transition_in(buf):
-    pyggel.view.set_lighting(False) #for now...
-    tex = buf.texture
-    tex.bind()
-    glPushMatrix()
-    scale = 0
-    rot = 0
-
-    for i in xrange(500):
-        scale += 1.1/500
-        rot -= 360.0/500
-        pyggel.view.set3d()
-        pyggel.view.clear_screen()
-
-        glRotatef(rot,0,0,1)
-
-        glBegin(GL_QUADS)
-        glTexCoord2f(0,1)
-        glVertex3f(-1*scale, 1*scale, -2)
-        glTexCoord2f(0,0)
-        glVertex3f(-1*scale,-1*scale, -2)
-        glTexCoord2f(1,0)
-        glVertex3f( 1*scale,-1*scale, -2)
-        glTexCoord2f(1,1)
-        glVertex3f( 1*scale, 1*scale, -2)
-        glEnd()
-
-        pyggel.view.refresh_screen()
-    glPopMatrix()
-    pyggel.view.set_lighting(True)
+    glClearColor(*pyggel.view.screen.clear_color)
 
 def main():
     pyggel.init()
@@ -397,6 +375,6 @@ def main():
             pyggel.quit()
             return None
         if command == "next":
-            do_transition_out(retval[1])
+            do_transition(retval[1])
             level += 1
             continue
