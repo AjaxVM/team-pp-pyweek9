@@ -128,6 +128,7 @@ def get_geoms(level):
     dynamic = []
 
     baddies = []
+    bosses = []
     feathers = []
 
     commands = _data.split(":")
@@ -178,7 +179,7 @@ def get_geoms(level):
                     if cur == "~":
                         feathers.append(Feather((x*tsize, 0, y*tsize)))
     return (pyggel.misc.StaticObjectGroup(static), dynamic,
-            baddies, feathers,
+            baddies, bosses, feathers,
             camera_pos,
             fog_color, tile_set,
             LevelData(map_grid, tsize),
@@ -209,15 +210,20 @@ def play_level(level, player_data): #TODO: add controls for player data, like we
 
     collidable = ["#"] #TODO: add other collidables!
 
-    static, dynamic, baddies, feathers, camera_pos, fog_color, tile_set, level_data, tsize = get_geoms(1)
+    static, dynamic, baddies, bosses, feathers, camera_pos, fog_color, tile_set, level_data, tsize = get_geoms(level)
     camera.set_pos(camera_pos)
     pyggel.view.set_fog_color(fog_color)
     pyggel.view.set_fog_depth(5, 60)
     pyggel.view.set_background_color(fog_color[:3])
     static.pickable = True
+
+    transition_buffer = pyggel.data.TextureBuffer(clear_color=fog_color[:3])
+    #This is for going to the next level...
+
     scene.add_3d(static)
     scene.add_3d(dynamic)
     scene.add_3d(baddies)
+    scene.add_3d(bosses)
     scene.add_3d(feathers)
 
     game_hud = hud.Hud()
@@ -238,6 +244,15 @@ def play_level(level, player_data): #TODO: add controls for player data, like we
     target = pyggel.image.Image(data.image_path("target.png"), pos=(320-32, 240-32))
     scene.add_2d(target)
 
+    scene.render_buffer = transition_buffer
+    scene.pick = False
+    game_hud.visible = False
+    scene.render(camera) #make sure we only pick the center!
+    do_transition_in(transition_buffer)
+    game_hud.visible = True
+    scene.pick = True
+    scene.render_buffer = None
+
     event.update() #so the camera doesn't wig out the first time...
 
     while 1:
@@ -245,6 +260,19 @@ def play_level(level, player_data): #TODO: add controls for player data, like we
         pyggel.view.set_title("FPS: %s"%clock.get_fps())
 
         #Render first, since picking is done at this time, and we need that later!
+
+        if have_feathers == len(feathers): #next round
+            good = True
+            for i in baddies:
+                if i in scene.graph.render_3d:
+                    good = False
+                    break
+            if good:
+                scene.render_buffer = transition_buffer
+                scene.pick = False
+                game_hud.visible = False
+                scene.render(camera) #make sure we only pick the center!
+                return ["next", transition_buffer]
 
         pyggel.view.clear_screen()
 
@@ -260,7 +288,7 @@ def play_level(level, player_data): #TODO: add controls for player data, like we
         #Now events!
         event.update()
         if K_ESCAPE in event.keyboard.hit:
-            return "back"
+            return ["back"]
 
         if event.mouse.motion[0]:
             camera.roty += event.mouse.motion[0] * 0.1
@@ -293,12 +321,82 @@ def play_level(level, player_data): #TODO: add controls for player data, like we
                 scene.remove_3d(pick)
                 game_hud.update_feathers(have_feathers, len(feathers))
 
+def do_transition_out(buf):
+    pyggel.view.set_lighting(False) #for now...
+    tex = buf.texture
+    tex.bind()
+    glPushMatrix()
+    scale = 1.1
+    rot = 0
+
+    for i in xrange(500):
+        scale -= 1.1/500
+        rot += 360.0/500
+        pyggel.view.set3d()
+        pyggel.view.clear_screen()
+
+        glRotatef(rot,0,0,1)
+
+        glBegin(GL_QUADS)
+        glTexCoord2f(0,1)
+        glVertex3f(-1*scale, 1*scale, -2)
+        glTexCoord2f(0,0)
+        glVertex3f(-1*scale,-1*scale, -2)
+        glTexCoord2f(1,0)
+        glVertex3f( 1*scale,-1*scale, -2)
+        glTexCoord2f(1,1)
+        glVertex3f( 1*scale, 1*scale, -2)
+        glEnd()
+
+        pyggel.view.refresh_screen()
+    glPopMatrix()
+    pyggel.view.set_lighting(True)
+
+def do_transition_in(buf):
+    pyggel.view.set_lighting(False) #for now...
+    tex = buf.texture
+    tex.bind()
+    glPushMatrix()
+    scale = 0
+    rot = 0
+
+    for i in xrange(500):
+        scale += 1.1/500
+        rot -= 360.0/500
+        pyggel.view.set3d()
+        pyggel.view.clear_screen()
+
+        glRotatef(rot,0,0,1)
+
+        glBegin(GL_QUADS)
+        glTexCoord2f(0,1)
+        glVertex3f(-1*scale, 1*scale, -2)
+        glTexCoord2f(0,0)
+        glVertex3f(-1*scale,-1*scale, -2)
+        glTexCoord2f(1,0)
+        glVertex3f( 1*scale,-1*scale, -2)
+        glTexCoord2f(1,1)
+        glVertex3f( 1*scale, 1*scale, -2)
+        glEnd()
+
+        pyggel.view.refresh_screen()
+    glPopMatrix()
+    pyggel.view.set_lighting(True)
+
 def main():
     pyggel.init()
 
     pData = PlayerData()
 
-    retval = play_level(1, pData)
-    if retval == "back":
-        pyggel.quit()
-        return None
+    level = 1
+
+    while 1:
+        retval = play_level(level, pData)
+        command = retval[0]
+        if command == "back":
+            pyggel.quit()
+            return None
+        if command == "next":
+            do_transition_out(retval[1])
+            level += 1
+            continue
