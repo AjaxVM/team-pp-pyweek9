@@ -9,6 +9,9 @@ class LevelData(object):
     def __init__(self, data):
         self.data = data
 
+    def get_data_at(self, x, y):
+        return self.data[y][len(self.data[y])-1-x]
+
 class VertDoor(pyggel.geometry.Cube):
     def __init__(self, size, _tex, _pos):
         pyggel.geometry.Cube.__init__(self, size, texture=_tex, pos=_pos)
@@ -45,6 +48,8 @@ class VertDoor(pyggel.geometry.Cube):
             self.off_height -= 0.1
         if self.off_height < 0:
             self.off_height = 0
+        if self.off_height > self.size:
+            self.off_height = self.size
 
         self.pos = self.orig_pos[0], self.orig_pos[1]+self.off_height, self.orig_pos[2]
         pyggel.geometry.Cube.render(self, camera)
