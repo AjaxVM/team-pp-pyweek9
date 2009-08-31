@@ -121,6 +121,10 @@ class Weapon(pyggel.scene.BaseSceneObject):
         self.obj = self.objs[name]
         self.rotation = 25, 0, 0
         self.name = name
+        if self.name == "shotgun":
+            self.base_ammo = 20
+        else:
+            self.base_ammo = 100
 
     def picked(self):
         self.game_hud.set_hover_status("shotgun")
@@ -237,9 +241,21 @@ class PlayerData(object):
         self.weapon_changes = (0,0)
         self.weapon_buck_done = True
 
+        self.game_hud = None
+
     def add_weapon(self, wep_type, mesh, ammo=100):
         self.weapons[wep_type] = [mesh, ammo]
         self.cur_weapon = wep_type
+
+    def hit(self, damage):
+        self.cur_hp -= damage
+        self.game_hud.update_hp(self.cur_hp)
+
+    def boost_hp(self, amount):
+        self.cur_hp += amount
+        if self.cur_hp >= self.max_hp:
+            self.cur_hp = self.max_hp
+        self.game_hud.update_hp(self.cur_hp)
 
     def swap_weapon(self, scene, new):
         try:
@@ -248,9 +264,13 @@ class PlayerData(object):
             pass
 
         self.cur_weapon = new
+        self.game_hud.update_weapon(new)
         if new:
             scene.add_3d_after(self.weapons[new][0])
             self.weapons[new][0].pickable = False
+            self.game_hud.update_ammo(self.weapons[new][1])
+        else:
+            self.game_hud.update_ammo(0)
 
     def update_weapon(self, camera):
         if self.cur_weapon:
@@ -258,8 +278,9 @@ class PlayerData(object):
                 x, y = self.weapon_changes
                 x += self.weapon_buck_back
                 y += self.weapon_buck_twist
-                if self.cur_weapon == "shotgun" and x >= self.weapon_buck_back*10:
-                    x = self.weapon_buck_back * 10
+                if self.cur_weapon == "shotgun" and x >= self.weapon_buck_back*7:
+                    x = self.weapon_buck_back * 7
+                    y = self.weapon_buck_twist * 7
                     self.weapon_bucked = False
                 self.weapon_changes = x, y
             elif not self.weapon_buck_done:
@@ -268,13 +289,9 @@ class PlayerData(object):
                     x -= self.weapon_buck_back/4
                     if x <= 0:
                         x = 0
-                if y:
                     y -= self.weapon_buck_twist/4
-                    if y <= 0:
-                        y = 0
-                    if y >= 360:
-                        y = 0
-                if not x or y:
+                else:
+                    y = 0
                     self.weapon_buck_done = True
                 self.weapon_changes = x, y
             obj = self.weapons[self.cur_weapon][0]
@@ -285,15 +302,18 @@ class PlayerData(object):
             x, y, z = pyggel.math3d.move_with_rotation((x, y, z), (0,-roty+45,0), -.75)
             y -= 0.25
             obj.pos = x, y, z
-            obj.rotation = (0,180-roty,-20-self.weapon_changes[1])
+            obj.rotation = (0,180-roty+self.weapon_changes[1],-20-self.weapon_changes[1])
 
     def fire(self, scene):
         if self.cur_weapon == "shotgun":
             if self.weapon_buck_done: #other types maybe don't need this
-                self.weapon_bucked = True
-                self.weapon_buck_back = 0.1
-                self.weapon_buck_twist = -15
-                self.weapon_buck_done = False
+                if self.weapons[self.cur_weapon][1]:
+                    self.weapons[self.cur_weapon][1] -= 1
+                    self.weapon_bucked = True
+                    self.weapon_buck_back = 0.1
+                    self.weapon_buck_twist = -3
+                    self.weapon_buck_done = False
+                    self.game_hud.update_ammo(self.weapons[self.cur_weapon][1])
 
 def play_level(level, player_data):
     camera = pyggel.camera.LookFromCamera((10,0,10))
@@ -340,6 +360,8 @@ def play_level(level, player_data):
 
     target = pyggel.image.Image(data.image_path("target.png"), pos=(320-32, 240-32))
     scene.add_2d(target)
+
+    player_data.game_hud = game_hud
 
     player_data.swap_weapon(scene, player_data.cur_weapon)
     player_data.update_weapon(camera)
@@ -424,7 +446,7 @@ def play_level(level, player_data):
                     game_hud.update_feathers(have_feathers, len(feathers))
                 if isinstance(pick, Weapon):
                     scene.remove_3d(pick)
-                    player_data.add_weapon(pick.name, pick.obj, 100)
+                    player_data.add_weapon(pick.name, pick.obj, pick.base_ammo)
                     player_data.swap_weapon(scene, pick.name)
         if "left" in event.mouse.hit:
             player_data.fire(scene)

@@ -9,6 +9,8 @@ class Hud(pyggel.scene.BaseSceneObject):
         pyggel.scene.BaseSceneObject.__init__(self)
 
         self.font = pyggel.font.Font()
+        self.font.add_image("{health}", pyggel.image.Image(data.image_path("hp.png")))
+        self.font.add_image("{ammo}", pyggel.image.Image(data.image_path("ammo.png")))
 
         self.hover_status = {}
         self.hover_status["door"] = self.font.make_text_image("Door - face and move next to it to open")
@@ -20,6 +22,13 @@ class Hud(pyggel.scene.BaseSceneObject):
         self.feathers = self.font.make_text_image("Feathers: 0/3")
         self.feathers.pos = (10, 50)
 
+        self.hp = self.font.make_text_image("{health} 100")
+        self.hp.pos = (10, 85)
+        self.weapon = self.font.make_text_image("Weapon: None")
+        self.weapon.pos = (0, 145)
+        self.ammo = self.font.make_text_image("{ammo} 100")
+        self.ammo.pos = (10, 180)
+
     def set_hover_status(self, text):
         self.cur_text = text
 
@@ -27,6 +36,21 @@ class Hud(pyggel.scene.BaseSceneObject):
         text = "Feathers: %s/%s"%(have, max)
         if not self.feathers.text == text:
             self.feathers.text = text
+
+    def update_hp(self, amount):
+        text = "{health} %s"%amount
+        if not self.hp.text == text:
+            self.hp.text = text
+
+    def update_ammo(self, amount):
+        text = "{ammo} %s"%amount
+        if not self.ammo.text == text:
+            self.ammo.text = text
+
+    def update_weapon(self, weapon):
+        text = "Weapon: %s"%weapon
+        if not self.weapon.text == text:
+            self.weapon.text = text
 
     def render(self):
         if self.cur_text:
@@ -38,3 +62,6 @@ class Hud(pyggel.scene.BaseSceneObject):
             img.pos = x,y
 
         self.feathers.render()
+        self.hp.render()
+        self.weapon.render()
+        self.ammo.render()
