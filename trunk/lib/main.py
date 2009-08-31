@@ -13,6 +13,8 @@ class LevelData(object):
         self.width = len(data[0])
         self.tsize = tsize
 
+        self.collidable = ["#"]
+
     def get_data_at(self, x, y):
         try:
             return self.data[self.height-1-y][x]
@@ -180,6 +182,29 @@ class AmmoBuff(pyggel.scene.BaseSceneObject):
 
     def render(self, camera=None):
         self.update()
+        self.obj.pos = self.pos
+        self.obj.rotation = self.rotation
+        self.obj.render(camera)
+
+class Shot(pyggel.scene.BaseSceneObject):
+    obj = None
+    def __init__(self, pos, rotation, level_data):
+        if not Shot.obj:
+            Shot.obj = pyggel.geometry.Sphere(0.1)
+            Shot.obj.scale = (1,1,2)
+            Shot.obj.colorize = (0.1,0.2,0.1)
+        pyggel.scene.BaseSceneObject.__init__(self)
+
+        self.pos = pos
+        self.rotation = rotation
+        self.level_data = level_data
+
+    def render(self, camera=None):
+        if self.dead_remove_from_scene:
+            return
+        self.pos = pyggel.math3d.move_with_rotation(self.pos, self.rotation, -.75)
+        if self.level_data.get_at_uncon(self.pos[0], self.pos[2]) in self.level_data.collidable:
+            self.dead_remove_from_scene = True #kills object
         self.obj.pos = self.pos
         self.obj.rotation = self.rotation
         self.obj.render(camera)
@@ -371,7 +396,7 @@ class PlayerData(object):
             obj.pos = x, y, z
             obj.rotation = (0,180-roty+self.weapon_changes[1],-20-self.weapon_changes[1])
 
-    def fire(self, scene):
+    def fire(self, scene, level_data):
         if self.cur_weapon == "shotgun":
             if self.weapon_buck_done: #other types maybe don't need this
                 if self.ammos[self.cur_weapon]:
@@ -381,6 +406,9 @@ class PlayerData(object):
                     self.weapon_buck_twist = -3
                     self.weapon_buck_done = False
                     self.game_hud.update_ammo(self.ammos[self.cur_weapon])
+                    scene.add_3d(Shot(self.weapons[self.cur_weapon].pos,
+                                      self.weapons[self.cur_weapon].rotation,
+                                      level_data))
 
 def play_level(level, player_data):
     camera = pyggel.camera.LookFromCamera((10,0,10))
@@ -391,8 +419,6 @@ def play_level(level, player_data):
     scene = pyggel.scene.Scene()
     scene.pick = True
     scene.add_light(light)
-
-    collidable = ["#"] #TODO: add other collidables!
 
     static, dynamic, baddies, bosses, feathers, camera_pos, fog_color, tile_set, level_data, tsize = get_geoms(level)
     camera.set_pos(camera_pos)
@@ -497,9 +523,9 @@ def play_level(level, player_data):
         if do_move:
             x = camera.posx + future[0]
             y = camera.posz + future[2]
-            if not level_data.get_at_uncon(x, camera.posz) in collidable:
+            if not level_data.get_at_uncon(x, camera.posz) in level_data.collidable:
                 camera.set_pos((camera.posx+new[0], camera.posy, camera.posz))
-            if not level_data.get_at_uncon(camera.posx, y) in collidable:
+            if not level_data.get_at_uncon(camera.posx, y) in level_data.collidable:
                 camera.set_pos((camera.posx, camera.posy, camera.posz+new[2]))
             camera.roty *= -1
 
@@ -522,7 +548,7 @@ def play_level(level, player_data):
                     scene.remove_3d(pick)
                     player_data.boost_ammo(25)
         if "left" in event.mouse.hit:
-            player_data.fire(scene)
+            player_data.fire(scene, level_data)
 
 def do_transition(buf, out=True):
     pyggel.view.set_lighting(False) #for now...
