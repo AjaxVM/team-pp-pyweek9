@@ -120,6 +120,7 @@ class Weapon(pyggel.scene.BaseSceneObject):
 
         self.obj = self.objs[name]
         self.rotation = 25, 0, 0
+        self.name = name
 
     def picked(self):
         self.game_hud.set_hover_status("shotgun")
@@ -230,11 +231,34 @@ class PlayerData(object):
         self.kills = 0
         self.cur_weapon = None
 
-    def add_weapon(self, wep_type, ammo=100):
-        self.weapons[wep_type] = ammo
+    def add_weapon(self, wep_type, mesh, ammo=100):
+        self.weapons[wep_type] = [mesh, ammo]
         self.cur_weapon = wep_type
 
-def play_level(level, player_data): #TODO: add controls for player data, like weapon, stats, etc.!
+    def swap_weapon(self, scene, new):
+        try:
+            scene.remove_3d_after(self.weapons[self.cur_weapon][0])
+        except:
+            pass
+
+        self.cur_weapon = new
+        if new:
+            scene.add_3d_after(self.weapons[new][0])
+            self.weapons[new][0].pickable = False
+
+    def update_weapon(self, camera):
+        if self.cur_weapon:
+            obj = self.weapons[self.cur_weapon][0]
+            obj.scale = 0.5
+            x, y, z = camera.get_pos()
+            roty = camera.roty
+            x, y, z = pyggel.math3d.move_with_rotation((x, y, z), (0,-roty,0), 2.25)
+            x, y, z = pyggel.math3d.move_with_rotation((x, y, z), (0,-roty+45,0), -.75)
+            y -= 0.25
+            obj.pos = x, y, z
+            obj.rotation = (0,180-roty,-20)
+
+def play_level(level, player_data):
     camera = pyggel.camera.LookFromCamera((10,0,10))
     light = pyggel.light.Light((0,100,0), (0.5,0.5,0.5,1),
                                   (1,1,1,1), (50,50,50,10),
@@ -279,6 +303,9 @@ def play_level(level, player_data): #TODO: add controls for player data, like we
 
     target = pyggel.image.Image(data.image_path("target.png"), pos=(320-32, 240-32))
     scene.add_2d(target)
+
+    player_data.swap_weapon(scene, player_data.cur_weapon)
+    player_data.update_weapon(camera)
 
     scene.render_buffer = transition_buffer
     scene.pick = False
@@ -332,7 +359,7 @@ def play_level(level, player_data): #TODO: add controls for player data, like we
         do_move = False
         if "w" in event.keyboard.active:
             camera.roty *= -1
-            new = pyggel.math3d.move_with_rotation((0,0,0), camera.get_rotation(), 0.05)
+            new = pyggel.math3d.move_with_rotation((0,0,0), camera.get_rotation(), 0.15)
             future = pyggel.math3d.move_with_rotation((0,0,0), camera.get_rotation(), 1.25)
             do_move = True
         if "s" in event.keyboard.active:
@@ -350,12 +377,18 @@ def play_level(level, player_data): #TODO: add controls for player data, like we
                 camera.set_pos((camera.posx, camera.posy, camera.posz+new[2]))
             camera.roty *= -1
 
+        player_data.update_weapon(camera)
+
         if "right" in event.mouse.hit:
-            if pick and isinstance(pick, Feather) and\
-               pyggel.math3d.get_distance(camera.get_pos(), pick.pos) < tsize*3:
-                have_feathers += 1
-                scene.remove_3d(pick)
-                game_hud.update_feathers(have_feathers, len(feathers))
+            if pick and pyggel.math3d.get_distance(camera.get_pos(), pick.pos) < tsize*3:
+                if isinstance(pick, Feather):
+                    have_feathers += 1
+                    scene.remove_3d(pick)
+                    game_hud.update_feathers(have_feathers, len(feathers))
+                if isinstance(pick, Weapon):
+                    scene.remove_3d(pick)
+                    player_data.add_weapon(pick.name, pick.obj, 100)
+                    player_data.swap_weapon(scene, pick.name)
 
 def do_transition(buf, out=True):
     pyggel.view.set_lighting(False) #for now...
