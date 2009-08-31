@@ -121,13 +121,57 @@ class Weapon(pyggel.scene.BaseSceneObject):
         self.obj = self.objs[name]
         self.rotation = 25, 0, 0
         self.name = name
-        if self.name == "shotgun":
-            self.base_ammo = 20
-        else:
-            self.base_ammo = 100
 
     def picked(self):
         self.game_hud.set_hover_status("shotgun")
+
+    def update(self):
+        x, y, z = self.rotation
+        y += 2
+        self.rotation = x, y, z
+
+    def render(self, camera=None):
+        self.update()
+        self.obj.pos = self.pos
+        self.obj.rotation = self.rotation
+        self.obj.render(camera)
+
+class HPBuff(pyggel.scene.BaseSceneObject):
+    obj = None
+    def __init__(self, pos):
+        if not HPBuff.obj:
+            HPBuff.obj = pyggel.geometry.Cube(2, texture=pyggel.data.Texture(data.image_path("hp_tex.png")), mirror=True)
+        pyggel.scene.BaseSceneObject.__init__(self)
+        self.pos = pos
+
+        self.rotation = 25, 0, 0
+
+    def picked(self):
+        self.game_hud.set_hover_status("hp")
+
+    def update(self):
+        x, y, z = self.rotation
+        y += 2
+        self.rotation = x, y, z
+
+    def render(self, camera=None):
+        self.update()
+        self.obj.pos = self.pos
+        self.obj.rotation = self.rotation
+        self.obj.render(camera)
+
+class AmmoBuff(pyggel.scene.BaseSceneObject):
+    obj = None
+    def __init__(self, pos):
+        if not AmmoBuff.obj:
+            AmmoBuff.obj = pyggel.geometry.Cube(2, texture=pyggel.data.Texture(data.image_path("ammo_tex.png")), mirror=True)
+        pyggel.scene.BaseSceneObject.__init__(self)
+        self.pos = pos
+
+        self.rotation = 25, 0, 0
+
+    def picked(self):
+        self.game_hud.set_hover_status("ammo")
 
     def update(self):
         x, y, z = self.rotation
@@ -173,6 +217,7 @@ def get_geoms(level):
     camera_pos = (2,0,2)
 
     possible_gun_locations = []
+    possible_boost_locations = []
 
     for i in xrange(0, len(commands), 2):
         com = commands[i]
@@ -215,10 +260,22 @@ def get_geoms(level):
                         feathers.append(Feather((x*tsize, 0, y*tsize)))
                     if cur == "&":
                         possible_gun_locations.append((x, y))
+                    if cur == "$":
+                        possible_boost_locations.append((x, y))
 
     if possible_gun_locations:
         pick = random.choice(possible_gun_locations)
         dynamic.append(Weapon((pick[0]*tsize, 0, pick[1]*tsize), weps_per_level[level]))
+    if possible_boost_locations:
+        t = 0
+        for i in xrange(len(possible_boost_locations)/2):
+            pick = random.choice(possible_boost_locations)
+            t = 1-t
+            possible_boost_locations.remove(pick)
+            if t == 0: #health
+                dynamic.append(HPBuff((pick[0]*tsize, 0, pick[1]*tsize)))
+            else:
+                dynamic.append(AmmoBuff((pick[0]*tsize, 0, pick[1]*tsize)))
     return (pyggel.misc.StaticObjectGroup(static), dynamic,
             baddies, bosses, feathers,
             camera_pos,
@@ -230,8 +287,10 @@ class PlayerData(object):
     def __init__(self):
         self.max_hp = 100
         self.cur_hp = 100
+        self.max_ammo = 100
 
         self.weapons = {}
+        self.ammos = {"shotgun":20}
         self.kills = 0
         self.cur_weapon = None
 
@@ -243,8 +302,8 @@ class PlayerData(object):
 
         self.game_hud = None
 
-    def add_weapon(self, wep_type, mesh, ammo=100):
-        self.weapons[wep_type] = [mesh, ammo]
+    def add_weapon(self, wep_type, mesh):
+        self.weapons[wep_type] = mesh
         self.cur_weapon = wep_type
 
     def hit(self, damage):
@@ -257,18 +316,26 @@ class PlayerData(object):
             self.cur_hp = self.max_hp
         self.game_hud.update_hp(self.cur_hp)
 
+    def boost_ammo(self, amount):
+        for i in self.ammos:
+            self.ammos[i] += amount
+            if self.ammos[i] > self.max_ammo:
+                self.ammos[i] = self.max_ammo
+        if self.cur_weapon:
+            self.game_hud.update_ammo(self.ammos[self.cur_weapon])
+
     def swap_weapon(self, scene, new):
         try:
-            scene.remove_3d_after(self.weapons[self.cur_weapon][0])
+            scene.remove_3d_after(self.weapons[self.cur_weapon])
         except:
             pass
 
         self.cur_weapon = new
         self.game_hud.update_weapon(new)
         if new:
-            scene.add_3d_after(self.weapons[new][0])
-            self.weapons[new][0].pickable = False
-            self.game_hud.update_ammo(self.weapons[new][1])
+            scene.add_3d_after(self.weapons[new])
+            self.weapons[new].pickable = False
+            self.game_hud.update_ammo(self.ammos[new])
         else:
             self.game_hud.update_ammo(0)
 
@@ -294,7 +361,7 @@ class PlayerData(object):
                     y = 0
                     self.weapon_buck_done = True
                 self.weapon_changes = x, y
-            obj = self.weapons[self.cur_weapon][0]
+            obj = self.weapons[self.cur_weapon]
             obj.scale = 0.5
             x, y, z = camera.get_pos()
             roty = camera.roty
@@ -307,13 +374,13 @@ class PlayerData(object):
     def fire(self, scene):
         if self.cur_weapon == "shotgun":
             if self.weapon_buck_done: #other types maybe don't need this
-                if self.weapons[self.cur_weapon][1]:
-                    self.weapons[self.cur_weapon][1] -= 1
+                if self.ammos[self.cur_weapon]:
+                    self.ammos[self.cur_weapon] -= 1
                     self.weapon_bucked = True
                     self.weapon_buck_back = 0.1
                     self.weapon_buck_twist = -3
                     self.weapon_buck_done = False
-                    self.game_hud.update_ammo(self.weapons[self.cur_weapon][1])
+                    self.game_hud.update_ammo(self.ammos[self.cur_weapon])
 
 def play_level(level, player_data):
     camera = pyggel.camera.LookFromCamera((10,0,10))
@@ -446,8 +513,14 @@ def play_level(level, player_data):
                     game_hud.update_feathers(have_feathers, len(feathers))
                 if isinstance(pick, Weapon):
                     scene.remove_3d(pick)
-                    player_data.add_weapon(pick.name, pick.obj, pick.base_ammo)
+                    player_data.add_weapon(pick.name, pick.obj)
                     player_data.swap_weapon(scene, pick.name)
+                if isinstance(pick, HPBuff):
+                    scene.remove_3d(pick)
+                    player_data.boost_hp(20)
+                if isinstance(pick, AmmoBuff):
+                    scene.remove_3d(pick)
+                    player_data.boost_ammo(25)
         if "left" in event.mouse.hit:
             player_data.fire(scene)
 

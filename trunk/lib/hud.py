@@ -16,6 +16,8 @@ class Hud(pyggel.scene.BaseSceneObject):
         self.hover_status["door"] = self.font.make_text_image("Door - face and move next to it to open")
         self.hover_status["feather"] = self.font.make_text_image("A feather! Get close to it and Right-click to pick it up")
         self.hover_status["shotgun"] = self.font.make_text_image("A shotgun! Better grab that, Right-click to pick it up")
+        self.hover_status["hp"] = self.font.make_text_image("A health {health}+20 pack! Right-click to take it")
+        self.hover_status["ammo"] = self.font.make_text_image("An ammo {ammo}+25 pack! Right-click to take it")
 
         self.cur_text = None
 
@@ -55,9 +57,8 @@ class Hud(pyggel.scene.BaseSceneObject):
     def render(self):
         if self.cur_text:
             img = self.hover_status[self.cur_text]
-            x,y = 320, 25
-            w,h = img.get_size()
-            img.pos = x-w/2, y-h/2
+            x,y = 320, 10
+            img.pos = x-img.get_width()/2, y
             img.render()
             img.pos = x,y
 
