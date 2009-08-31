@@ -231,6 +231,12 @@ class PlayerData(object):
         self.kills = 0
         self.cur_weapon = None
 
+        self.weapon_bucked = False
+        self.weapon_buck_back = 0
+        self.weapon_buck_twist = 0
+        self.weapon_changes = (0,0)
+        self.weapon_buck_done = True
+
     def add_weapon(self, wep_type, mesh, ammo=100):
         self.weapons[wep_type] = [mesh, ammo]
         self.cur_weapon = wep_type
@@ -248,15 +254,46 @@ class PlayerData(object):
 
     def update_weapon(self, camera):
         if self.cur_weapon:
+            if self.weapon_bucked:
+                x, y = self.weapon_changes
+                x += self.weapon_buck_back
+                y += self.weapon_buck_twist
+                if self.cur_weapon == "shotgun" and x >= self.weapon_buck_back*5:
+                    x = self.weapon_buck_back * 5
+                    self.weapon_bucked = False
+                self.weapon_changes = x, y
+            elif not self.weapon_buck_done:
+                x, y = self.weapon_changes
+                if x:
+                    x -= self.weapon_buck_back/4
+                    if x <= 0:
+                        x = 0
+                if y:
+                    y -= self.weapon_buck_twist/4
+                    if y <= 0:
+                        y = 0
+                    if y >= 360:
+                        y = 0
+                if not x or y:
+                    self.weapon_buck_done = True
+                self.weapon_changes = x, y
             obj = self.weapons[self.cur_weapon][0]
             obj.scale = 0.5
             x, y, z = camera.get_pos()
             roty = camera.roty
-            x, y, z = pyggel.math3d.move_with_rotation((x, y, z), (0,-roty,0), 2.25)
+            x, y, z = pyggel.math3d.move_with_rotation((x, y, z), (0,-roty,0), 2.25-self.weapon_changes[0])
             x, y, z = pyggel.math3d.move_with_rotation((x, y, z), (0,-roty+45,0), -.75)
             y -= 0.25
             obj.pos = x, y, z
-            obj.rotation = (0,180-roty,-20)
+            obj.rotation = (0,180-roty,-20-self.weapon_changes[1])
+
+    def fire(self, scene):
+        if self.cur_weapon == "shotgun":
+            if self.weapon_buck_done: #other types maybe don't need this
+                self.weapon_bucked = True
+                self.weapon_buck_back = 0.2
+                self.weapon_buck_twist = -15
+                self.weapon_buck_done = False
 
 def play_level(level, player_data):
     camera = pyggel.camera.LookFromCamera((10,0,10))
@@ -389,6 +426,8 @@ def play_level(level, player_data):
                     scene.remove_3d(pick)
                     player_data.add_weapon(pick.name, pick.obj, 100)
                     player_data.swap_weapon(scene, pick.name)
+        if "left" in event.mouse.hit:
+            player_data.fire(scene)
 
 def do_transition(buf, out=True):
     pyggel.view.set_lighting(False) #for now...
