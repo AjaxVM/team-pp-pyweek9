@@ -357,6 +357,12 @@ class PlayerData(object):
         self.weapon_changes = (0,0)
         self.weapon_buck_done = True
 
+        self.weapon_bob_d = 0.002
+        self.weapon_bob_up = 0
+        self.weapon_bob_rd = -0.2
+        self.weapon_bob_rot = 0
+        self.weapon_bob_count = 20
+
         self.game_hud = None
 
     def add_weapon(self, wep_type, mesh):
@@ -396,6 +402,22 @@ class PlayerData(object):
         else:
             self.game_hud.update_ammo(0)
 
+    def move(self):
+        if self.cur_weapon:
+            self.weapon_bob_up += self.weapon_bob_d
+            self.weapon_bob_rot += self.weapon_bob_rd
+            self.weapon_bob_count += 1
+            if abs(self.weapon_bob_count) > 40:
+                self.weapon_bob_d *= -1
+                self.weapon_bob_rd *= -1
+                self.weapon_bob_count = 0
+        else:
+            self.reset_move()
+    def reset_move(self):
+        self.weapon_bob_up = 0
+        self.weapon_bob_rot = 0
+        self.weapon_bob_count = 20
+
     def update_weapon(self, camera):
         if self.cur_weapon:
             if self.weapon_bucked:
@@ -425,8 +447,9 @@ class PlayerData(object):
             x, y, z = pyggel.math3d.move_with_rotation((x, y, z), (0,-roty,0), 2.25-self.weapon_changes[0])
             x, y, z = pyggel.math3d.move_with_rotation((x, y, z), (0,-roty+45,0), -.75)
             y -= 0.25
-            obj.pos = x, y, z
-            obj.rotation = (0,180-roty+self.weapon_changes[1],-20-self.weapon_changes[1])
+            obj.pos = x, y+self.weapon_bob_up, z
+            obj.rotation = (0,180-roty+self.weapon_changes[1]-self.weapon_bob_rot*0.2,
+                            -20-self.weapon_changes[1]+self.weapon_bob_rot)
 
     def fire(self, scene, level_data):
         if self.cur_weapon == "shotgun":
@@ -574,12 +597,15 @@ def play_level(level, player_data):
             do_move = True
 
         if do_move:
+            player_data.move()
             x = camera.posx + future[0]
             y = camera.posz + future[2]
             if not level_data.get_at_uncon(x, camera.posz) in level_data.collidable:
                 camera.set_pos((camera.posx+new[0], camera.posy, camera.posz))
             if not level_data.get_at_uncon(camera.posx, y) in level_data.collidable:
                 camera.set_pos((camera.posx, camera.posy, camera.posz+new[2]))
+        else:
+            player_data.reset_move()
 
         player_data.update_weapon(camera)
 
