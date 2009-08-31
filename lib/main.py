@@ -94,13 +94,39 @@ class Feather(pyggel.scene.BaseSceneObject):
         self.pos = pos
 
         self.obj = random.choice(self.objs)
+        self.rotation = 25,0,0
 
     def picked(self):
         self.game_hud.set_hover_status("feather")
 
     def update(self):
         x, y, z = self.rotation
-        y += 0.5
+        y += 2
+        self.rotation = x, y, z
+
+    def render(self, camera=None):
+        self.update()
+        self.obj.pos = self.pos
+        self.obj.rotation = self.rotation
+        self.obj.render(camera)
+
+class Weapon(pyggel.scene.BaseSceneObject):
+    objs = {}
+    def __init__(self, pos, name):
+        if not self.objs:
+            self.objs["shotgun"] = pyggel.mesh.OBJ(data.mesh_path("shotgun.obj"))
+        pyggel.scene.BaseSceneObject.__init__(self)
+        self.pos = pos
+
+        self.obj = self.objs[name]
+        self.rotation = 25, 0, 0
+
+    def picked(self):
+        self.game_hud.set_hover_status("shotgun")
+
+    def update(self):
+        x, y, z = self.rotation
+        y += 2
         self.rotation = x, y, z
 
     def render(self, camera=None):
@@ -131,6 +157,8 @@ def get_geoms(level):
     bosses = []
     feathers = []
 
+    weps_per_level = {1: "shotgun"}
+
     commands = _data.split(":")
     commands = [i.strip() for i in commands if i]
     tile_set = "dungeon"
@@ -138,6 +166,8 @@ def get_geoms(level):
     map_grid = None
 
     camera_pos = (2,0,2)
+
+    possible_gun_locations = []
 
     for i in xrange(0, len(commands), 2):
         com = commands[i]
@@ -178,6 +208,12 @@ def get_geoms(level):
                         camera_pos = x*tsize, 0, y*tsize
                     if cur == "~":
                         feathers.append(Feather((x*tsize, 0, y*tsize)))
+                    if cur == "&":
+                        possible_gun_locations.append((x, y))
+
+    if possible_gun_locations:
+        pick = random.choice(possible_gun_locations)
+        dynamic.append(Weapon((pick[0]*tsize, 0, pick[1]*tsize), weps_per_level[level]))
     return (pyggel.misc.StaticObjectGroup(static), dynamic,
             baddies, bosses, feathers,
             camera_pos,
