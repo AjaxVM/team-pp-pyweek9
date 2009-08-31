@@ -186,18 +186,21 @@ class AmmoBuff(pyggel.scene.BaseSceneObject):
         self.obj.rotation = self.rotation
         self.obj.render(camera)
 
-class Shot(pyggel.scene.BaseSceneObject):
+class ShotgunShot(pyggel.scene.BaseSceneObject):
     obj = None
-    def __init__(self, pos, rotation, level_data):
-        if not Shot.obj:
-            Shot.obj = pyggel.geometry.Sphere(0.1)
-            Shot.obj.scale = (1,1,4)
-            Shot.obj.colorize = (0.2,0.2,0.25)
+    def __init__(self, pos, rotation, level_data, scene):
+        if not ShotgunShot.obj:
+            ShotgunShot.obj = pyggel.geometry.Sphere(0.1)
+            ShotgunShot.obj.scale = (1,1,4)
+            ShotgunShot.obj.colorize = (0.2,0.2,0.25)
         pyggel.scene.BaseSceneObject.__init__(self)
+
+        self.scene = scene
 
         self.pos = pos
         self.rotation = rotation
         self.level_data = level_data
+        self.puff_tick = 1
 
     def render(self, camera=None):
         if self.dead_remove_from_scene:
@@ -208,6 +211,35 @@ class Shot(pyggel.scene.BaseSceneObject):
         self.obj.pos = self.pos
         self.obj.rotation = self.rotation
         self.obj.render(camera)
+
+        if self.puff_tick <= 20:
+            self.scene.add_3d_blend(ShotgunPuff(self.pos, self.rotation, self.puff_tick))
+            self.puff_tick += 1
+
+class ShotgunPuff(pyggel.scene.BaseSceneObject):
+    obj = None
+    def __init__(self, pos, rotation, size=1):
+        if not ShotgunPuff.obj:
+            ShotgunPuff.obj = pyggel.image.Image3D(data.image_path("shotgun_puff.png"))
+        pyggel.scene.BaseSceneObject.__init__(self)
+
+        self.pos = pos
+        self.rotation = rotation
+
+        self.pos = pyggel.math3d.move_with_rotation(self.pos, self.rotation, -1)
+
+        self.puff_scale = 0.075 * size
+        self.puff_rotate = size*3
+        self.puff_alpha = 0.5 - size*0.025
+
+    def render(self, camera=None):
+        self.obj.pos = self.pos
+        self.obj.scale  = self.puff_scale
+        self.obj.rotation = (0,0,self.puff_rotate)
+        self.obj.colorize = (1,1,1,self.puff_alpha)
+        self.obj.render(camera)
+
+        self.dead_remove_from_scene = True
 
 def get_geoms(level):
     tsize = 5.0
@@ -406,9 +438,9 @@ class PlayerData(object):
                     self.weapon_buck_twist = -3
                     self.weapon_buck_done = False
                     self.game_hud.update_ammo(self.ammos[self.cur_weapon])
-                    scene.add_3d(Shot(self.weapons[self.cur_weapon].pos,
-                                      self.weapons[self.cur_weapon].rotation,
-                                      level_data))
+                    scene.add_3d(ShotgunShot(self.weapons[self.cur_weapon].pos,
+                                             self.weapons[self.cur_weapon].rotation,
+                                             level_data, scene))
 
 def play_level(level, player_data):
     camera = pyggel.camera.LookFromCamera((10,0,10))
