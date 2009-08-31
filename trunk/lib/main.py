@@ -541,15 +541,36 @@ def play_level(level, player_data):
             camera.roty += event.mouse.motion[0] * 0.1
 
         do_move = False
+        new = (0,0,0)
+        future = (0,0,0)
         if "w" in event.keyboard.active:
-            camera.roty *= -1
-            new = pyggel.math3d.move_with_rotation((0,0,0), camera.get_rotation(), 0.15)
-            future = pyggel.math3d.move_with_rotation((0,0,0), camera.get_rotation(), 1.25)
+            new = pyggel.math3d.move_with_rotation(new,
+                                                   (camera.rotx,camera.roty*-1, camera.rotz), 0.15)
+            future = pyggel.math3d.move_with_rotation(future,
+                                                      (camera.rotx,camera.roty*-1, camera.rotz), 1.25)
             do_move = True
         if "s" in event.keyboard.active:
-            camera.roty *= -1
-            new = pyggel.math3d.move_with_rotation((0,0,0), camera.get_rotation(), -0.05)
-            future = pyggel.math3d.move_with_rotation((0,0,0), camera.get_rotation(), -1.25)
+            new = pyggel.math3d.move_with_rotation(new,
+                                                   (camera.rotx,camera.roty*-1, camera.rotz), -0.15)
+            future = pyggel.math3d.move_with_rotation(future,
+                                                      (camera.rotx,camera.roty*-1, camera.rotz), -1.25)
+            do_move = True
+
+        if "a" in event.keyboard.active:
+            new = pyggel.math3d.move_with_rotation(new,
+                                                   (camera.rotx,camera.roty*-1+90, camera.rotz),
+                                                   0.15)
+            future = pyggel.math3d.move_with_rotation(future,
+                                                   (camera.rotx,camera.roty*-1+90, camera.rotz),
+                                                   1.25)
+            do_move = True
+        if "d" in event.keyboard.active:
+            new = pyggel.math3d.move_with_rotation(new,
+                                                   (camera.rotx,camera.roty*-1-90, camera.rotz),
+                                                   0.15)
+            future = pyggel.math3d.move_with_rotation(future,
+                                                   (camera.rotx,camera.roty*-1-90, camera.rotz),
+                                                   1.25)
             do_move = True
 
         if do_move:
@@ -559,7 +580,6 @@ def play_level(level, player_data):
                 camera.set_pos((camera.posx+new[0], camera.posy, camera.posz))
             if not level_data.get_at_uncon(camera.posx, y) in level_data.collidable:
                 camera.set_pos((camera.posx, camera.posy, camera.posz+new[2]))
-            camera.roty *= -1
 
         player_data.update_weapon(camera)
 
