@@ -191,8 +191,8 @@ class Shot(pyggel.scene.BaseSceneObject):
     def __init__(self, pos, rotation, level_data):
         if not Shot.obj:
             Shot.obj = pyggel.geometry.Sphere(0.1)
-            Shot.obj.scale = (1,1,2)
-            Shot.obj.colorize = (0.1,0.2,0.1)
+            Shot.obj.scale = (1,1,4)
+            Shot.obj.colorize = (0.2,0.2,0.25)
         pyggel.scene.BaseSceneObject.__init__(self)
 
         self.pos = pos
