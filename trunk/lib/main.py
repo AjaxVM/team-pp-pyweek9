@@ -242,20 +242,20 @@ class ShotgunPuff(pyggel.scene.BaseSceneObject):
 
         self.dead_remove_from_scene = True
 
-class FirstAlien(pyggel.scene.BaseSceneObject):
-    obj = None
-    def __init__(self, pos):
-        if not FirstAlien.obj:
-            FirstAlien.obj = pyggel.misc.StaticObjectGroup([pyggel.mesh.OBJ(data.mesh_path("alien_test.obj"))])
-        pyggel.scene.BaseSceneObject.__init__(self)
-
-        self.pos = pos
-        self.rotation = (0,0,0)
-
-    def render(self, camera=None):
-        self.obj.pos = self.pos
-        self.obj.rotation = self.rotation
-        self.obj.render(camera)
+##class FirstAlien(pyggel.scene.BaseSceneObject):
+##    obj = None
+##    def __init__(self, pos):
+##        if not FirstAlien.obj:
+##            FirstAlien.obj = pyggel.misc.StaticObjectGroup([pyggel.mesh.OBJ(data.mesh_path("alien_test.obj"))])
+##        pyggel.scene.BaseSceneObject.__init__(self)
+##
+##        self.pos = pos
+##        self.rotation = (0,0,0)
+##
+##    def render(self, camera=None):
+##        self.obj.pos = self.pos
+##        self.obj.rotation = self.rotation
+##        self.obj.render(camera)
 
 def get_geoms(level):
     tsize = 5.0
@@ -335,8 +335,8 @@ def get_geoms(level):
                         possible_gun_locations.append((x, y))
                     if cur == "$":
                         possible_boost_locations.append((x, y))
-                    if cur == "1":
-                        baddies.append(FirstAlien((x*tsize, 0, y*tsize)))
+##                    if cur == "1":
+##                        baddies.append(FirstAlien((x*tsize, 0, y*tsize)))
 
     if possible_gun_locations:
         pick = random.choice(possible_gun_locations)
