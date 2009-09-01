@@ -91,7 +91,7 @@ class Feather(pyggel.scene.BaseSceneObject):
     objs = []
     def __init__(self, pos):
         if not self.objs:
-            self.objs.append(pyggel.mesh.OBJ(data.mesh_path("feather_test.obj")))
+            self.objs.append(pyggel.misc.StaticObjectGroup(pyggel.mesh.OBJ(data.mesh_path("feather_test.obj"))))
         pyggel.scene.BaseSceneObject.__init__(self)
         self.pos = pos
 
@@ -116,7 +116,8 @@ class Weapon(pyggel.scene.BaseSceneObject):
     objs = {}
     def __init__(self, pos, name):
         if not self.objs:
-            self.objs["shotgun"] = pyggel.mesh.OBJ(data.mesh_path("shotgun.obj"))
+            self.objs["shotgun"] = pyggel.misc.StaticObjectGroup([pyggel.mesh.OBJ(data.mesh_path("shotgun.obj"))])
+            self.objs["shotgun"].pickable = True
         pyggel.scene.BaseSceneObject.__init__(self)
         self.pos = pos
 
@@ -245,7 +246,7 @@ class FirstAlien(pyggel.scene.BaseSceneObject):
     obj = None
     def __init__(self, pos):
         if not FirstAlien.obj:
-            FirstAlien.obj = pyggel.mesh.OBJ(data.mesh_path("alien_test.obj"))
+            FirstAlien.obj = pyggel.misc.StaticObjectGroup([pyggel.mesh.OBJ(data.mesh_path("alien_test.obj"))])
         pyggel.scene.BaseSceneObject.__init__(self)
 
         self.pos = pos
