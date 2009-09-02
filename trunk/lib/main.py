@@ -414,14 +414,16 @@ class Alien(pyggel.scene.BaseSceneObject):
         self.sLOS_count = random.randint(0,10)
 
     def LOS_to(self, topos, level_data, angle):
+        if pyggel.math3d.get_distance(topos, self.pos) <= 4:
+            return True
         pos = self.pos
         see = True
-        for i in xrange(100):
-            pos = pyggel.math3d.move_with_rotation(pos, (0,angle,0), -1)
+        for i in xrange(50):
+            pos = pyggel.math3d.move_with_rotation(pos, (0,angle,0), -4)
+            if pyggel.math3d.get_distance(topos, pos) <= 4:
+                return True
             if level_data.get_at_uncon(pos[0], pos[2]) in level_data.collidable:
                 return False
-            if pyggel.math3d.get_distance(topos, pos) <= 1:
-                return True
         return False
 
     def make_aware(self):
