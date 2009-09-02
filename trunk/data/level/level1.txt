@@ -9,26 +9,26 @@ dungeon
 #,$,,,,,,,,,,,,,1,,,,1,,#
 #,,,,#####_######,,,,1,,#
 #,,,,#1,,,,,,,,~#,,,,,,,#
-#,,,,,#1,,,,,,,#,,,,,,,,#
-#,,,,,,#,,,,,,#,,,,$,,,,#
-#,,,,,,,####_#,,,,,,,,,,#
+#,,,,##1,,,,,,,##,,,,,,,#
+#,,,,,##,,,,,,##,,,$,,,,#
+#,2,,,,#####_##,,,,,,,,,#
 #,,,,,,,,,,,,,,,,,,,,,,,#
 #,,,,,,,,,,,,,,,,,,,,,,,#
 ####_####,,,,,,,,,,,,,,,#
-#,,,,,,,#,,,,######,,,,,#
+#,,,,,,2#,,,,######,,,,,#
 #$,,,,,,#,,,,#,,1,,,,,,,#
-#,,,~,,,#,,,,#,~,,,,,,,,#
+#,,,~,,,#,,,,#,~,,,,,,22#
 #,,,,,,,#,,,,#,,,,,,,,,,#
-#1,,,,,,#,,,,###,,,,,,,,#
+#1,,,,,b#,,,,###,,,,,,,,#
 ####_####,,,,,,,,,,,,,,$#
-#,,,,,,,,,,,,############
+#2,,,,,,,,,,,############
 #,1,,,,,,,,,,,,,,,,,,,,,#
 #$,,,,,,,,,,,,,,,,,,,$,,#
 ##############,,,,,1,,,,#
-#,@,&|,,,,,,$#,,,,,,11,,#
+#,@,a|,,,,,,$#,,,,,,21,,#
 #,,,,#,,,,,,,#,,,,,,,,,,#
 #,*,,#,,,,,1,#,,,,,,,,,,#
-#,,,,#,,,,,,,,,,,,,,,,,,#
+#,,,,#,,2,,,,,,,,,,,,,,,#
 #########################
 
 
@@ -38,8 +38,8 @@ dungeon
 //_ - is a "vertical" door
 //| - is a horizontal door
 //$ - is a possible boost item (health, ammo, etc.) location
-//& - is a possible special weapon location
-//1,2,3,4,5,6,7,8,9,0 - are locations for different kinds of units
+//a,b,c,d,e - handgun, shotgun, chaingun, lightning gun, plasma gun
+//1,2,3,4,5,6 - are locations for different kinds of units (5,6 being bosses)
 //	0 being the boss, and others being whatever, if needed
 //* - is the players start location
 //% - is the final "win" goal - will only appear once there are no more boss baddies on this level
@@ -47,3 +47,8 @@ dungeon
 //@ - is the starting command prompt
 //	when you go here it triggers the communication with command
 //~ - a feather location, collect all on a level and you teleport to next level...
+//
+//Due to the collision checking being as cheap as possible - there must not be any diagonal walls
+//If you want diagonal, make sure it is double diagonal:
+//	#   Not  #
+//   ##       #

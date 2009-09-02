@@ -14,10 +14,11 @@ class Hud(pyggel.scene.BaseSceneObject):
 
         self.hover_status = {}
         self.hover_status["door"] = self.font.make_text_image("Door - face and move next to it to open")
-        self.hover_status["feather"] = self.font.make_text_image("A feather! Get close to it and Right-click to pick it up")
-        self.hover_status["shotgun"] = self.font.make_text_image("A shotgun! Better grab that, Right-click to pick it up")
-        self.hover_status["hp"] = self.font.make_text_image("A health {health}+20 pack! Right-click to take it")
-        self.hover_status["ammo"] = self.font.make_text_image("An ammo {ammo}+25 pack! Right-click to take it")
+        self.hover_status["feather"] = self.font.make_text_image("A feather! Get close to it and Right-click to take")
+        self.hover_status["shotgun"] = self.font.make_text_image("A shotgun! Better grab that - Right-click to take")
+        self.hover_status["handgun"] = self.font.make_text_image("A handgun, better than nothing - Right-click to take")
+        self.hover_status["hp"] = self.font.make_text_image("A health {health}+20 pack! Right-click to take")
+        self.hover_status["ammo"] = self.font.make_text_image("An ammo {ammo}+25 pack! Right-click to take")
 
         colors = {"1//1//0.25":"fast",
                   "0//1//0":"high damage",

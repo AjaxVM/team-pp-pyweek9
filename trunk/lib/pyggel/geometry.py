@@ -180,6 +180,10 @@ class Quad(Cube, BaseSceneObject):
         """Compile the Quad into a data.DisplayList"""
         self.display_list.begin()
 
+        #pyweek change
+        #z coords become y coords
+        #tex coords modified to fit
+
         glBegin(GL_QUADS)
         glNormal3f(0,1,0)
         glTexCoord2f(1,1)

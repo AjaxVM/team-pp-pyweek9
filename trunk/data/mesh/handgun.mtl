@@ -1,13 +1,11 @@
-# Blender3D MTL File: LowPoly9.blend
-# Material Count: 1
+# Exported from Wings 3D 0.99.04a
 newmtl Material_gun9.JPG
-Ns 96.078431
-Ka 0.000000 0.000000 0.000000
-Kd 0.640000 0.640000 0.640000
-Ks 0.500000 0.500000 0.500000
-Ni 1.000000
-d 1.000000
+Ns 100.0
+d 1.0
 illum 2
+Kd 0.64 0.64 0.64
+Ka 0.0 0.0 0.0
+Ks 0.5 0.5 0.5
+Ke 0.0 0.0 0.0
 map_Kd gun9.JPG
-
 
