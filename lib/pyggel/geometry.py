@@ -35,6 +35,8 @@ class Cube(BaseSceneObject):
             texture = Texture(texture)
         if texture:
             self.texture = texture
+        else:
+            self.texture = BlankTexture()
         self.colorize = colorize
 
         self.mirror = mirror
@@ -89,6 +91,8 @@ class Cube(BaseSceneObject):
         ox = .25
         oy = .33
         last_tex = None
+        #Pyweek change, move glBegin calls to one, instead of inside each loop!
+        glBegin(GL_QUADS)
         for i in self.sides:
             ix = 0
             x, y = self.split_coords[i[5]]
@@ -99,8 +103,6 @@ class Cube(BaseSceneObject):
             else:
                 coords = ((x+ox, y+oy), (x+ox, y), (x, y), (x, y+oy))
 
-            glBegin(GL_QUADS)
-
             glNormal3f(*self.normals[i[6]])
 
             for x in i[:4]:
@@ -108,7 +110,7 @@ class Cube(BaseSceneObject):
                 a, b, c = self.corners[x]
                 glVertex3f(a,b,c)
                 ix += 1
-            glEnd()
+        glEnd()
         self.display_list.end()
 
     def render(self, camera=None):
@@ -164,6 +166,8 @@ class Quad(Cube, BaseSceneObject):
             texture = Texture(texture)
         if texture:
             self.texture = texture
+        else:
+            self.texture = BlankTexture()
         self.colorize = colorize
 
         self.scale = 1
@@ -340,6 +344,8 @@ class Sphere(BaseSceneObject):
             texture = Texture(texture)
         if texture:
             self.texture = texture
+        else:
+            self.texture = BlankTexture()
         self.detail = detail
         self.scale = 1
 
@@ -358,6 +364,8 @@ class Sphere(BaseSceneObject):
     def _compile(self):
         """Compile the Sphere into a data.DisplayList"""
         self.display_list.begin()
+        #Pyweek change - set rotation for faces to be correct!
+        glRotatef(-90,1,0,0)
         Sphere = gluNewQuadric()
         gluQuadricTexture(Sphere, GLU_TRUE)
         gluSphere(Sphere, 1, self.detail, self.detail)
@@ -430,3 +438,115 @@ class Skyball(Sphere):
         n.scale = self.scale
         n.display_list = self.display_list
         return n
+
+
+#Pyweek changes:
+import math3d, math
+class Pyramid(BaseSceneObject):
+    """A geometric pyramid that can be colored and textured"""
+    def __init__(self, size, pos=(0,0,0), rotation=(0,0,0),
+                 colorize=(1,1,1,1), texture=None):
+        BaseSceneObject.__init__(self)
+
+        self.size = size
+        self.pos = pos
+        self.rotation = rotation
+        if type(texture) is type(""):
+            texture = Texture(texture)
+        if texture:
+            self.texture = texture
+        else:
+            self.texture = BlankTexture()
+        self.colorize = colorize
+
+        self.scale = 1
+
+        self.display_list = data.DisplayList()
+
+        self._compile()
+
+    def _compile(self):
+        """Compile the cube's rendering into a data.DisplayList"""
+        self.display_list.begin()
+
+        top = (0,0.5,0)
+        bottomleft = (-math.sqrt(3)*0.25,-0.5,0.25)
+        bottomright = (math.sqrt(3)*0.25,-0.5,0.25)
+        bottomback = (0,-0.5,-0.5)
+
+        tpoints = [[top, bottomleft, bottomright],
+                   [top, bottomright, bottomback],
+                   [top, bottomback, bottomleft],
+                   [bottomleft,bottomright,bottomback]]
+
+        glBegin(GL_TRIANGLES)
+        for i in tpoints:
+            coords = ((0.5,1), (0,0), (1,0))
+
+            glNormal3f(*math3d.calcTriNormal(i[0],i[1],i[2],True))
+
+            for p in xrange(3):
+                glTexCoord2fv(coords[p])
+                glVertex3f(*i[p])
+        glEnd()
+
+        self.display_list.end()
+
+    def render(self, camera=None):
+        """Render the cube
+           camera is None or the camera object the scene is using to render this object"""
+        glPushMatrix()
+        x, y, z = self.pos
+        glTranslatef(x, y, -z)
+        a, b, c = self.rotation
+        glRotatef(a, 1, 0, 0)
+        glRotatef(b, 0, 1, 0)
+        glRotatef(c, 0, 0, 1)
+        glScalef(self.size,self.size,self.size)
+        try:
+            glScalef(*self.scale)
+        except:
+            glScalef(self.scale, self.scale, self.scale)
+        glColor(*self.colorize)
+        self.texture.bind()
+        if self.outline:
+            misc.outline(self.display_list, self.outline_color, self.outline_size)
+        self.display_list.render()
+        glPopMatrix()
+
+class DoublePyramid(Pyramid):
+    """A geometric double-pyramid that can be colored and textured"""
+    def __init__(self, size, pos=(0,0,0), rotation=(0,0,0),
+                 colorize=(1,1,1,1), texture=None):
+        Pyramid.__init__(self, size, pos, rotation, colorize, texture)
+
+    def _compile(self):
+        """Compile the cube's rendering into a data.DisplayList"""
+        self.display_list.begin()
+
+        top = (0,0.5,0)
+        bottom = (0,-0.5,0)
+        midleft = (-math.sqrt(3)*0.25,0,0.25)
+        midright = (math.sqrt(3)*0.25,0,0.25)
+        midback = (0,0,-0.5)
+
+        tpoints = [[top, midleft, midright],
+                   [top, midright, midback],
+                   [top, midback, midleft],
+
+                   [bottom,midright,midleft],
+                   [bottom,midleft,midback],
+                   [bottom,midback,midright]]
+
+        glBegin(GL_TRIANGLES)
+        for i in tpoints:
+            coords = ((0.5,1), (0,0), (1,0))
+
+            glNormal3f(*math3d.calcTriNormal(i[0],i[1],i[2],False))
+
+            for p in xrange(3):
+                glTexCoord2fv(coords[p])
+                glVertex3f(*i[p])
+        glEnd()
+
+        self.display_list.end()
