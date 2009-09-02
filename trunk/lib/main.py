@@ -212,6 +212,8 @@ class ShotgunShot(pyggel.scene.BaseSceneObject):
         self.level_data = level_data
         self.puff_tick = 1
         self.damage = 4
+        self.age = 0
+        self.lifespan = 60
 
     def render(self, camera=None):
         if self.dead_remove_from_scene:
@@ -227,6 +229,10 @@ class ShotgunShot(pyggel.scene.BaseSceneObject):
         if self.puff_tick <= 20:
             self.scene.add_3d_blend(ShotgunPuff(self.pos, self.rotation, self.puff_tick))
             self.puff_tick += 1
+
+        self.age += 1
+        if self.age >= self.lifespan:
+            self.dead_remove_from_scene = True
 
 class ShotgunPuff(pyggel.scene.BaseSceneObject):
     obj = None
@@ -252,6 +258,59 @@ class ShotgunPuff(pyggel.scene.BaseSceneObject):
         self.obj.render(camera)
 
         self.dead_remove_from_scene = True
+
+
+class AlienShot(pyggel.scene.BaseSceneObject):
+    obj = None
+    def __init__(self, pos, rotation, color, level_data):
+        if not ShotgunShot.obj:
+            AlienShot.obj = pyggel.image.Image3D(data.image_path("flash.png"))
+        pyggel.scene.BaseSceneObject.__init__(self)
+
+        self.collision_body = pyggel.math3d.AABox(pos, 0.15)
+
+        self.pos = pyggel.math3d.move_with_rotation(pos, rotation, -1.25)
+        self.rotation = rotation
+        self.level_data = level_data
+        self.color = color
+
+        self.scale_up = True
+        self.scale = 0.5
+        self.twist = 0
+
+        if self.color == (1,1,0.25,1):
+            self.damage = 2
+            self.speed = 3
+        if self.color == (0,1,0,1):
+            self.damage = 8
+            self.speed = 1
+        if self.color == (0,0,1,1):
+            self.damage = 4
+            self.speed = 2
+
+    def render(self, camera=None):
+        if self.scale_up:
+            self.scale += 0.6
+            if self.scale >= 4:
+                self.scale = 4
+                self.scale_up = False
+        else:
+            if self.scale > 0.25:
+                self.scale -= 0.5
+            else:
+                self.scale = 0.25
+                self.pos = pyggel.math3d.move_with_rotation(self.pos, self.rotation, -.5*self.speed)
+        if self.dead_remove_from_scene:
+            return
+        self.collision_body.set_pos(self.pos)
+        if self.level_data.get_at_uncon(self.pos[0], self.pos[2]) in self.level_data.collidable:
+            self.dead_remove_from_scene = True #kills object
+        self.obj.pos = self.pos
+        self.obj.scale = self.scale
+        self.obj.colorize = self.color
+        self.twist += 5
+        self.obj.rotation = (0,0,self.twist)
+        self.obj.render(camera)
 
 class Alien(pyggel.scene.BaseSceneObject):
     objs = {}
@@ -297,22 +356,39 @@ class Alien(pyggel.scene.BaseSceneObject):
             self.dead_scale = 1
             self.dead_scale_dec = 0.1
 
+        self.shot_count = 0
+        self.noticed = False
+
     def picked(self):
         self.game_hud.set_hover_status("%s//%s//%s//%s"%(self.color[0],self.color[1],self.color[2],self.kind))
 
-    def update(self, player_pos, scene, level_data):
-##        x = player_pos[0] - self.pos[0]
-##        y = player_pos[2] - self.pos[2]
-##        angle = math.atan2(-y, x)
-##        angle = 90-(angle * 180.0)/math.pi
-##        self.rotation = (self.rotation[0], angle, self.rotation[2])
-
+    def update(self, player_pos, level_data):
         x, y, z = self.rotation
         y += 5
         self.rotation = x,y,z
         self.collision_body.set_pos(self.pos)
 
+        if self.noticed and pyggel.math3d.get_distance(player_pos, self.pos) > level_data.tsize * 10:
+            self.noticed = False
+
+        elif (not self.noticed) and pyggel.math3d.get_distance(player_pos, self.pos) < level_data.tsize * 5:
+            self.noticed = True
+
+        if self.noticed:
+            self.shot_count += 1
+            if self.shot_count >= 75:
+                self.shot_count = 0
+                x = player_pos[0] - self.pos[0]
+                y = player_pos[2] - self.pos[2]
+                angle = math.atan2(-y, x)
+                angle = 90-(angle * 180.0)/math.pi
+
+                return AlienShot(self.pos, (0,angle,0), self.color, level_data)
+        else:
+            self.shot_count = 45
+
     def hit(self, damage):
+        self.noticed = True
         self.got_hit = True
         self.hp -= damage
         if self.hp <= 0:
@@ -477,6 +553,8 @@ class PlayerData(object):
 
         self.game_hud = None
 
+        self.collision_body = pyggel.math3d.Sphere((0,0,0), 1)
+
     def add_weapon(self, wep_type, mesh):
         self.weapons[wep_type] = mesh
         self.cur_weapon = wep_type
@@ -514,7 +592,8 @@ class PlayerData(object):
         else:
             self.game_hud.update_ammo(0)
 
-    def move(self):
+    def move(self, camera):
+        self.collision_body.set_pos(camera.get_pos())
         if self.cur_weapon:
             self.weapon_bob_up += self.weapon_bob_d
             self.weapon_bob_rot += self.weapon_bob_rd
@@ -589,6 +668,7 @@ def play_level(level, player_data):
 
     static, dynamic, baddies, feathers, camera_pos, fog_color, tile_set, level_data, tsize = get_geoms(level)
     shots = []
+    badshots = []
     camera.set_pos(camera_pos)
     pyggel.view.set_fog_color(fog_color)
     pyggel.view.set_fog_depth(5, 60)
@@ -709,7 +789,7 @@ def play_level(level, player_data):
             do_move = True
 
         if do_move:
-            player_data.move()
+            player_data.move(camera)
             x = camera.posx + future[0]
             y = camera.posz + future[2]
             if not level_data.get_at_uncon(x, camera.posz) in level_data.collidable:
@@ -731,10 +811,21 @@ def play_level(level, player_data):
                         x.hit(i.damage)
                         break
 
+        for i in badshots:
+            if i.dead_remove_from_scene:
+                badshots.remove(i)
+            else:
+                if i.collision_body.collide(player_data.collision_body):
+                    i.dead_remove_from_scene = True
+                    player_data.hit(i.damage)
+
         for i in baddies:
-            i.update(camera.get_pos(), scene, level_data)
+            shot = i.update(camera.get_pos(), level_data)
             if i.dead_remove_from_scene:
                 baddies.remove(i)
+            if shot:
+                badshots.append(shot)
+                scene.add_3d_blend(shot)
 
         if "right" in event.mouse.hit:
             if pick and pyggel.math3d.get_distance(camera.get_pos(), pick.pos) < tsize*3:
