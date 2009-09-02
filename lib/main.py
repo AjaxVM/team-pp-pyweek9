@@ -331,13 +331,13 @@ class AlienShot(pyggel.scene.BaseSceneObject):
 
         if self.color == (1,1,0.25,1):
             self.damage = 2
-            self.speed = 3
+            self.speed = 4
         if self.color == (0,1,0,1):
             self.damage = 8
-            self.speed = 1
+            self.speed = 2
         if self.color == (0,0,1,1):
             self.damage = 4
-            self.speed = 2
+            self.speed = 3
 
     def render(self, camera=None):
         if self.scale_up:
@@ -359,7 +359,7 @@ class AlienShot(pyggel.scene.BaseSceneObject):
         self.obj.pos = self.pos
         self.obj.scale = self.scale
         self.obj.colorize = self.color
-        self.twist += 5
+        self.twist += 15
         self.obj.rotation = (0,0,self.twist)
         self.obj.render(camera)
 
@@ -614,9 +614,9 @@ class PlayerData(object):
 
         self.collision_body = pyggel.math3d.Sphere((0,0,0), 1)
 
-    def add_weapon(self, wep_type, mesh):
+    def add_weapon(self, scene, wep_type, mesh):
         self.weapons[wep_type] = mesh
-        self.cur_weapon = wep_type
+        self.swap_weapon(scene, wep_type)
 
     def hit(self, damage):
         self.cur_hp -= damage
@@ -780,6 +780,7 @@ def play_level(level, player_data):
 
     player_data.swap_weapon(scene, player_data.cur_weapon)
     player_data.update_weapon(camera)
+    player_data.hit(0)
 
     scene.render_buffer = transition_buffer
     scene.pick = False
@@ -829,7 +830,7 @@ def play_level(level, player_data):
             return ["back"]
 
         if event.mouse.motion[0]:
-            camera.roty += event.mouse.motion[0] * 0.1
+            camera.roty += event.mouse.motion[0] * 0.2
 
         do_move = False
         new = (0,0,0)
@@ -911,8 +912,7 @@ def play_level(level, player_data):
                     game_hud.update_feathers(have_feathers, len(feathers))
                 if isinstance(pick, Weapon):
                     scene.remove_3d(pick)
-                    player_data.add_weapon(pick.name, pick.obj)
-                    player_data.swap_weapon(scene, pick.name)
+                    player_data.add_weapon(scene, pick.name, pick.obj)
                 if isinstance(pick, HPBuff):
                     scene.remove_3d(pick)
                     player_data.boost_hp(20)
