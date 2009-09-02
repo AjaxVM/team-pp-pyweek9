@@ -1,28 +1,12 @@
-# Exported from Wings 3D 0.99.04a
-newmtl color_058_000_000
-Ns 100.0
-d 1.0
+# Blender3D MTL File: ShotGun1.blend
+# Material Count: 1
+newmtl None_pump-action-shotgun-a
+Ns 0
+Ka 0.000000 0.000000 0.000000
+Kd 0.8 0.8 0.8
+Ks 0.8 0.8 0.8
+d 1
 illum 2
-Kd 0.1 0.0 0.0
-Ka 1.0 1.0 1.0
-Ks 1.0 1.0 1.0
-Ke 0.0 0.0 0.0
+map_Kd pump-action-shotgun-airsoft-spring-gun.jpg
 
-newmtl color_069_124_124
-Ns 100.0
-d 1.0
-illum 2
-Kd 0.2733333333333333 0.4866666666666667 0.4866666666666667
-Ka 1.0 1.0 1.0
-Ks 1.0 1.0 1.0
-Ke 0.0 0.0 0.0
-
-newmtl color_087_055_000
-Ns 100.0
-d 1.0
-illum 2
-Kd 0.34 0.2174999999999999 0.0
-Ka 1.0 1.0 1.0
-Ks 1.0 1.0 1.0
-Ke 0.0 0.0 0.0
 
