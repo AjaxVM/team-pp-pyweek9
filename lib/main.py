@@ -410,6 +410,20 @@ class Alien(pyggel.scene.BaseSceneObject):
         self.shot_count = 0
         self.noticed = False
 
+        self.stored_LOS = False
+        self.sLOS_count = random.randint(0,10)
+
+    def LOS_to(self, topos, level_data, angle):
+        pos = self.pos
+        see = True
+        for i in xrange(100):
+            pos = pyggel.math3d.move_with_rotation(pos, (0,angle,0), -1)
+            if level_data.get_at_uncon(pos[0], pos[2]) in level_data.collidable:
+                return False
+            if pyggel.math3d.get_distance(topos, pos) <= 1:
+                return True
+        return False
+
     def make_aware(self):
         self.noticed = True
 
@@ -422,18 +436,25 @@ class Alien(pyggel.scene.BaseSceneObject):
         self.rotation = x,y,z
         self.collision_body.set_pos(self.pos)
 
-        if (not self.noticed) and pyggel.math3d.get_distance(player_pos, self.pos) < level_data.tsize * 5:
+        x = player_pos[0] - self.pos[0]
+        y = player_pos[2] - self.pos[2]
+        angle = math.atan2(-y, x)
+        angle = 90-(angle * 180.0)/math.pi
+
+        self.sLOS_count += 1
+        if self.sLOS_count >= 15:
+            self.stored_LOS = self.LOS_to(player_pos, level_data, angle)
+            self.sLOS_count = 0
+
+        if (not self.noticed) and\
+           pyggel.math3d.get_distance(player_pos, self.pos) < level_data.tsize * 7 and\
+           self.stored_LOS:
             self.make_aware()
 
-        if self.noticed:
+        if self.noticed and self.stored_LOS:
             self.shot_count += 1
             if self.shot_count >= 75:
                 self.shot_count = 0
-                x = player_pos[0] - self.pos[0]
-                y = player_pos[2] - self.pos[2]
-                angle = math.atan2(-y, x)
-                angle = 90-(angle * 180.0)/math.pi
-
                 return AlienShot(self.pos, (0,angle,0), self.color, level_data)
         else:
             self.shot_count = 45
