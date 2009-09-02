@@ -290,7 +290,7 @@ class Alien(pyggel.scene.BaseSceneObject):
 
         self.hp = all_hp[self.kind]
         self.dead = False
-        if kind == "ellpisoid":
+        if kind == "ellipsoid":
             self.dead_scale = 2
             self.dead_scale_dec = 0.2
         else:
