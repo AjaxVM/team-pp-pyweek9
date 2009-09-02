@@ -474,10 +474,10 @@ class Pyramid(BaseSceneObject):
         bottomright = (math.sqrt(3)*0.25,-0.5,0.25)
         bottomback = (0,-0.5,-0.5)
 
-        tpoints = [[top, bottomleft, bottomright],
+        tpoints = [[bottomleft,bottomright,bottomback],
+                   [top, bottomleft, bottomright],
                    [top, bottomright, bottomback],
-                   [top, bottomback, bottomleft],
-                   [bottomleft,bottomright,bottomback]]
+                   [top, bottomback, bottomleft]]
 
         glBegin(GL_TRIANGLES)
         for i in tpoints:

@@ -360,7 +360,6 @@ def get_geoms(level):
     dynamic = []
 
     baddies = []
-    bosses = []
     feathers = []
 
     weps_per_level = {1: "shotgun"}
@@ -437,7 +436,7 @@ def get_geoms(level):
             else:
                 dynamic.append(AmmoBuff((pick[0]*tsize, 0, pick[1]*tsize)))
     return (pyggel.misc.StaticObjectGroup(static), dynamic,
-            baddies, bosses, feathers,
+            baddies, feathers,
             camera_pos,
             fog_color, tile_set,
             LevelData(map_grid, tsize),
@@ -578,7 +577,7 @@ def play_level(level, player_data):
     scene.pick = True
     scene.add_light(light)
 
-    static, dynamic, baddies, bosses, feathers, camera_pos, fog_color, tile_set, level_data, tsize = get_geoms(level)
+    static, dynamic, baddies, feathers, camera_pos, fog_color, tile_set, level_data, tsize = get_geoms(level)
     shots = []
     camera.set_pos(camera_pos)
     pyggel.view.set_fog_color(fog_color)
@@ -592,7 +591,6 @@ def play_level(level, player_data):
     scene.add_3d(static)
     scene.add_3d(dynamic)
     scene.add_3d(baddies)
-    scene.add_3d(bosses)
     scene.add_3d(feathers)
 
     game_hud = hud.Hud()
@@ -725,6 +723,8 @@ def play_level(level, player_data):
 
         for i in baddies:
             i.update(camera.get_pos(), scene)
+            if i.dead_remove_from_scene:
+                baddies.remove(i)
 
         if "right" in event.mouse.hit:
             if pick and pyggel.math3d.get_distance(camera.get_pos(), pick.pos) < tsize*3:
