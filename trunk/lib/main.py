@@ -33,10 +33,14 @@ class VertDoor(pyggel.geometry.Cube):
         pyggel.geometry.Cube.__init__(self, size, texture=_tex, pos=_pos)
         self.scale = (0.25, 0.8, 1)
         x, y, z = _pos
+        bar_tex = pyggel.data.Texture(data.image_path("door_bar.png"))
         self.sphere = pyggel.geometry.Sphere(1, (x,size/2,z),
-                                             colorize=(0,1,0,1))
+                                             colorize=(0,1,0,1),
+                                             texture=bar_tex)
         self.band = pyggel.geometry.Cube(size/5, pos=(x,size/2,z),
-                                         colorize=(0.75,0,0.75,1))
+                                         colorize=(0.75,0,0.75,1),
+                                         texture=bar_tex,
+                                         mirror=True)
         self.band.scale = (1.5,2,5)
         self.hide = False
 
@@ -77,10 +81,13 @@ class HorzDoor(VertDoor, pyggel.geometry.Cube):
         pyggel.geometry.Cube.__init__(self, size, texture=_tex, pos=_pos)
         self.scale = (1, 0.8, 0.25)
         x, y, z = _pos
+        bar_tex = pyggel.data.Texture(data.image_path("door_bar.png"))
         self.sphere = pyggel.geometry.Sphere(1, (x,size/2,z),
-                                             colorize=(0,1,0,1))
+                                             colorize=(0,1,0,1),
+                                             texture=bar_tex)
         self.band = pyggel.geometry.Cube(size/5, pos=(x,size/2,z),
-                                         colorize=(0.75,0,0.75,1))
+                                         colorize=(0.75,0,0.75,1),
+                                         texture=bar_tex, mirror=True)
         self.band.scale = (5,2,1.5)
         self.hide = False
 
@@ -290,7 +297,10 @@ class Alien(pyggel.scene.BaseSceneObject):
             self.dead_scale = 1
             self.dead_scale_dec = 0.1
 
-    def update(self, player_pos, scene):
+    def picked(self):
+        self.game_hud.set_hover_status("%s//%s//%s//%s"%(self.color[0],self.color[1],self.color[2],self.kind))
+
+    def update(self, player_pos, scene, level_data):
 ##        x = player_pos[0] - self.pos[0]
 ##        y = player_pos[2] - self.pos[2]
 ##        angle = math.atan2(-y, x)
@@ -722,7 +732,7 @@ def play_level(level, player_data):
                         break
 
         for i in baddies:
-            i.update(camera.get_pos(), scene)
+            i.update(camera.get_pos(), scene, level_data)
             if i.dead_remove_from_scene:
                 baddies.remove(i)
 
