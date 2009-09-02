@@ -98,7 +98,7 @@ class Feather(pyggel.scene.BaseSceneObject):
     objs = []
     def __init__(self, pos):
         if not self.objs:
-            self.objs.append(pyggel.misc.StaticObjectGroup(pyggel.mesh.OBJ(data.mesh_path("feather_test.obj"))))
+            self.objs.append(pyggel.mesh.OBJ(data.mesh_path("feather_test.obj")))
         pyggel.scene.BaseSceneObject.__init__(self)
         self.pos = pos
 
@@ -123,8 +123,8 @@ class Weapon(pyggel.scene.BaseSceneObject):
     objs = {}
     def __init__(self, pos, name):
         if not self.objs:
-            self.objs["shotgun"] = pyggel.misc.StaticObjectGroup([pyggel.mesh.OBJ(data.mesh_path("shotgun_OLD.obj"))])
-            self.objs["shotgun"].pickable = True
+            self.objs["shotgun"] = pyggel.mesh.OBJ(data.mesh_path("shotgun.obj"))
+            self.objs["handgun"] = pyggel.mesh.OBJ(data.mesh_path("handgun.obj"))
         pyggel.scene.BaseSceneObject.__init__(self)
         self.pos = pos
 
@@ -133,7 +133,7 @@ class Weapon(pyggel.scene.BaseSceneObject):
         self.name = name
 
     def picked(self):
-        self.game_hud.set_hover_status("shotgun")
+        self.game_hud.set_hover_status(self.name)
 
     def update(self):
         x, y, z = self.rotation
@@ -211,9 +211,7 @@ class ShotgunShot(pyggel.scene.BaseSceneObject):
         self.rotation = rotation
         self.level_data = level_data
         self.puff_tick = 1
-        self.damage = 4
-        self.age = 0
-        self.lifespan = 60
+        self.damage = 5
 
     def render(self, camera=None):
         if self.dead_remove_from_scene:
@@ -229,10 +227,6 @@ class ShotgunShot(pyggel.scene.BaseSceneObject):
         if self.puff_tick <= 20:
             self.scene.add_3d_blend(ShotgunPuff(self.pos, self.rotation, self.puff_tick))
             self.puff_tick += 1
-
-        self.age += 1
-        if self.age >= self.lifespan:
-            self.dead_remove_from_scene = True
 
 class ShotgunPuff(pyggel.scene.BaseSceneObject):
     obj = None
@@ -259,11 +253,68 @@ class ShotgunPuff(pyggel.scene.BaseSceneObject):
 
         self.dead_remove_from_scene = True
 
+class HandgunShot(pyggel.scene.BaseSceneObject):
+    obj = None
+    def __init__(self, pos, rotation, level_data, scene):
+        if not HandgunShot.obj:
+            HandgunShot.obj = pyggel.geometry.Sphere(0.1)
+            HandgunShot.obj.colorize = (0,0,0)
+        pyggel.scene.BaseSceneObject.__init__(self)
+
+        self.scene = scene
+
+        self.collision_body = pyggel.math3d.Sphere(pos, 0.1)
+
+        self.pos = pos
+        self.rotation = rotation
+        self.level_data = level_data
+        self.puff_tick = 1
+        self.damage = 2
+
+    def render(self, camera=None):
+        if self.dead_remove_from_scene:
+            return
+        self.pos = pyggel.math3d.move_with_rotation(self.pos, self.rotation, -.5)
+        self.collision_body.set_pos(self.pos)
+        if self.level_data.get_at_uncon(self.pos[0], self.pos[2]) in self.level_data.collidable:
+            self.dead_remove_from_scene = True #kills object
+        self.obj.pos = self.pos
+        self.obj.rotation = self.rotation
+        self.obj.render(camera)
+
+        if self.puff_tick <= 10:
+            self.scene.add_3d_blend(HandgunPuff(self.pos, self.rotation, self.puff_tick))
+            self.puff_tick += 1
+
+class HandgunPuff(pyggel.scene.BaseSceneObject):
+    obj = None
+    def __init__(self, pos, rotation, size=1):
+        if not HandgunPuff.obj:
+            HandgunPuff.obj = pyggel.image.Image3D(data.image_path("shotgun_puff.png"))
+        pyggel.scene.BaseSceneObject.__init__(self)
+
+        self.pos = pos
+        self.rotation = rotation
+
+        self.pos = pyggel.math3d.move_with_rotation(self.pos, self.rotation, -1)
+
+        self.puff_scale = 0.1 * size
+        self.puff_rotate = size * 3
+        self.puff_alpha = 0.5 - size*0.025
+
+    def render(self, camera=None):
+        self.obj.pos = self.pos
+        self.obj.scale  = self.puff_scale
+        self.obj.rotation = (0,0,self.puff_rotate)
+        self.obj.colorize = (1,1,1,self.puff_alpha)
+        self.obj.render(camera)
+
+        self.dead_remove_from_scene = True
 
 class AlienShot(pyggel.scene.BaseSceneObject):
     obj = None
     def __init__(self, pos, rotation, color, level_data):
-        if not ShotgunShot.obj:
+        if not AlienShot.obj:
             AlienShot.obj = pyggel.image.Image3D(data.image_path("flash.png"))
         pyggel.scene.BaseSceneObject.__init__(self)
 
@@ -359,6 +410,9 @@ class Alien(pyggel.scene.BaseSceneObject):
         self.shot_count = 0
         self.noticed = False
 
+    def make_aware(self):
+        self.noticed = True
+
     def picked(self):
         self.game_hud.set_hover_status("%s//%s//%s//%s"%(self.color[0],self.color[1],self.color[2],self.kind))
 
@@ -368,11 +422,8 @@ class Alien(pyggel.scene.BaseSceneObject):
         self.rotation = x,y,z
         self.collision_body.set_pos(self.pos)
 
-        if self.noticed and pyggel.math3d.get_distance(player_pos, self.pos) > level_data.tsize * 10:
-            self.noticed = False
-
-        elif (not self.noticed) and pyggel.math3d.get_distance(player_pos, self.pos) < level_data.tsize * 5:
-            self.noticed = True
+        if (not self.noticed) and pyggel.math3d.get_distance(player_pos, self.pos) < level_data.tsize * 5:
+            self.make_aware()
 
         if self.noticed:
             self.shot_count += 1
@@ -388,7 +439,7 @@ class Alien(pyggel.scene.BaseSceneObject):
             self.shot_count = 45
 
     def hit(self, damage):
-        self.noticed = True
+        self.make_aware()
         self.got_hit = True
         self.hp -= damage
         if self.hp <= 0:
@@ -448,8 +499,6 @@ def get_geoms(level):
     baddies = []
     feathers = []
 
-    weps_per_level = {1: "shotgun"}
-
     commands = _data.split(":")
     commands = [i.strip() for i in commands if i]
     tile_set = "dungeon"
@@ -500,17 +549,26 @@ def get_geoms(level):
                         camera_pos = x*tsize, 0, y*tsize
                     if cur == "~":
                         feathers.append(Feather((x*tsize, 0, y*tsize)))
-                    if cur == "&":
-                        possible_gun_locations.append((x, y))
+                    if cur in ("a","b","c","d","e"):
+                        weights = {"a":"handgun",
+                                   "b":"shotgun",
+                                   "c":"chaingun",
+                                   "d":"lightning gun",
+                                   "e":"plasma gun"}
+                        possible_gun_locations.append((x, y, weights[cur]))
                     if cur == "$":
                         possible_boost_locations.append((x, y))
-                    if cur == "1":
-                        baddies.append(Alien((x*tsize, 0, y*tsize), random.choice(["quad", "cube", "sphere",
-                                                                                   "ellipsoid", "pyramid", "dpyramid"])))
+                    if cur in ("1", "2", "3", "4", "5", "6"):
+                        weights = {"1":"quad",
+                                   "2":"pyramid",
+                                   "3":"dpyramid",
+                                   "4":"cube",
+                                   "5":"sphere",
+                                   "6":"ellipsoid"}
+                        baddies.append(Alien((x*tsize, 0, y*tsize), weights[cur]))
 
-    if possible_gun_locations:
-        pick = random.choice(possible_gun_locations)
-        dynamic.append(Weapon((pick[0]*tsize, 0, pick[1]*tsize), weps_per_level[level]))
+    for i in possible_gun_locations:
+        dynamic.append(Weapon((i[0]*tsize, 0, i[1]*tsize), i[2]))
     if possible_boost_locations:
         t = 0
         for i in xrange(len(possible_boost_locations)/2):
@@ -535,7 +593,8 @@ class PlayerData(object):
         self.max_ammo = 100
 
         self.weapons = {}
-        self.ammos = {"shotgun":20}
+        self.ammos = {"shotgun":25,
+                      "handgun":50}
         self.kills = 0
         self.cur_weapon = None
 
@@ -619,6 +678,10 @@ class PlayerData(object):
                     x = self.weapon_buck_back * 7
                     y = self.weapon_buck_twist * 7
                     self.weapon_bucked = False
+                if self.cur_weapon == "handgun" and x >= self.weapon_buck_back*3:
+                    x = self.weapon_buck_back * 3
+                    y = self.weapon_buck_twist * 3
+                    self.weapon_bucked = False
                 self.weapon_changes = x, y
             elif not self.weapon_buck_done:
                 x, y = self.weapon_changes
@@ -653,6 +716,18 @@ class PlayerData(object):
                     self.weapon_buck_done = False
                     self.game_hud.update_ammo(self.ammos[self.cur_weapon])
                     return ShotgunShot(self.weapons[self.cur_weapon].pos,
+                                       self.weapons[self.cur_weapon].rotation,
+                                       level_data, scene)
+        if self.cur_weapon == "handgun":
+            if self.weapon_buck_done:
+                if self.ammos[self.cur_weapon]:
+                    self.ammos[self.cur_weapon] -= 1
+                    self.weapon_bucked = True
+                    self.weapon_buck_back = 0.2
+                    self.weapon_buck_twist = -4
+                    self.weapon_buck_done = False
+                    self.game_hud.update_ammo(self.ammos[self.cur_weapon])
+                    return HandgunShot(self.weapons[self.cur_weapon].pos,
                                        self.weapons[self.cur_weapon].rotation,
                                        level_data, scene)
 
@@ -726,9 +801,10 @@ def play_level(level, player_data):
         if have_feathers == len(feathers): #next round
             good = True
             for i in baddies:
-                if i in scene.graph.render_3d:
-                    good = False
-                    break
+                if i.kind in ("sphere", "ellipsoid"):
+                    if i in scene.graph.render_3d:
+                        good = False
+                        break
             if good:
                 scene.render_buffer = transition_buffer
                 scene.pick = False
@@ -843,7 +919,7 @@ def play_level(level, player_data):
                 if isinstance(pick, AmmoBuff):
                     scene.remove_3d(pick)
                     player_data.boost_ammo(25)
-        if "left" in event.mouse.hit:
+        if "left" in event.mouse.active:
             shot = player_data.fire(scene, level_data)
             if shot:
                 scene.add_3d(shot)
