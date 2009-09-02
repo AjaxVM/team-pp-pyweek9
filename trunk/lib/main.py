@@ -116,7 +116,7 @@ class Weapon(pyggel.scene.BaseSceneObject):
     objs = {}
     def __init__(self, pos, name):
         if not self.objs:
-            self.objs["shotgun"] = pyggel.misc.StaticObjectGroup([pyggel.mesh.OBJ(data.mesh_path("shotgun.obj"))])
+            self.objs["shotgun"] = pyggel.misc.StaticObjectGroup([pyggel.mesh.OBJ(data.mesh_path("shotgun_OLD.obj"))])
             self.objs["shotgun"].pickable = True
         pyggel.scene.BaseSceneObject.__init__(self)
         self.pos = pos
@@ -198,15 +198,19 @@ class ShotgunShot(pyggel.scene.BaseSceneObject):
 
         self.scene = scene
 
+        self.collision_body = pyggel.math3d.AABox(pos, 0.15)
+
         self.pos = pos
         self.rotation = rotation
         self.level_data = level_data
         self.puff_tick = 1
+        self.damage = 4
 
     def render(self, camera=None):
         if self.dead_remove_from_scene:
             return
         self.pos = pyggel.math3d.move_with_rotation(self.pos, self.rotation, -.75)
+        self.collision_body.set_pos(self.pos)
         if self.level_data.get_at_uncon(self.pos[0], self.pos[2]) in self.level_data.collidable:
             self.dead_remove_from_scene = True #kills object
         self.obj.pos = self.pos
@@ -264,6 +268,28 @@ class Alien(pyggel.scene.BaseSceneObject):
         self.kind = kind
         self.color = random.choice(((1,1,0.25,1), (0,1,0,1), (0,0,1,1)))
 
+        self.collision_body = pyggel.math3d.AABox(self.pos, 1.5)
+
+        self.got_hit = False
+        self.hit_grow = True
+        self.hit_scale = 0
+        self.hit_scale_inc = 0.1
+        all_hp = {"quad":4,
+                  "pyramid":6,
+                  "dpyramid":9,
+                  "cube":14,
+                  "sphere":30,
+                  "ellipsoid":40}
+
+        self.hp = all_hp[self.kind]
+        self.dead = False
+        if kind == "ellpisoid":
+            self.dead_scale = 2
+            self.dead_scale_dec = 0.2
+        else:
+            self.dead_scale = 1
+            self.dead_scale_dec = 0.1
+
     def update(self, player_pos, scene):
 ##        x = player_pos[0] - self.pos[0]
 ##        y = player_pos[2] - self.pos[2]
@@ -274,13 +300,45 @@ class Alien(pyggel.scene.BaseSceneObject):
         x, y, z = self.rotation
         y += 5
         self.rotation = x,y,z
+        self.collision_body.set_pos(self.pos)
+
+    def hit(self, damage):
+        self.got_hit = True
+        self.hp -= damage
+        if self.hp <= 0:
+            self.dead = True
 
     def render(self, camera=None):
+        if self.dead:
+            self.dead_scale -= self.dead_scale_dec
+            if self.dead_scale <= 0:
+                self.dead_remove_from_scene = True
+                return
+            oscale = self.dead_scale
+        elif self.got_hit:
+            self.obj.outline = True
+            if self.hit_grow:
+                self.hit_scale += self.hit_scale_inc
+                if self.hit_scale >= 1:
+                    self.hit_scale = 1
+                    self.hit_grow = False
+            else:
+                self.hit_scale -= self.hit_scale_inc*2
+                if self.hit_scale <= 0:
+                    self.hit_scale = 0
+                    self.got_hit = False
+                    self.hit_grow = True
+        else:
+            self.obj.outline = False
         self.obj.pos = self.pos
         x, y, z = self.rotation
         self.obj.rotation = x, y, z
         self.obj.texture = self.tex
         self.obj.colorize = self.color
+
+        oscale = self.dead_scale
+        if self.kind == "quad": oscale += self.hit_scale
+        self.obj.scale = 1+self.hit_scale, oscale, 1+self.hit_scale
         self.obj.render(camera)
 
 def get_geoms(level):
@@ -506,9 +564,9 @@ class PlayerData(object):
                     self.weapon_buck_twist = -3
                     self.weapon_buck_done = False
                     self.game_hud.update_ammo(self.ammos[self.cur_weapon])
-                    scene.add_3d(ShotgunShot(self.weapons[self.cur_weapon].pos,
-                                             self.weapons[self.cur_weapon].rotation,
-                                             level_data, scene))
+                    return ShotgunShot(self.weapons[self.cur_weapon].pos,
+                                       self.weapons[self.cur_weapon].rotation,
+                                       level_data, scene)
 
 def play_level(level, player_data):
     camera = pyggel.camera.LookFromCamera((10,0,10))
@@ -521,6 +579,7 @@ def play_level(level, player_data):
     scene.add_light(light)
 
     static, dynamic, baddies, bosses, feathers, camera_pos, fog_color, tile_set, level_data, tsize = get_geoms(level)
+    shots = []
     camera.set_pos(camera_pos)
     pyggel.view.set_fog_color(fog_color)
     pyggel.view.set_fog_depth(5, 60)
@@ -654,6 +713,16 @@ def play_level(level, player_data):
 
         player_data.update_weapon(camera)
 
+        for i in shots:
+            if i.dead_remove_from_scene:
+                shots.remove(i)
+            else:
+                for x in baddies:
+                    if i.collision_body.collide(x.collision_body):
+                        i.dead_remove_from_scene = True
+                        x.hit(i.damage)
+                        break
+
         for i in baddies:
             i.update(camera.get_pos(), scene)
 
@@ -674,7 +743,10 @@ def play_level(level, player_data):
                     scene.remove_3d(pick)
                     player_data.boost_ammo(25)
         if "left" in event.mouse.hit:
-            player_data.fire(scene, level_data)
+            shot = player_data.fire(scene, level_data)
+            if shot:
+                scene.add_3d(shot)
+                shots.append(shot)
 
 def do_transition(buf, out=True):
     pyggel.view.set_lighting(False) #for now...
