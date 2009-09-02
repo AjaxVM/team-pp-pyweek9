@@ -3,7 +3,7 @@ import pyggel
 from pyggel import *
 
 import data, hud
-import random
+import random, math
 
 class LevelData(object):
     """WIP - for pathfinding and such later!"""
@@ -242,20 +242,46 @@ class ShotgunPuff(pyggel.scene.BaseSceneObject):
 
         self.dead_remove_from_scene = True
 
-##class FirstAlien(pyggel.scene.BaseSceneObject):
-##    obj = None
-##    def __init__(self, pos):
-##        if not FirstAlien.obj:
-##            FirstAlien.obj = pyggel.misc.StaticObjectGroup([pyggel.mesh.OBJ(data.mesh_path("alien_test.obj"))])
-##        pyggel.scene.BaseSceneObject.__init__(self)
-##
-##        self.pos = pos
-##        self.rotation = (0,0,0)
-##
-##    def render(self, camera=None):
-##        self.obj.pos = self.pos
-##        self.obj.rotation = self.rotation
-##        self.obj.render(camera)
+class Alien(pyggel.scene.BaseSceneObject):
+    objs = {}
+    texs = []
+    def __init__(self, pos, kind="quad"):
+        if not Alien.objs:
+            Alien.objs["quad"] = pyggel.geometry.Quad(1)
+            Alien.objs["cube"] = pyggel.geometry.Cube(1, mirror=True)
+            Alien.objs["sphere"] = pyggel.geometry.Sphere(1)
+            Alien.objs["ellipsoid"] = pyggel.geometry.Sphere(1)
+            Alien.objs["ellipsoid"].scale = 1,2,1
+            Alien.objs["pyramid"] = pyggel.geometry.Pyramid(2)
+            Alien.objs["dpyramid"] = pyggel.geometry.DoublePyramid(2)
+            Alien.texs.append(pyggel.data.Texture(data.image_path("alien_face1.png")))
+        pyggel.scene.BaseSceneObject.__init__(self)
+
+        self.pos = pos
+        self.rotation = (0,0,0)
+        self.obj = self.objs[kind]
+        self.tex = random.choice(self.texs)
+        self.kind = kind
+        self.color = random.choice(((1,1,0.25,1), (0,1,0,1), (0,0,1,1)))
+
+    def update(self, player_pos, scene):
+##        x = player_pos[0] - self.pos[0]
+##        y = player_pos[2] - self.pos[2]
+##        angle = math.atan2(-y, x)
+##        angle = 90-(angle * 180.0)/math.pi
+##        self.rotation = (self.rotation[0], angle, self.rotation[2])
+
+        x, y, z = self.rotation
+        y += 5
+        self.rotation = x,y,z
+
+    def render(self, camera=None):
+        self.obj.pos = self.pos
+        x, y, z = self.rotation
+        self.obj.rotation = x, y, z
+        self.obj.texture = self.tex
+        self.obj.colorize = self.color
+        self.obj.render(camera)
 
 def get_geoms(level):
     tsize = 5.0
@@ -335,8 +361,9 @@ def get_geoms(level):
                         possible_gun_locations.append((x, y))
                     if cur == "$":
                         possible_boost_locations.append((x, y))
-##                    if cur == "1":
-##                        baddies.append(FirstAlien((x*tsize, 0, y*tsize)))
+                    if cur == "1":
+                        baddies.append(Alien((x*tsize, 0, y*tsize), random.choice(["quad", "cube", "sphere",
+                                                                                   "ellipsoid", "pyramid", "dpyramid"])))
 
     if possible_gun_locations:
         pick = random.choice(possible_gun_locations)
@@ -626,6 +653,9 @@ def play_level(level, player_data):
             player_data.reset_move()
 
         player_data.update_weapon(camera)
+
+        for i in baddies:
+            i.update(camera.get_pos(), scene)
 
         if "right" in event.mouse.hit:
             if pick and pyggel.math3d.get_distance(camera.get_pos(), pick.pos) < tsize*3:
