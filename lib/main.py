@@ -366,6 +366,7 @@ class AlienShot(pyggel.scene.BaseSceneObject):
 class Alien(pyggel.scene.BaseSceneObject):
     objs = {}
     texs = []
+    base_los_count = 0
     def __init__(self, pos, kind="quad"):
         if not Alien.objs:
             Alien.objs["quad"] = pyggel.geometry.Quad(1)
@@ -411,16 +412,36 @@ class Alien(pyggel.scene.BaseSceneObject):
         self.noticed = False
 
         self.stored_LOS = False
-        self.sLOS_count = random.randint(0,10)
+        self.sLOS_count = Alien.base_los_count
+        Alien.base_los_count += 1
+        if Alien.base_los_count >= 25:
+            Alien.base_los_count = 0
+        self.connected_to = []
+
+    def build_connections(self, others, level_data):
+        for i in others:
+            if not (i in self.connected_to or i == self):
+                if abs(self.pos[0]-i.pos[0]) <= 8 and\
+                   abs(self.pos[2]-i.pos[2]) <= 8: #one-ish tile
+                    self.connected_to.append(i)
+                    if not self in i.connected_to:
+                        i.connected_to.append(self)
+
+                    for x in i.connected_to:
+                        if not (x in self.connected_to or x == self):
+                            self.connected_to.append(x)
+                    for x in self.connected_to:
+                        if not (x in i.connected_to or x == i):
+                            i.connected_to.append(x)
 
     def LOS_to(self, topos, level_data, angle):
-        if pyggel.math3d.get_distance(topos, self.pos) <= 4:
+        if pyggel.math3d.get_distance(topos, self.pos) <= 5:
             return True
         pos = self.pos
         see = True
         for i in xrange(50):
             pos = pyggel.math3d.move_with_rotation(pos, (0,angle,0), -4)
-            if pyggel.math3d.get_distance(topos, pos) <= 4:
+            if pyggel.math3d.get_distance(topos, pos) <= 5:
                 return True
             if level_data.get_at_uncon(pos[0], pos[2]) in level_data.collidable:
                 return False
@@ -428,11 +449,16 @@ class Alien(pyggel.scene.BaseSceneObject):
 
     def make_aware(self):
         self.noticed = True
+        for i in self.connected_to:
+            i.noticed = True
 
     def picked(self):
         self.game_hud.set_hover_status("%s//%s//%s//%s"%(self.color[0],self.color[1],self.color[2],self.kind))
 
     def update(self, player_pos, level_data):
+        for i in self.connected_to:
+            if i.dead_remove_from_scene:
+                self.connected_to.remove(i)
         x, y, z = self.rotation
         y += 5
         self.rotation = x,y,z
@@ -444,7 +470,7 @@ class Alien(pyggel.scene.BaseSceneObject):
         angle = 90-(angle * 180.0)/math.pi
 
         self.sLOS_count += 1
-        if self.sLOS_count >= 15:
+        if self.sLOS_count >= 30:
             self.stored_LOS = self.LOS_to(player_pos, level_data, angle)
             self.sLOS_count = 0
 
@@ -463,6 +489,7 @@ class Alien(pyggel.scene.BaseSceneObject):
 
     def hit(self, damage):
         self.make_aware()
+        self.stored_LOS = True
         self.got_hit = True
         self.hp -= damage
         if self.hp <= 0:
@@ -602,12 +629,14 @@ def get_geoms(level):
                 dynamic.append(HPBuff((pick[0]*tsize, 0, pick[1]*tsize)))
             else:
                 dynamic.append(AmmoBuff((pick[0]*tsize, 0, pick[1]*tsize)))
+    l = LevelData(map_grid, tsize)
+    for i in baddies:
+        i.build_connections(baddies, l)
     return (pyggel.misc.StaticObjectGroup(static), dynamic,
             baddies, feathers,
             camera_pos,
             fog_color, tile_set,
-            LevelData(map_grid, tsize),
-            tsize)
+            l, tsize)
 
 class PlayerData(object):
     def __init__(self):
