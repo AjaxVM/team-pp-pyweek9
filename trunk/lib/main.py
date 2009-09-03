@@ -474,10 +474,10 @@ class Alien(pyggel.scene.BaseSceneObject):
             self.stored_LOS = self.LOS_to(player_pos, level_data, angle)
             self.sLOS_count = 0
 
-        if (not self.noticed) and\
-           pyggel.math3d.get_distance(player_pos, self.pos) < level_data.tsize * 7 and\
-           self.stored_LOS:
-            self.make_aware()
+        if (not self.noticed):
+            if pyggel.math3d.get_distance(player_pos, self.pos) < level_data.tsize * 7:
+                if self.stored_LOS:
+                    self.make_aware()
 
         if self.noticed and self.stored_LOS:
             self.shot_count += 1
