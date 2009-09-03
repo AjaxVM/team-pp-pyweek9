@@ -38,7 +38,7 @@ def play_level(level, player_data):
     scene.add_3d(baddies)
     scene.add_3d(feathers)
 
-    game_hud = hud.Hud()
+    game_hud = player_data.game_hud
     scene.add_2d(game_hud)
     for i in dynamic + feathers + baddies:
         i.game_hud = game_hud
@@ -56,11 +56,8 @@ def play_level(level, player_data):
     target = pyggel.image.Image(data.image_path("target.png"), pos=(320-32, 240-32))
     scene.add_2d(target)
 
-    player_data.game_hud = game_hud
-
     player_data.swap_weapon(scene, player_data.cur_weapon)
     player_data.update_weapon(camera)
-    player_data.hit(0)
 
     scene.render_buffer = transition_buffer
     scene.pick = False
@@ -252,7 +249,7 @@ def main():
     except:
         print "Cannot disable debug, speed may be slower..."
 
-    pData = PlayerData()
+    pData = PlayerData(hud.Hud())
 
     level = 1
 
