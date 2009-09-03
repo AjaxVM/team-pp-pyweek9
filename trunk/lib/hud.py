@@ -52,8 +52,9 @@ class Hud(pyggel.scene.BaseSceneObject):
         self.console_app = pyggel.gui.App(self.event_handler)
         self.console_app.theme.load(data.gui_path("theme.py"))
         self.console_app.packer.packtype="center"
-        pyggel.gui.Button(self.console_app, "click!",
-                          callbacks=[self.gui_inactive])
+        frame = pyggel.gui.Frame(self.console_app, size=(300,200), image_border=9)
+        frame.packer.packtype="center"
+        pyggel.gui.Button(frame, "click!", callbacks=[self.gui_inactive])
 
 
         #set up later theme/font usage
