@@ -4,10 +4,12 @@ from pyggel import *
 from weapons import *
 
 class PlayerData(object):
-    def __init__(self):
+    def __init__(self, hud):
         self.max_hp = 100
         self.cur_hp = 100
         self.max_ammo = 100
+
+        self.game_hud = hud
 
         self.weapons = {}
         self.ammos = {"shotgun":25,
@@ -26,8 +28,6 @@ class PlayerData(object):
         self.weapon_bob_rd = -0.2
         self.weapon_bob_rot = 0
         self.weapon_bob_count = 20
-
-        self.game_hud = None
 
         self.collision_body = pyggel.math3d.Sphere((0,0,0), 1)
 
