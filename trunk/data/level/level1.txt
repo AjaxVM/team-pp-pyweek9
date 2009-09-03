@@ -25,10 +25,10 @@ dungeon
 #,1,,,,,,,,,,,,,,,,,,,,,#
 #$,,,,,,,,,,,,,,,,,,,$,,#
 ##############,,,,,1,,,,#
-#,@,a|,,,,,,$#,,,,,,21,,#
+#@,,a|,,,,,,$#,,,,,,21,,#
 #,,,,#,,,,,,,#,,,,,,,,,,#
-#,*,,#,,,,,1,#,,,,,,,,,,#
-#,,,,#,,2,,,,,,,,,,,,,,,#
+#,,,,#,,,,,1,#,,,,,,,,,,#
+#*,,,#,,2,,,,,,,,,,,,,,,#
 #########################
 
 
@@ -52,3 +52,5 @@ dungeon
 //If you want diagonal, make sure it is double diagonal:
 //	#   Not  #
 //   ##       #
+//
+//For badguys to group they must starting out touching, they must be on adjacent tiles (diagonal accepted)

@@ -122,6 +122,27 @@ class Feather(pyggel.scene.BaseSceneObject):
         self.obj.rotation = self.rotation
         self.obj.render(camera)
 
+class Console(pyggel.scene.BaseSceneObject):
+    obj = None
+    def __init__(self, pos):
+        if not Console.obj:
+            Console.obj = pyggel.mesh.OBJ(data.mesh_path("alien_console.obj"))
+            Console.obj.scale = 1.5,2,1 #tsize
+            Console.obj.rotation = 0,180,0
+
+        pyggel.scene.BaseSceneObject.__init__(self)
+
+        x,y,z = pos
+        z += 1.25
+        self.pos = x, y, z
+
+    def picked(self):
+        self.game_hud.set_hover_status("starting_console")
+
+    def render(self, camera=None):
+        self.obj.pos = self.pos
+        self.obj.render(camera)
+
 def get_geoms(level):
     tsize = 5.0
     fname = data.level_path("level%s.txt"%level)
@@ -210,6 +231,8 @@ def get_geoms(level):
                                    "5":"sphere",
                                    "6":"ellipsoid"}
                         baddies.append(Alien((x*tsize, 0, y*tsize), weights[cur]))
+                    if cur == "@":
+                        dynamic.append(Console((x*tsize, 0, y*tsize)))
 
     for i in possible_gun_locations:
         dynamic.append(Weapon((i[0]*tsize, 0, i[1]*tsize), i[2]))
