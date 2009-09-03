@@ -11,3 +11,6 @@ def sound_path(path):
 
 def level_path(path):
     return os.path.join("data", "level", path)
+
+def gui_path(path):
+    return os.path.join("data", "gui", path)

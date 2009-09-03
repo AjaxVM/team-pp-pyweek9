@@ -47,14 +47,8 @@ def play_level(level, player_data):
     have_feathers = 0
 
     clock = pygame.time.Clock()
-    event = pyggel.event.Handler()
-
-    #set up target:
-    pygame.event.set_grab(1)
-    pygame.mouse.set_visible(0)
-
-    target = pyggel.image.Image(data.image_path("target.png"), pos=(320-32, 240-32))
-    scene.add_2d(target)
+    event = game_hud.event_handler
+    game_hud.gui_inactive()
 
     player_data.swap_weapon(scene, player_data.cur_weapon)
     player_data.update_weapon(camera)
@@ -106,52 +100,53 @@ def play_level(level, player_data):
         if K_ESCAPE in event.keyboard.hit:
             return ["back"]
 
-        if event.mouse.motion[0]:
-            camera.roty += event.mouse.motion[0] * 0.2
+        if not game_hud.grab_events:
+            if event.mouse.motion[0]:
+                camera.roty += event.mouse.motion[0] * 0.2
 
-        do_move = False
-        new = (0,0,0)
-        future = (0,0,0)
-        if "w" in event.keyboard.active:
-            new = pyggel.math3d.move_with_rotation(new,
-                                                   (camera.rotx,camera.roty*-1, camera.rotz), 0.15)
-            future = pyggel.math3d.move_with_rotation(future,
-                                                      (camera.rotx,camera.roty*-1, camera.rotz), 1.25)
-            do_move = True
-        if "s" in event.keyboard.active:
-            new = pyggel.math3d.move_with_rotation(new,
-                                                   (camera.rotx,camera.roty*-1, camera.rotz), -0.15)
-            future = pyggel.math3d.move_with_rotation(future,
-                                                      (camera.rotx,camera.roty*-1, camera.rotz), -1.25)
-            do_move = True
+            do_move = False
+            new = (0,0,0)
+            future = (0,0,0)
+            if "w" in event.keyboard.active:
+                new = pyggel.math3d.move_with_rotation(new,
+                                                       (camera.rotx,camera.roty*-1, camera.rotz), 0.15)
+                future = pyggel.math3d.move_with_rotation(future,
+                                                          (camera.rotx,camera.roty*-1, camera.rotz), 1.25)
+                do_move = True
+            if "s" in event.keyboard.active:
+                new = pyggel.math3d.move_with_rotation(new,
+                                                       (camera.rotx,camera.roty*-1, camera.rotz), -0.15)
+                future = pyggel.math3d.move_with_rotation(future,
+                                                          (camera.rotx,camera.roty*-1, camera.rotz), -1.25)
+                do_move = True
 
-        if "a" in event.keyboard.active:
-            new = pyggel.math3d.move_with_rotation(new,
-                                                   (camera.rotx,camera.roty*-1+90, camera.rotz),
-                                                   0.15)
-            future = pyggel.math3d.move_with_rotation(future,
-                                                   (camera.rotx,camera.roty*-1+90, camera.rotz),
-                                                   1.25)
-            do_move = True
-        if "d" in event.keyboard.active:
-            new = pyggel.math3d.move_with_rotation(new,
-                                                   (camera.rotx,camera.roty*-1-90, camera.rotz),
-                                                   0.15)
-            future = pyggel.math3d.move_with_rotation(future,
-                                                   (camera.rotx,camera.roty*-1-90, camera.rotz),
-                                                   1.25)
-            do_move = True
+            if "a" in event.keyboard.active:
+                new = pyggel.math3d.move_with_rotation(new,
+                                                       (camera.rotx,camera.roty*-1+90, camera.rotz),
+                                                       0.15)
+                future = pyggel.math3d.move_with_rotation(future,
+                                                       (camera.rotx,camera.roty*-1+90, camera.rotz),
+                                                       1.25)
+                do_move = True
+            if "d" in event.keyboard.active:
+                new = pyggel.math3d.move_with_rotation(new,
+                                                       (camera.rotx,camera.roty*-1-90, camera.rotz),
+                                                       0.15)
+                future = pyggel.math3d.move_with_rotation(future,
+                                                       (camera.rotx,camera.roty*-1-90, camera.rotz),
+                                                       1.25)
+                do_move = True
 
-        if do_move:
-            player_data.move(camera)
-            x = camera.posx + future[0]
-            y = camera.posz + future[2]
-            if not level_data.get_at_uncon(x, camera.posz) in level_data.collidable:
-                camera.set_pos((camera.posx+new[0], camera.posy, camera.posz))
-            if not level_data.get_at_uncon(camera.posx, y) in level_data.collidable:
-                camera.set_pos((camera.posx, camera.posy, camera.posz+new[2]))
-        else:
-            player_data.reset_move()
+            if do_move:
+                player_data.move(camera)
+                x = camera.posx + future[0]
+                y = camera.posz + future[2]
+                if not level_data.get_at_uncon(x, camera.posz) in level_data.collidable:
+                    camera.set_pos((camera.posx+new[0], camera.posy, camera.posz))
+                if not level_data.get_at_uncon(camera.posx, y) in level_data.collidable:
+                    camera.set_pos((camera.posx, camera.posy, camera.posz+new[2]))
+            else:
+                player_data.reset_move()
 
         player_data.update_weapon(camera)
 
@@ -181,26 +176,29 @@ def play_level(level, player_data):
                 badshots.append(shot)
                 scene.add_3d_blend(shot)
 
-        if "right" in event.mouse.hit:
-            if pick and pyggel.math3d.get_distance(camera.get_pos(), pick.pos) < tsize*3:
-                if isinstance(pick, Feather):
-                    have_feathers += 1
-                    scene.remove_3d(pick)
-                    game_hud.update_feathers(have_feathers, len(feathers))
-                if isinstance(pick, Weapon):
-                    scene.remove_3d(pick)
-                    player_data.add_weapon(scene, pick.name, pick.obj)
-                if isinstance(pick, HPBuff):
-                    scene.remove_3d(pick)
-                    player_data.boost_hp(20)
-                if isinstance(pick, AmmoBuff):
-                    scene.remove_3d(pick)
-                    player_data.boost_ammo(25)
-        if "left" in event.mouse.active:
-            shot = player_data.fire(scene, level_data)
-            if shot:
-                scene.add_3d(shot)
-                shots.append(shot)
+        if not game_hud.grab_events:
+            if "right" in event.mouse.hit:
+                if pick and pyggel.math3d.get_distance(camera.get_pos(), pick.pos) < tsize*3:
+                    if isinstance(pick, Feather):
+                        have_feathers += 1
+                        scene.remove_3d(pick)
+                        game_hud.update_feathers(have_feathers, len(feathers))
+                    if isinstance(pick, Weapon):
+                        scene.remove_3d(pick)
+                        player_data.add_weapon(scene, pick.name, pick.obj)
+                    if isinstance(pick, HPBuff):
+                        scene.remove_3d(pick)
+                        player_data.boost_hp(20)
+                    if isinstance(pick, AmmoBuff):
+                        scene.remove_3d(pick)
+                        player_data.boost_ammo(25)
+                    if isinstance(pick, Console):
+                        game_hud.set_gui_app("console")
+            if "left" in event.mouse.active:
+                shot = player_data.fire(scene, level_data)
+                if shot:
+                    scene.add_3d(shot)
+                    shots.append(shot)
 
 def do_transition(buf, out=True):
     pyggel.view.set_lighting(False) #for now...

@@ -46,6 +46,55 @@ class Hud(pyggel.scene.BaseSceneObject):
         self.ammo = self.font.make_text_image("{ammo} 100")
         self.ammo.pos = (10, 180)
 
+        self.event_handler = pyggel.event.Handler()
+
+        #create gui apps for various events!
+        self.console_app = pyggel.gui.App(self.event_handler)
+        self.console_app.theme.load(data.gui_path("theme.py"))
+        self.console_app.packer.packtype="center"
+        pyggel.gui.Button(self.console_app, "click!",
+                          callbacks=[self.gui_inactive])
+
+
+        #set up later theme/font usage
+        theme = self.console_app.theme
+        fonts = self.console_app.fonts
+        #any apps that are created later:
+        #   app.theme = theme
+        #   app.update_fonts(fonts)
+
+        self.active_app = None
+
+        self.app_binding = {"console":self.console_app}
+        self.grab_events = False
+
+
+        #target image
+        self.target = pyggel.image.Image(data.image_path("target.png"),
+                                         pos=(320-32, 240-32))
+
+    def gui_inactive(self):
+        pygame.event.set_grab(1)
+        pygame.mouse.set_visible(0)
+        self.event_handler.gui = None #turn off all guis
+        self.active_app = None
+        self.grab_events = False
+
+    def gui_active(self):
+        pygame.event.set_grab(0)
+        pygame.mouse.set_visible(1)
+        self.active_app.activate()
+        self.grab_events = True
+        pygame.mouse.set_pos((320,240))
+
+    def set_gui_app(self, name):
+        if name in self.app_binding:
+            self.active_app = self.app_binding[name]
+            self.gui_active()
+        else:
+            print name, "not in bindings!"
+            self.gui_inactive()
+
     def set_hover_status(self, text):
         self.cur_text = text
 
@@ -70,14 +119,19 @@ class Hud(pyggel.scene.BaseSceneObject):
             self.weapon.text = text
 
     def render(self):
-        if self.cur_text:
-            img = self.hover_status[self.cur_text]
-            x,y = 320, 10
-            img.pos = x-img.get_width()/2, y
-            img.render()
-            img.pos = x,y
+        if self.active_app:
+            self.active_app.render()
 
-        self.feathers.render()
-        self.hp.render()
-        self.weapon.render()
-        self.ammo.render()
+        else:
+            if self.cur_text:
+                img = self.hover_status[self.cur_text]
+                x,y = 320, 10
+                img.pos = x-img.get_width()/2, y
+                img.render()
+                img.pos = x,y
+
+            self.feathers.render()
+            self.hp.render()
+            self.weapon.render()
+            self.ammo.render()
+            self.target.render()
