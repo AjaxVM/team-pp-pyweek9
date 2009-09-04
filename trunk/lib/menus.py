@@ -11,13 +11,13 @@ class Menu(pyggel.scene.BaseSceneObject):
         self.event_handler = pyggel.event.Handler()
 
         self.app = pyggel.gui.App(self.event_handler)
-        self.app.theme.load(data.gui_path("theme.py"))
-        frame = pyggel.gui.Frame(self.app, pos=(500,300), size=(100,125), background_image=None)
+        self.app.theme.load(data.gui_path("menu_theme.py"))
+        frame = pyggel.gui.Frame(self.app, pos=(500,275), size=(150,175), background_image=None)
         frame.packer.packtype = "center"
         pyggel.gui.Button(frame, "play", callbacks=[self.set_play])
-        pyggel.gui.NewLine(frame)
+        pyggel.gui.NewLine(frame, 10)
         pyggel.gui.Button(frame, "story", callbacks=[self.set_story])
-        pyggel.gui.NewLine(frame)
+        pyggel.gui.NewLine(frame, 10)
         pyggel.gui.Button(frame, "quit", callbacks=[self.set_quit])
 
         self.background_image = pyggel.image.Image(data.image_path("background_crop_circle.png"))
@@ -68,11 +68,11 @@ class StoryMenu(pyggel.scene.BaseSceneObject):
         self.event_handler = pyggel.event.Handler()
 
         self.app = pyggel.gui.App(self.event_handler)
-        self.app.theme.load(data.gui_path("theme.py"))
-        frame = pyggel.gui.Frame(self.app, pos=(500,300), size=(100,125), background_image=None)
+        self.app.theme.load(data.gui_path("menu_theme.py"))
+        frame = pyggel.gui.Frame(self.app, pos=(500,275), size=(150,175), background_image=None)
         frame.packer.packtype = "center"
         pyggel.gui.Button(frame, "Play", callbacks=[self.set_play])
-        pyggel.gui.NewLine(frame)
+        pyggel.gui.NewLine(frame, 10)
         pyggel.gui.Button(frame, "Back", callbacks=[self.set_back])
 
         f = open(data.misc_path("intro_story.txt"), "rU")

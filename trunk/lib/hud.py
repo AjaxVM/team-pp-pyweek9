@@ -18,8 +18,8 @@ class Hud(pyggel.scene.BaseSceneObject):
         self.hover_status["feather"] = self.font.make_text_image("A feather! Get close to it and Right-click to take")
         self.hover_status["shotgun"] = self.font.make_text_image("A shotgun! Better grab that - Right-click to take")
         self.hover_status["handgun"] = self.font.make_text_image("A handgun, better than nothing - Right-click to take")
-        self.hover_status["hp"] = self.font.make_text_image("A health {health}+20 pack! Right-click to take")
-        self.hover_status["ammo"] = self.font.make_text_image("An ammo {ammo}+25 pack! Right-click to take")
+        self.hover_status["hp"] = self.font.make_text_image("A +20 {health} pack! Right-click to take")
+        self.hover_status["ammo"] = self.font.make_text_image("A +25 {ammo} pack! Right-click to take")
         self.hover_status["starting_console"] = self.font.make_text_image("Alien Console - move to and Right-click to use!")
 
         colors = {"1//1//0.25":"fast",
@@ -112,6 +112,18 @@ class Hud(pyggel.scene.BaseSceneObject):
                                                 pos=(320-32,240-32))
 
         self.hud_image = pyggel.image.Image(data.image_path("hud1.png"))
+        self.logo_image = pyggel.image.Image(data.image_path("chickenstein_logo.png"))
+        self.logo_image.colorize = (1,1,1,0.5)
+
+        self.ouch_image = pyggel.image.Image(data.image_path("ouch.png"))
+        self.ouch_image.colorize = (1,1,1,0)
+
+    def reset(self):
+        self.ouch_image.colorize = (1,1,1,0)
+        self.gui_inactive()
+
+    def got_hit(self):
+        self.ouch_image.colorize = 1,1,1,1
 
     def _set_active_app_internal_cadi_next(self):
         app = self.console_last_index
@@ -193,6 +205,15 @@ class Hud(pyggel.scene.BaseSceneObject):
             self.active_app.render()
 
         else:
+            a,b,c,d = self.ouch_image.colorize
+            if d <= 0:
+                d = 0
+
+            if d:
+                self.ouch_image.render()
+                d -= 0.025
+                self.ouch_image.colorize = a,b,c,d
+            self.logo_image.render()
             self.hud_image.render()
 
             if self.cur_text:
