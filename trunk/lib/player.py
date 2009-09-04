@@ -94,6 +94,7 @@ class PlayerData(object):
             self.game_hud.update_ammo(0)
 
     def move(self, camera):
+        self.game_hud.sfx.play_walk()
         self.collision_body.set_pos(camera.get_pos())
         if self.cur_weapon:
             self.weapon_bob_up += self.weapon_bob_d
@@ -104,9 +105,11 @@ class PlayerData(object):
                 self.weapon_bob_rd *= -1
                 self.weapon_bob_count = 0
         else:
-            self.reset_move()
+            self.reset_move(False)
 
-    def reset_move(self):
+    def reset_move(self, b=True):
+        if b:
+            self.game_hud.sfx.stop_walk()
         self.weapon_bob_up = 0
         self.weapon_bob_rot = 0
         self.weapon_bob_count = 20
@@ -143,12 +146,14 @@ class PlayerData(object):
             roty = camera.roty
             x, y, z = pyggel.math3d.move_with_rotation((x, y, z), (0,-roty,0), 2.25-self.weapon_changes[0])
             x, y, z = pyggel.math3d.move_with_rotation((x, y, z), (0,-roty+45,0), -.75)
-            y -= 0.25
+            y -= 0.5
             obj.pos = x, y+self.weapon_bob_up, z
             obj.rotation = (0,180-roty+self.weapon_changes[1]-self.weapon_bob_rot*0.2,
                             -20-self.weapon_changes[1]+self.weapon_bob_rot)
 
     def fire(self, scene, level_data):
+        if self.cur_weapon and self.ammos[self.cur_weapon]:
+            self.game_hud.sfx.player_shoot(self.cur_weapon)
         if self.cur_weapon == "shotgun":
             if self.weapon_buck_done: #other types maybe don't need this
                 if self.ammos[self.cur_weapon]:

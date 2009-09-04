@@ -3,6 +3,10 @@ import pyggel
 from pyggel import *
 
 import data
+import time
+
+import sfx
+        
 
 class Hud(pyggel.scene.BaseSceneObject):
     def __init__(self):
@@ -118,6 +122,9 @@ class Hud(pyggel.scene.BaseSceneObject):
         self.ouch_image = pyggel.image.Image(data.image_path("ouch.png"))
         self.ouch_image.colorize = (1,1,1,0)
 
+        #for 3d sounds...
+        self.sfx = sfx.SFX()
+
     def reset(self):
         self.ouch_image.colorize = (1,1,1,0)
         self.gui_inactive()
@@ -201,6 +208,7 @@ class Hud(pyggel.scene.BaseSceneObject):
             self.weapon.text = text
 
     def render(self):
+        self.sfx.update()
         if self.active_app:
             self.active_app.render()
 

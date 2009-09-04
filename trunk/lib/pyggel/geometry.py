@@ -125,9 +125,11 @@ class Cube(BaseSceneObject):
         glRotatef(c, 0, 0, 1)
         glScalef(.5*self.size,.5*self.size,.5*self.size)
         try:
-            glScalef(*self.scale)
+            if not self.scale == (1,1,1):
+                glScalef(*self.scale)
         except:
-            glScalef(self.scale, self.scale, self.scale)
+            if not self.scale == 1:
+                glScalef(self.scale, self.scale, self.scale)
         glColor(*self.colorize)
         self.texture.bind()
         if self.outline:

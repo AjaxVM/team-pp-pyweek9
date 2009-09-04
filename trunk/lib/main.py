@@ -41,6 +41,8 @@ def play_level(level, player_data):
     scene.add_3d(feathers)
 
     game_hud = player_data.game_hud
+    game_hud.scene = scene
+    game_hud.camera = camera
     scene.add_2d(game_hud)
     for i in dynamic + feathers + baddies:
         i.game_hud = game_hud
