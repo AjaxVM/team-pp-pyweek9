@@ -84,6 +84,7 @@ class Hud(pyggel.scene.BaseSceneObject):
                    ("Ahem, Chicken probably lost a few feathers\nfighting his captors.\nFollow and collect them.\n"+\
                     "Once you have all the feathers in an area\na teleporter chip will be activated\nto the next level.",
                     "Interesting... anything else I should know?"),
+                   ("Well, the aliens shoot nasty energy beams,\nso avoid them if you can...", "Right, avoid energy beams... good idea..."),
                    ("That should be plenty - good luck Farmer!", "Then let's do this!\n...\nhey! wait a second\nwhy do I have to do this?"),
                    ("Because, we haven't managed to get a single\nsoldier onto that mother ship yet!\n"+\
                     "So, we aren't gonna let this opportunity\nescape us!\n"+\
