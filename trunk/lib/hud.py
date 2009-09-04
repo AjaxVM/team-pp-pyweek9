@@ -11,6 +11,7 @@ class Hud(pyggel.scene.BaseSceneObject):
         self.font = pyggel.font.Font()
         self.font.add_image("{health}", pyggel.image.Image(data.image_path("hp.png")))
         self.font.add_image("{ammo}", pyggel.image.Image(data.image_path("ammo.png")))
+        self.font.add_image("{feather}", pyggel.image.Image(data.image_path("feather.png")))
 
         self.hover_status = {}
         self.hover_status["door"] = self.font.make_text_image("Door - face and move next to it to open")
@@ -37,15 +38,15 @@ class Hud(pyggel.scene.BaseSceneObject):
 
         self.cur_text = None
 
-        self.feathers = self.font.make_text_image("Feathers: 0/3")
-        self.feathers.pos = (10, 50)
+        self.feathers = self.font.make_text_image("{feather} 0/3")
+        self.feathers.pos = (10, 5)
 
         self.hp = self.font.make_text_image("{health} 100")
-        self.hp.pos = (10, 85)
+        self.hp.pos = (130, 5)
         self.weapon = self.font.make_text_image("Weapon: None")
-        self.weapon.pos = (0, 145)
+        self.weapon.pos = (250, 5)
         self.ammo = self.font.make_text_image("{ammo} 100")
-        self.ammo.pos = (10, 180)
+        self.ammo.pos = (505, 5)
 
         self.event_handler = pyggel.event.Handler()
 
@@ -107,6 +108,10 @@ class Hud(pyggel.scene.BaseSceneObject):
         #target image
         self.target = pyggel.image.Image(data.image_path("target.png"),
                                          pos=(320-32, 240-32))
+        self.target_active = pyggel.image.Image(data.image_path("target_over.png"),
+                                                pos=(320-32,240-32))
+
+        self.hud_image = pyggel.image.Image(data.image_path("hud1.png"))
 
     def _set_active_app_internal_cadi_next(self):
         app = self.console_last_index
@@ -164,7 +169,7 @@ class Hud(pyggel.scene.BaseSceneObject):
         self.cur_text = text
 
     def update_feathers(self, have, max):
-        text = "Feathers: %s/%s"%(have, max)
+        text = "{feather} %s/%s"%(have, max)
         if not self.feathers.text == text:
             self.feathers.text = text
 
@@ -188,15 +193,19 @@ class Hud(pyggel.scene.BaseSceneObject):
             self.active_app.render()
 
         else:
+            self.hud_image.render()
+
             if self.cur_text:
                 img = self.hover_status[self.cur_text]
-                x,y = 320, 10
+                x,y = 320, 65
                 img.pos = x-img.get_width()/2, y
                 img.render()
                 img.pos = x,y
+                self.target_active.render()
+            else:
+                self.target.render()
 
             self.feathers.render()
             self.hp.render()
             self.weapon.render()
             self.ammo.render()
-            self.target.render()
