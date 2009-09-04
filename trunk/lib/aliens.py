@@ -138,8 +138,12 @@ class Alien(pyggel.scene.BaseSceneObject):
                             i.connected_to.append(x)
 
     def LOS_to(self, topos, level_data, angle):
-        if pyggel.math3d.get_distance(topos, self.pos) <= 5:
-            return True
+        # this is probably your bug -- getting distance through the wall
+        # easy fix is take this out,  'proper' fix is to use some pathing alg to see if
+        # they are just around a corner or well beyond a wall
+        #if pyggel.math3d.get_distance(topos, self.pos) <= 5:
+        #    return True
+
         pos = self.pos
         see = True
         for i in xrange(50):
