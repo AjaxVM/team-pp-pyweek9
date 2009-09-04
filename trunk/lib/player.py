@@ -60,6 +60,7 @@ class PlayerData(object):
         self.swap_weapon(scene, wep_type)
 
     def hit(self, damage):
+        self.game_hud.sfx.play_player_hit()
         self.cur_hp -= damage
         self.game_hud.update_hp(self.cur_hp)
         self.game_hud.got_hit()
