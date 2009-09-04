@@ -75,12 +75,11 @@ class StoryMenu(pyggel.scene.BaseSceneObject):
         pyggel.gui.Button(frame, "Back", callbacks=[self.set_back])
 
         f = open(data.misc_path("intro_story.txt"), "rU")
-        text = ""
-        for line in f:
-            text += line.strip() + "\n"
+        text = "\n".join([line.strip() for line in f])
 
-        pyggel.gui.Label(self.app, text, font_color=(0,0,0,1), font_color_inactive=(0,0,0,1),
+        l = pyggel.gui.Label(self.app, text, font_color=(0,0,0,1), font_color_inactive=(0,0,0,1),
                          font="default-small")
+        l.pos = (0,480-l.size[1])
 
         self.background_image = pyggel.image.Image(data.image_path("background_crop_circle.png"))
 
