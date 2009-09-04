@@ -14,3 +14,6 @@ def level_path(path):
 
 def gui_path(path):
     return os.path.join("data", "gui", path)
+
+def misc_path(path):
+    return os.path.join("data", "misc", path)

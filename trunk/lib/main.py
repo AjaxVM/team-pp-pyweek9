@@ -256,19 +256,24 @@ def main():
     mode = "menu"
 
     core_menu = Menu()
+    core_story_menu = StoryMenu()
 
     while 1:
         if mode == "menu":
             level = 1
             retval = core_menu.run()
             command = retval[0]
-            print command
         elif mode == "game":
             retval = play_level(level, pData)
+            command = retval[0]
+        elif mode == "story":
+            retval = core_story_menu.run()
             command = retval[0]
 
         if command == "menu":
             mode = "menu"
+        if command == "story":
+            mode = "story"
         if command == "quit":
             pyggel.quit()
             return None

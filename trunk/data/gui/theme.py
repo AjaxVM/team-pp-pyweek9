@@ -3,6 +3,11 @@
         "fontfile":None,
         "fontsize":32,
         "images":{}
+        },
+    "default-small":{
+        "fontfile":None,
+        "fontsize":20,
+        "images":{}
         }
     },
 "App":{
