@@ -86,12 +86,21 @@ class SFX(object):
 
         self.alien_shot = SoundWrapper(data.character_sound_path("gun", "alien-lazer.wav"))
 
+        self.door_open = SoundWrapper(data.sound_path("door-open.wav"))
+
+        self.all_sounds.append(self.alien_shot)
+        self.all_sounds.append(self.door_open)
+
     def play_walk(self):
         if not self.player_walk.running:
             self.player_walk.play()
     def stop_walk(self):
         if self.player_walk.running:
             self.player_walk.stop()
+
+    def open_door(self):
+        if not self.door_open.running:
+            self.door_open.play()
 
     def play_player_hit(self):
         if self.player_one_playing and not self.player_one_playing.running:
