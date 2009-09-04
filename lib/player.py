@@ -31,6 +31,30 @@ class PlayerData(object):
 
         self.collision_body = pyggel.math3d.Sphere((0,0,0), 1)
 
+    def reset(self):
+        self.cur_hp = 100
+        self.weapons = {}
+        self.ammos = {"shotgun":25,
+                      "handgun":50}
+        self.kills = 0
+        self.cur_weapon = None
+
+        self.weapon_bucked = False
+        self.weapon_buck_back = 0
+        self.weapon_buck_twist = 0
+        self.weapon_changes = (0,0)
+        self.weapon_buck_done = True
+
+        self.weapon_bob_d = 0.002
+        self.weapon_bob_up = 0
+        self.weapon_bob_rd = -0.2
+        self.weapon_bob_rot = 0
+        self.weapon_bob_count = 20
+
+        self.game_hud.update_ammo(0)
+        self.game_hud.update_weapon("None")
+        self.game_hud.update_hp(100)
+
     def add_weapon(self, scene, wep_type, mesh):
         self.weapons[wep_type] = mesh
         self.swap_weapon(scene, wep_type)

@@ -86,6 +86,14 @@ def play_level(level, player_data):
                 game_hud.visible = False
                 scene.render(camera) #make sure we only pick the center!
                 return ["next", transition_buffer]
+            else:
+                #TODO: hack
+                #this won't return win - only when you finish talking to chicken do you win!
+                scene.render_buffer = transition_buffer
+                scene.pick = False
+                game_hud.visible = False
+                scene.render(camera) #make sure we only pick the center!
+                return ["win", transition_buffer]
 
         pyggel.view.clear_screen()
 
@@ -101,7 +109,11 @@ def play_level(level, player_data):
         #Now events!
         event.update()
         if K_ESCAPE in event.keyboard.hit:
-            return ["menu"]
+            scene.render_buffer = transition_buffer
+            scene.pick = False
+            game_hud.visible = False
+            scene.render(camera) #make sure we only pick the center!
+            return ["menu", transition_buffer]
         if event.quit:
             return ["quit"]
 
@@ -172,6 +184,13 @@ def play_level(level, player_data):
                 if i.collision_body.collide(player_data.collision_body):
                     i.dead_remove_from_scene = True
                     player_data.hit(i.damage)
+
+        if player_data.cur_hp <= 0:
+            scene.render_buffer = transition_buffer
+            scene.pick = False
+            game_hud.visible = False
+            scene.render(camera) #make sure we only pick the center!
+            return ["death", transition_buffer]
 
         for i in baddies:
             shot = i.update(camera.get_pos(), level_data)
@@ -260,11 +279,14 @@ def main():
 
     core_menu = Menu()
     core_story_menu = StoryMenu()
+    core_death_menu = DeathMenu()
+    core_win_menu = WinMenu()
 
     while 1:
         pyggel.view.set_title("Chickenstein - Team [insert name] - Pyweek #9")
         if mode == "menu":
             level = 1
+            pData.reset()
             retval = core_menu.run()
             command = retval[0]
         elif mode == "game":
@@ -272,6 +294,12 @@ def main():
             command = retval[0]
         elif mode == "story":
             retval = core_story_menu.run()
+            command = retval[0]
+        elif mode == "death":
+            retval = core_death_menu.run()
+            command = retval[0]
+        elif mode == "win":
+            retval = core_win_menu.run()
             command = retval[0]
 
         if command == "menu":
@@ -284,8 +312,19 @@ def main():
         if command == "play":
             mode = "game"
             level = 1
+            pData.reset()
         if command == "next":
             mode = "game"
             do_transition(retval[1])
             level += 1
             continue
+        if command == "win":
+            mode = "win"
+            do_transition(retval[1])
+            level = 1
+            pData.reset()
+        if command == "death":
+            mode = "death"
+            do_transition(retval[1])
+            level = 1
+            pData.reset()
