@@ -28,8 +28,9 @@ class Hud(pyggel.scene.BaseSceneObject):
                   "pyramid":("A badguy (Level 2)", "- shoot it!"),
                   "dpyramid":("A badguy (Level 3)", "- shoot it!"),
                   "cube":("A badguy (Level 4)", "- shoot it!"),
-                  "sphere":("A boss (Level 10)", "- watch out O_O"),
-                  "ellipsoid":("A boss (Level 15)", "- umm.. run?")}
+                  "sphere":("An enforcer (Level 5)", "- watch out O_O"),
+                  "ellipsoid":("An enforcer (Level 6)", "careful there!"),
+                  "boss":("A boss (Level 10)", "The Controller - kill him!")}
         for i in colors:
             for x in shapes:
                 self.hover_status[i+"//"+x] = self.font.make_text_image(shapes[x][0]+" ("+colors[i]+") "+shapes[x][1])

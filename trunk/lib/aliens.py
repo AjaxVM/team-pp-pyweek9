@@ -6,14 +6,18 @@ import random, math
 
 class AlienShot(pyggel.scene.BaseSceneObject):
     obj = None
-    def __init__(self, pos, rotation, color, level_data):
+    def __init__(self, pos, rotation, color, level_data, far=False):
         if not AlienShot.obj:
             AlienShot.obj = pyggel.image.Image3D(data.image_path("flash.png"))
         pyggel.scene.BaseSceneObject.__init__(self)
 
         self.collision_body = pyggel.math3d.AABox(pos, 0.15)
 
-        self.pos = pyggel.math3d.move_with_rotation(pos, rotation, -1.25)
+        if far:
+            dis = -3.5
+        else:
+            dis = -1.25
+        self.pos = pyggel.math3d.move_with_rotation(pos, rotation, dis)
         self.rotation = rotation
         self.level_data = level_data
         self.color = color
@@ -69,6 +73,8 @@ class Alien(pyggel.scene.BaseSceneObject):
             Alien.objs["ellipsoid"].scale = 1,2,1
             Alien.objs["pyramid"] = pyggel.geometry.Pyramid(2)
             Alien.objs["dpyramid"] = pyggel.geometry.DoublePyramid(2)
+            Alien.objs["boss"] = pyggel.geometry.DoublePyramid(5)
+            Alien.objs["boss"].scale = 1,0.5,1
             Alien.texs.append(pyggel.data.Texture(data.image_path("alien_face1.png")))
         pyggel.scene.BaseSceneObject.__init__(self)
 
@@ -79,7 +85,10 @@ class Alien(pyggel.scene.BaseSceneObject):
         self.kind = kind
         self.color = random.choice(((1,1,0.25,1), (0,1,0,1), (0,0,1,1)))
 
-        self.collision_body = pyggel.math3d.AABox(self.pos, 1.5)
+        if self.kind == "boss":
+            self.collision_body = pyggel.math3d.AABox(self.pos, 3.5)
+        else:
+            self.collision_body = pyggel.math3d.AABox(self.pos, 1.5)
 
         self.got_hit = False
         self.hit_grow = True
@@ -87,10 +96,11 @@ class Alien(pyggel.scene.BaseSceneObject):
         self.hit_scale_inc = 0.1
         all_hp = {"quad":4,
                   "pyramid":6,
-                  "dpyramid":9,
-                  "cube":14,
-                  "sphere":30,
-                  "ellipsoid":40}
+                  "dpyramid":8,
+                  "cube":10,
+                  "sphere":15,
+                  "ellipsoid":20,
+                  "boss":40}
 
         self.hp = all_hp[self.kind]
         self.dead = False
@@ -174,9 +184,14 @@ class Alien(pyggel.scene.BaseSceneObject):
 
         if self.noticed and self.stored_LOS:
             self.shot_count += 1
-            if self.shot_count >= 75:
+            if self.kind == "boss" and self.shot_count >= 50:
                 self.shot_count = 0
-                return AlienShot(self.pos, (0,angle,0), self.color, level_data)
+                return [AlienShot(self.pos, (0,angle+random.randint(-4,4),0),
+                                  random.choice(((1,1,0.25,1), (0,1,0,1), (0,0,1,1))),
+                                  level_data, True) for i in xrange(5)]
+            elif self.shot_count >= 75:
+                self.shot_count = 0
+                return [AlienShot(self.pos, (0,angle,0), self.color, level_data)]
         else:
             self.shot_count = 45
 

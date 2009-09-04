@@ -22,7 +22,8 @@ def play_level(level, player_data):
     scene.pick = True
     scene.add_light(light)
 
-    static, dynamic, baddies, feathers, camera_pos, fog_color, tile_set, level_data, tsize = get_geoms(level)
+    (static, dynamic, baddies, feathers, camera_pos,
+     fog_color, tile_set, level_data, tsize, last_level) = get_geoms(level)
     shots = []
     badshots = []
     camera.set_pos(camera_pos)
@@ -74,11 +75,11 @@ def play_level(level, player_data):
         if have_feathers == len(feathers): #next round
             good = True
             for i in baddies:
-                if i.kind in ("sphere", "ellipsoid"):
+                if i.kind == "boss":
                     if i in scene.graph.render_3d:
                         good = False
                         break
-            if good:
+            if good and (not last_level):
                 scene.render_buffer = transition_buffer
                 scene.pick = False
                 game_hud.visible = False
@@ -176,7 +177,8 @@ def play_level(level, player_data):
             if i.dead_remove_from_scene:
                 baddies.remove(i)
             if shot:
-                badshots.append(shot)
+                for x in shot:
+                    badshots.append(x)
                 scene.add_3d_blend(shot)
 
         if not game_hud.grab_events:

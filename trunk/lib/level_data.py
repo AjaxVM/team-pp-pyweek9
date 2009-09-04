@@ -169,6 +169,7 @@ def get_geoms(level):
     tile_set = "dungeon"
     fog_color = (1,1,1)
     map_grid = None
+    last_level = False
 
     camera_pos = (2,0,2)
 
@@ -182,6 +183,9 @@ def get_geoms(level):
             tile_set = val
         if com == "fog_color":
             fog_color = tuple(map(float, val.split(",")))
+        if com == "last_level":
+            if val in ("True", "true"):
+                last_level = True
         if com == "map":
             val = val.split()
             map_grid = val
@@ -223,13 +227,14 @@ def get_geoms(level):
                         possible_gun_locations.append((x, y, weights[cur]))
                     if cur == "$":
                         possible_boost_locations.append((x, y))
-                    if cur in ("1", "2", "3", "4", "5", "6"):
+                    if cur in ("1", "2", "3", "4", "5", "6", "7"):
                         weights = {"1":"quad",
                                    "2":"pyramid",
                                    "3":"dpyramid",
                                    "4":"cube",
                                    "5":"sphere",
-                                   "6":"ellipsoid"}
+                                   "6":"ellipsoid",
+                                   "7":"boss"}
                         baddies.append(Alien((x*tsize, 0, y*tsize), weights[cur]))
                     if cur == "@":
                         dynamic.append(Console((x*tsize, 0, y*tsize)))
@@ -253,4 +258,4 @@ def get_geoms(level):
             baddies, feathers,
             camera_pos,
             fog_color, tile_set,
-            l, tsize)
+            l, tsize, last_level)
