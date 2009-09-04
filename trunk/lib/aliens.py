@@ -151,11 +151,10 @@ class Alien(pyggel.scene.BaseSceneObject):
         return False
 
     def make_aware(self):
-        if not self.noticed:
-            self.game_hud.sfx.play_alien_alert()
-            self.noticed = True
-            for i in self.connected_to:
-                i.noticed = True
+        self.game_hud.sfx.play_alien_alert()
+        self.noticed = True
+        for i in self.connected_to:
+            i.noticed = True
 
     def picked(self):
         self.game_hud.set_hover_status("%s//%s//%s//%s"%(self.color[0],self.color[1],self.color[2],self.kind))
@@ -191,11 +190,13 @@ class Alien(pyggel.scene.BaseSceneObject):
             self.shot_count += 1
             if self.kind == "boss" and self.shot_count >= 50:
                 self.shot_count = 0
+                self.game_hud.sfx.alien_shoot()
                 return [AlienShot(self.pos, (0,angle+random.randint(-4,4),0),
                                   random.choice(((1,1,0.25,1), (0,1,0,1), (0,0,1,1))),
                                   level_data, True) for i in xrange(5)]
             elif self.shot_count >= 75:
                 self.shot_count = 0
+                self.game_hud.sfx.alien_shoot()
                 return [AlienShot(self.pos, (0,angle,0), self.color, level_data)]
         else:
             self.shot_count = 45

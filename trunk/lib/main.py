@@ -316,6 +316,8 @@ def main():
             retval = core_win_menu.run()
             command = retval[0]
 
+        pData.game_hud.sfx.reset()
+
         if command == "menu":
             mode = "menu"
         if command == "story":

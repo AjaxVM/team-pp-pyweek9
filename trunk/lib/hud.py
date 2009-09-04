@@ -13,18 +13,23 @@ class Hud(pyggel.scene.BaseSceneObject):
         pyggel.scene.BaseSceneObject.__init__(self)
 
         self.font = pyggel.font.Font()
+        self.big_font = pyggel.font.Font(None, 45)
         self.font.add_image("{health}", pyggel.image.Image(data.image_path("hp.png")))
         self.font.add_image("{ammo}", pyggel.image.Image(data.image_path("ammo.png")))
         self.font.add_image("{feather}", pyggel.image.Image(data.image_path("feather.png")))
 
+        self.big_font.add_image("{health}", pyggel.image.Image(data.image_path("hp.png")))
+        self.big_font.add_image("{ammo}", pyggel.image.Image(data.image_path("ammo.png")))
+        self.big_font.add_image("{feather}", pyggel.image.Image(data.image_path("feather.png")))
+
         self.hover_status = {}
-        self.hover_status["door"] = self.font.make_text_image("Door - face and move next to it to open")
-        self.hover_status["feather"] = self.font.make_text_image("A feather! Get close to it and Right-click to take")
-        self.hover_status["shotgun"] = self.font.make_text_image("A shotgun! Better grab that - Right-click to take")
-        self.hover_status["handgun"] = self.font.make_text_image("A handgun, better than nothing - Right-click to take")
-        self.hover_status["hp"] = self.font.make_text_image("A +20 {health} pack! Right-click to take")
-        self.hover_status["ammo"] = self.font.make_text_image("A +25 {ammo} pack! Right-click to take")
-        self.hover_status["starting_console"] = self.font.make_text_image("Alien Console - move to and Right-click to use!")
+        self.hover_status["door"] = self.font.make_text_image("Door - face and move next to it to open", color=(0,0,0,1))
+        self.hover_status["feather"] = self.font.make_text_image("A feather! Get close to it and Right-click to take", color=(0,0,0,1))
+        self.hover_status["shotgun"] = self.font.make_text_image("A shotgun! Better grab that - Right-click to take", color=(0,0,0,1))
+        self.hover_status["handgun"] = self.font.make_text_image("A handgun, better than nothing - Right-click to take", color=(0,0,0,1))
+        self.hover_status["hp"] = self.font.make_text_image("A +20 {health} pack! Right-click to take", color=(0,0,0,1))
+        self.hover_status["ammo"] = self.font.make_text_image("A +25 {ammo} pack! Right-click to take", color=(0,0,0,1))
+        self.hover_status["starting_console"] = self.font.make_text_image("Alien Console - move to and Right-click to use!", color=(0,0,0,1))
 
         colors = {"1//1//0.25":"fast",
                   "0//1//0":"high damage",
@@ -42,14 +47,15 @@ class Hud(pyggel.scene.BaseSceneObject):
 
         self.cur_text = None
 
-        self.feathers = self.font.make_text_image("{feather} 0/3")
+        self.feathers = self.big_font.make_text_image("{feather} 0/3", color=(0,0,0,1))
         self.feathers.pos = (10, 5)
 
-        self.hp = self.font.make_text_image("{health} 100")
+        self.hp = self.big_font.make_text_image("{health} 100", color=(0,0,0,1))
         self.hp.pos = (130, 5)
-        self.weapon = self.font.make_text_image("Weapon: None")
-        self.weapon.pos = (250, 5)
-        self.ammo = self.font.make_text_image("{ammo} 100")
+        self.weapon = self.font.make_text_image("Weapon: None", color=(0,0,0,1))
+        self.weapon.pos = (260, 10)
+        self.weapon.scale = (1,1.5,1)
+        self.ammo = self.big_font.make_text_image("{ammo} 100", color=(0,0,0,1))
         self.ammo.pos = (505, 5)
 
         self.event_handler = pyggel.event.Handler()

@@ -84,6 +84,8 @@ class SFX(object):
             self.human_weapons[i] = xx
             self.all_sounds.extend(xx)
 
+        self.alien_shot = SoundWrapper(data.character_sound_path("gun", "alien-lazer.wav"))
+
     def play_walk(self):
         if not self.player_walk.running:
             self.player_walk.play()
@@ -117,13 +119,16 @@ class SFX(object):
         if self.alien_one_playing and not self.alien_one_playing.running:
             self.alien_one_playing = None
         if not self.alien_one_playing:
-            self.alien_one_playing = random.choice(self.alien_alert_sounds)
+            self.alien_one_playing = random.choice(self.alien_chatter_sounds)
             self.alien_one_playing.play()
 
     def player_shoot(self, kind):
         s = random.choice(self.human_weapons[kind])
         if not s.running:
             s.play()
+
+    def alien_shoot(self):
+        self.alien_shot.play()
 
     def reset(self):
         for i in self.all_sounds:
