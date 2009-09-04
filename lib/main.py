@@ -68,7 +68,7 @@ def play_level(level, player_data):
 
     while 1:
         clock.tick(999)
-        pyggel.view.set_title("FPS: %s"%clock.get_fps())
+        pyggel.view.set_title("Chickenstein - Team [insert name] - Pyweek #9 - FPS: %s"%clock.get_fps())
 
         #Render first, since picking is done at this time, and we need that later!
 
@@ -261,6 +261,7 @@ def main():
     core_story_menu = StoryMenu()
 
     while 1:
+        pyggel.view.set_title("Chickenstein - Team [insert name] - Pyweek #9")
         if mode == "menu":
             level = 1
             retval = core_menu.run()
