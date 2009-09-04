@@ -39,7 +39,7 @@ dungeon
 //| - is a horizontal door
 //$ - is a possible boost item (health, ammo, etc.) location
 //a,b,c,d,e - handgun, shotgun, chaingun, lightning gun, plasma gun
-//1,2,3,4,5,6 - are locations for different kinds of units (5,6 being bosses)
+//1,2,3,4,5,6,7 - are locations for different kinds of units (7 being boss)
 //	0 being the boss, and others being whatever, if needed
 //* - is the players start location
 //% - is the final "win" goal - will only appear once there are no more boss baddies on this level
@@ -54,3 +54,5 @@ dungeon
 //   ##       #
 //
 //For badguys to group they must starting out touching, they must be on adjacent tiles (diagonal accepted)
+//
+//If last_level, set last_level to True
