@@ -151,9 +151,11 @@ class Alien(pyggel.scene.BaseSceneObject):
         return False
 
     def make_aware(self):
-        self.noticed = True
-        for i in self.connected_to:
-            i.noticed = True
+        if not self.noticed:
+            self.game_hud.sfx.play_alien_alert()
+            self.noticed = True
+            for i in self.connected_to:
+                i.noticed = True
 
     def picked(self):
         self.game_hud.set_hover_status("%s//%s//%s//%s"%(self.color[0],self.color[1],self.color[2],self.kind))
@@ -176,6 +178,9 @@ class Alien(pyggel.scene.BaseSceneObject):
         if self.sLOS_count >= 30:
             self.stored_LOS = self.LOS_to(player_pos, level_data, angle)
             self.sLOS_count = 0
+            if self.stored_LOS:
+                if random.randint(0,1):
+                    self.game_hud.sfx.play_alien_chatter()
 
         if (not self.noticed):
             if pyggel.math3d.get_distance(player_pos, self.pos) < level_data.tsize * 7:

@@ -34,6 +34,8 @@ class SFX(object):
 
         alien_alert = (("alien", "alien-alert1.wav"), ("alien", "alien-alert2.wav"),
                        ("alien", "alien-alert3.wav"), ("alien", "alien-alert4.wav"))
+        alien_chatter = (("alien", "alien1.wav"), ("alien", "alien3.wav"),
+                         ("alien", "alien4.wav"), ("alien", "alien5.wav"))
         alien_boss = (("alien", "alien-sinister1.wav"), ("alien", "alien-sinister2.wav"),
                       ("alien", "alien-sinister3.wav"), ("alien", "alien-sinister4.wav"),
                       ("alien", "alien-sinister5.wav"))
@@ -60,6 +62,10 @@ class SFX(object):
         for i in alien_alert:
             self.alien_alert_sounds.append(SoundWrapper(data.character_sound_path(*i)))
             self.all_sounds.append(self.alien_alert_sounds[-1])
+        self.alien_chatter_sounds = []
+        for i in alien_chatter:
+            self.alien_chatter_sounds.append(SoundWrapper(data.character_sound_path(*i)))
+            self.all_sounds.append(self.alien_chatter_sounds[-1])
 
         self.alien_boss_sounds = []
         for i in alien_boss:
@@ -97,6 +103,22 @@ class SFX(object):
         else:
             self.player_one_playing = random.choice(self.player_hit_sounds)
             self.player_one_playing.play()
+
+    def play_alien_alert(self):
+        if self.alien_one_playing and not self.alien_one_playing.running:
+            self.alien_one_playing = None
+        if self.alien_one_playing in self.alien_chatter_sounds:
+            self.alien_one_playing.stop()
+        if not self.alien_one_playing:
+            self.alien_one_playing = random.choice(self.alien_alert_sounds)
+            self.alien_one_playing.play()
+
+    def play_alien_chatter(self):
+        if self.alien_one_playing and not self.alien_one_playing.running:
+            self.alien_one_playing = None
+        if not self.alien_one_playing:
+            self.alien_one_playing = random.choice(self.alien_alert_sounds)
+            self.alien_one_playing.play()
 
     def player_shoot(self, kind):
         s = random.choice(self.human_weapons[kind])
