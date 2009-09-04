@@ -60,7 +60,7 @@ def play_level(level, player_data):
     scene.pick = False
     game_hud.visible = False
     scene.render(camera) #make sure we only pick the center!
-    do_transition(transition_buffer, False)
+    do_transition(transition_buffer, player_data, False)
     game_hud.visible = True
     scene.pick = True
     scene.render_buffer = None
@@ -212,15 +212,19 @@ def play_level(level, player_data):
                     if isinstance(pick, Feather):
                         have_feathers += 1
                         scene.remove_3d(pick)
+                        game_hud.sfx.play_pickup_feather()
                         game_hud.update_feathers(have_feathers, len(feathers))
                     if isinstance(pick, Weapon):
                         scene.remove_3d(pick)
+                        game_hud.sfx.play_pickup_ammo()
                         player_data.add_weapon(scene, pick.name, pick.obj)
                     if isinstance(pick, HPBuff):
                         scene.remove_3d(pick)
+                        game_hud.sfx.play_pickup_hp()
                         player_data.boost_hp(20)
                     if isinstance(pick, AmmoBuff):
                         scene.remove_3d(pick)
+                        game_hud.sfx.play_pickup_ammo()
                         player_data.boost_ammo(25)
                     if isinstance(pick, Console):
                         game_hud.set_gui_app("console")
@@ -230,7 +234,8 @@ def play_level(level, player_data):
                     scene.add_3d(shot)
                     shots.append(shot)
 
-def do_transition(buf, out=True):
+def do_transition(buf, player_data, out=True):
+    player_data.game_hud.sfx.play_level_warp()
     pyggel.view.set_lighting(False) #for now...
     glClearColor(0,0,0,0)
     tex = buf.texture
@@ -334,16 +339,16 @@ def main():
             pData.reset()
         if command == "next":
             mode = "game"
-            do_transition(retval[1])
+            do_transition(retval[1], pData)
             level += 1
             continue
         if command == "win":
             mode = "win"
-            do_transition(retval[1])
+            do_transition(retval[1], pData)
             level = 1
             pData.reset()
         if command == "death":
             mode = "death"
-            do_transition(retval[1])
+            do_transition(retval[1], pData)
             level = 1
             pData.reset()

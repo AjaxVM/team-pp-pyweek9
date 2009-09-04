@@ -87,9 +87,19 @@ class SFX(object):
         self.alien_shot = SoundWrapper(data.character_sound_path("gun", "alien-lazer.wav"))
 
         self.door_open = SoundWrapper(data.sound_path("door-open.wav"))
+        self.level_warp = SoundWrapper(data.sound_path("levelwarp.wav"))
+
+        self.pickup_ammo = SoundWrapper(data.sound_path("pickup-ammo.wav"))
+        self.pickup_hp = SoundWrapper(data.sound_path("pickup-health.wav"))
+        self.pickup_feather = SoundWrapper(data.sound_path("pickup-feather.wav"))
 
         self.all_sounds.append(self.alien_shot)
         self.all_sounds.append(self.door_open)
+        self.all_sounds.append(self.level_warp)
+
+        self.all_sounds.append(self.pickup_ammo)
+        self.all_sounds.append(self.pickup_hp)
+        self.all_sounds.append(self.pickup_feather)
 
     def play_walk(self):
         if not self.player_walk.running:
@@ -101,6 +111,16 @@ class SFX(object):
     def open_door(self):
         if not self.door_open.running:
             self.door_open.play()
+
+    def play_level_warp(self):
+        self.level_warp.play()
+
+    def play_pickup_ammo(self):
+        self.pickup_ammo.play()
+    def play_pickup_hp(self):
+        self.pickup_hp.play()
+    def play_pickup_feather(self):
+        self.pickup_feather.play()
 
     def play_player_hit(self):
         if self.player_one_playing and not self.player_one_playing.running:
