@@ -237,13 +237,19 @@ def do_transition(buf, out=True):
         scale = 0
     rot = 0
 
-    for i in xrange(500):
+    clock = pygame.time.Clock()
+    duration = 1.25
+    frames = 30
+    dif = int(frames*duration)
+
+    for i in xrange(dif):
+        clock.tick(30)
         if out:
-            scale -= 1.1/500
-            rot += 360.0/500
+            scale -= 1.1/dif
+            rot += 360.0/dif
         else:
-            scale += 1.1/500
-            rot -= 360.0/500
+            scale += 1.1/dif
+            rot -= 360.0/dif
         pyggel.view.set3d()
         pyggel.view.clear_screen()
 
