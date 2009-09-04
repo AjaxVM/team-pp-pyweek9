@@ -10,6 +10,7 @@ from weapons import *
 from buffs import *
 from aliens import *
 from player import *
+from menus import *
 
 def play_level(level, player_data):
     camera = pyggel.camera.LookFromCamera((10,0,10))
@@ -97,8 +98,10 @@ def play_level(level, player_data):
 
         #Now events!
         event.update()
-        if K_ESCAPE in event.keyboard.hit or event.quit:
-            return ["back"]
+        if K_ESCAPE in event.keyboard.hit:
+            return ["menu"]
+        if event.quit:
+            return ["quit"]
 
         if not game_hud.grab_events:
             if event.mouse.motion[0]:
@@ -250,14 +253,30 @@ def main():
     pData = PlayerData(hud.Hud())
 
     level = 1
+    mode = "menu"
+
+    core_menu = Menu()
 
     while 1:
-        retval = play_level(level, pData)
-        command = retval[0]
-        if command == "back":
+        if mode == "menu":
+            level = 1
+            retval = core_menu.run()
+            command = retval[0]
+            print command
+        elif mode == "game":
+            retval = play_level(level, pData)
+            command = retval[0]
+
+        if command == "menu":
+            mode = "menu"
+        if command == "quit":
             pyggel.quit()
             return None
+        if command == "play":
+            mode = "game"
+            level = 1
         if command == "next":
+            mode = "game"
             do_transition(retval[1])
             level += 1
             continue
