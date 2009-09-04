@@ -60,31 +60,33 @@ class Hud(pyggel.scene.BaseSceneObject):
         #   app.update_fonts(self.core_fonts)
 
         intro_qa = [("Hmm, this looks like a radio...\nmy nerves are fried...\nmaybe they have country 122.3 here...","<Hit some buttons>"),
-                   ("BZZT... Squad 4 to sector 12...\numm sir, there's someone else on the line!?!?", "...uhm, oops..."),
-                   ("Sir! Communication is coming from the alien mother-ship!\nWHAT!? How'd they get this channel?", "...umm, hi? I'm no alien..."),
+                   ("BZZT... Squad 4 to sector 12...\numm sir, there's someone else on the line!!\n"+\
+                    "Communication is coming from the alien mother-ship!", "...uhm, oops... I'm not an alien..."),
                    ("Of course you're not an alien, they can't speak...\nidentify yourself then...", "I'm Farmer Bob"),
-                   ("Oh. I see - is your chicken there?", "My chicken?!?!"),
-                   ("*sigh* Yes, your chicken. Is he there?", "Erm, no, actually, there was this crop-circle\nand he went in just before I got there"),
-                   ("Ok, let's take this slow for you.\nWe're at war with a race of extra-dimensional aliens.", "<continue>"),
-                   ("They can't completely fit into our dimension,\ninstead they have to confine themselves\nto geometric shapes.", "<continue>"),
-                   ("Your chicken is an advanced mutated commando,\nand was fowl-napped while investigating\nthat crop-circle.", "<continue>"),
-                   ("That crop circle was actually the outline of\nthe alien mothership.\nWe lost communication with Chicken\nshortly after he got on board.",
+                   ("Oh. I see - is your chicken there?", "My chicken?!?! umm, no..."),
+                   ("Ok, then I'd better explain.\nWe're at war with a race of extra-dimensional aliens.\n"+\
+                    "These aliens can't completely fit into our dimension,\ninstead they have to confine themselves\nto geometric shapes.",
                     "<continue>"),
-                   ("Now that that is out of the way,\nwe can proceed to explain your mission.", "My WHAT?!?!"),
-                   ("Your mission, please pay attention.", "*whispers* should have stayed home...")]
+                   ("Your chicken is an advanced mutated commando,\nand was fowl-napped while investigating\nthat crop-circle.\n"+\
+                    "Oh, btw - that crop circle was actually\nthe outline of the alien mothership.\n"+\
+                    "Anyway, we lost communication with Chicken\nshortly after he got on board.\nok...\n"+\
+                    "Now to explain your mission.",
+                    "My WHAT?!?!"),
+                   ("Your mission, please pay attention.", "*whispers* should have stayed in the house...")]
         cont_qa = [("Your objectives are simple, destroy the alien ship\nand rescue Chicken.",
                     "Blow the ship? How am I supposed to do that?"),
-                   ("The ship is controlled by one very powerful alien,\nChicken will probably be kept near him.", "ok, that makes sense..."),
-                   ("Once the alien controlled is killed,\nthe ship will lose control\nand start falling apart.","Wow, that sounds pretty easy"),
-                   ('"Easier said than done" could never be more true,\nthe controller is exceedinly strong.',"Umm, then how am I supposed to kill it?"),
+                   ("The ship is controlled by one very powerful alien,\nChicken will probably be kept near him.\n"+\
+                    "Once the alien controller is dead,\nthe ship will lose control and start falling apart.",
+                    "Wow, that sounds pretty easy..."),
+                   ('"Easier said than done" could never be more true,\nthe controller is exceedinly strong.',
+                    "Umm, then how am I supposed to kill it?"),
                    ("Chicken had several weapons when he entered the ship,\nand would not have gone down without a fight.\n"+\
-                    "He probably dropped weapons throughout the ship.", "Why didn't the aliens take them?"),
-                   ("As far as we can tell they\nreally don't understand our weapons\nand thus, to them, they are just object to ignore.",
+                    "He probably dropped weapons throughout the ship.\nLuckily, the aliens don't understand\n"+\
+                    "the concept of our weapons, and probably ignored them.",
                     "Nice, an enemy even dumber than me!\nSo how do I find Chicken and the controller?"),
                    ("Ahem, Chicken probably lost a few feathers\nfighting his captors.\nFollow and collect them.\n"+\
                     "Once you have all the feathers in an area\na teleporter chip will be activated\nto the next level.",
                     "Interesting... anything else I should know?"),
-                   ("Well, the aliens shoot nasty energy beams,\nso avoid them if you can...", "Right, avoid energy beams... good idea..."),
                    ("That should be plenty - good luck Farmer!", "Then let's do this!\n...\nhey! wait a second\nwhy do I have to do this?"),
                    ("Because, we haven't managed to get a single\nsoldier onto that mother ship yet!\n"+\
                     "So, we aren't gonna let this opportunity\nescape us!\n"+\
