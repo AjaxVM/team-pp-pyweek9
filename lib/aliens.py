@@ -138,7 +138,7 @@ class Alien(pyggel.scene.BaseSceneObject):
                             i.connected_to.append(x)
 
     def LOS_to(self, topos, level_data, angle):
-        # this is probably your bug -- getting distance through the wall
+        # this is probably issue 15 -- getting distance through the wall
         # easy fix is take this out,  'proper' fix is to use some pathing alg to see if
         # they are just around a corner or well beyond a wall
         #if pyggel.math3d.get_distance(topos, self.pos) <= 5:
@@ -164,18 +164,23 @@ class Alien(pyggel.scene.BaseSceneObject):
         self.game_hud.set_hover_status("%s//%s//%s//%s"%(self.color[0],self.color[1],self.color[2],self.kind))
 
     def update(self, player_pos, level_data):
+        # disconnect with any killed peers -- probably to free up for garbage collection
         for i in self.connected_to:
             if i.dead_remove_from_scene:
                 self.connected_to.remove(i)
+
+        # spin model
         x, y, z = self.rotation
         y += 5
         self.rotation = x,y,z
         self.collision_body.set_pos(self.pos)
 
+        # rotate toward player
         x = player_pos[0] - self.pos[0]
         y = player_pos[2] - self.pos[2]
         angle = math.atan2(-y, x)
         angle = 90-(angle * 180.0)/math.pi
+
 
         self.sLOS_count += 1
         if self.sLOS_count >= 30:
@@ -190,18 +195,37 @@ class Alien(pyggel.scene.BaseSceneObject):
                 if self.stored_LOS:
                     self.make_aware()
 
+        # if noticed and have a line of sight
         if self.noticed and self.stored_LOS:
+            # increment shot counter
             self.shot_count += 1
+            
+            # move toward the player every X ticks
+            engage_distance = 10    # aliens stop moving toward you when they get this close
+            movement = 0.3         # movement speed of the aliens
+            if self.shot_count % 5 == 0 and math.hypot(player_pos[0]-self.pos[0], player_pos[2]-self.pos[2]) > engage_distance:
+                # move toward the player a little bit -- skip pathing  :)
+                # could inject bugs that get you stuck in walls though probably, depending
+                # on how the LOS raycast works
+                # should probably implement A* pathing when I have more time and have looked at how the level data works
+        
+                x,y,z = self.pos
+                self.pos = x - (math.cos(math.radians(angle+90)) * movement), y, z - (math.sin(math.radians(angle+90)) * movement)
+                self.collision_body.set_pos(self.pos)
+                
+            # boss shoots a little faster
             if self.kind == "boss" and self.shot_count >= 50:
                 self.shot_count = 0
                 self.game_hud.sfx.alien_shoot()
                 return [AlienShot(self.pos, (0,angle+random.randint(-4,4),0),
                                   random.choice(((1,1,0.25,1), (0,1,0,1), (0,0,1,1))),
                                   level_data, True) for i in xrange(5)]
+            # regular alien shot
             elif self.shot_count >= 75:
                 self.shot_count = 0
                 self.game_hud.sfx.alien_shoot()
                 return [AlienShot(self.pos, (0,angle,0), self.color, level_data)]
+
         else:
             self.shot_count = 45
 
