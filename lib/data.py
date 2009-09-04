@@ -7,7 +7,10 @@ def mesh_path(path):
     return os.path.join("data", "mesh", path)
 
 def sound_path(path):
-    return os.path.join("data", "image", path)
+    return os.path.join("data", "sound", path)
+
+def character_sound_path(char, path):
+    return os.path.join(sound_path(char), path)
 
 def level_path(path):
     return os.path.join("data", "level", path)
