@@ -202,6 +202,9 @@ def play_level(level, player_data):
                 for x in shot:
                     badshots.append(x)
                 scene.add_3d_blend(shot)
+            if i.collision_body.collide(player_data.collision_body):
+                player_data.hit(1)
+                i.hit(1)
 
         if not game_hud.grab_events:
             if "right" in event.mouse.hit:
