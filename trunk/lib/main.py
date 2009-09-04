@@ -274,6 +274,12 @@ def do_transition(buf, out=True):
 def main():
     pyggel.init()
     try:
+        i = pygame.image.load(data.image_path("chickenstein_logo_small.png"))
+        i.set_colorkey(i.get_at((0,0)), RLEACCEL)
+        pygame.display.set_icon(i)
+    except:
+        pass
+    try:
         pyggel.view.set_debug(False)
     except:
         print "Cannot disable debug, speed may be slower..."
