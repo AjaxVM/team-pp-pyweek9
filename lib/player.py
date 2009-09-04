@@ -38,6 +38,7 @@ class PlayerData(object):
     def hit(self, damage):
         self.cur_hp -= damage
         self.game_hud.update_hp(self.cur_hp)
+        self.game_hud.got_hit()
 
     def boost_hp(self, amount):
         self.cur_hp += amount

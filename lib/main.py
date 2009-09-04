@@ -50,7 +50,6 @@ def play_level(level, player_data):
 
     clock = pygame.time.Clock()
     event = game_hud.event_handler
-    game_hud.gui_inactive()
 
     player_data.swap_weapon(scene, player_data.cur_weapon)
     player_data.update_weapon(camera)
@@ -63,6 +62,8 @@ def play_level(level, player_data):
     game_hud.visible = True
     scene.pick = True
     scene.render_buffer = None
+
+    game_hud.reset()
 
     event.update() #so the camera doesn't wig out the first time...
 
