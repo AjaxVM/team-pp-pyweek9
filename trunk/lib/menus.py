@@ -21,9 +21,10 @@ class Menu(pyggel.scene.BaseSceneObject):
         pyggel.gui.Button(frame, "quit", callbacks=[self.set_quit])
 
         self.background_image = pyggel.image.Image(data.image_path("background_crop_circle.png"))
+        self.logo_image = pyggel.image.Image(data.image_path("chickenstein_logo.png"))
 
         self.scene = pyggel.scene.Scene()
-        self.scene.add_2d(self.background_image)
+        self.scene.add_2d((self.background_image, self.logo_image))
         self.scene.add_2d(self.app)
 
         self.have_event = False
@@ -82,9 +83,10 @@ class StoryMenu(pyggel.scene.BaseSceneObject):
         l.pos = (0,480-l.size[1])
 
         self.background_image = pyggel.image.Image(data.image_path("background_crop_circle.png"))
+        self.logo_image = pyggel.image.Image(data.image_path("chickenstein_logo.png"))
 
         self.scene = pyggel.scene.Scene()
-        self.scene.add_2d(self.background_image)
+        self.scene.add_2d((self.background_image, self.logo_image))
         self.scene.add_2d(self.app)
 
         self.have_event = False
