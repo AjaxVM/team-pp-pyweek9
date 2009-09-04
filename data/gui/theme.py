@@ -16,7 +16,7 @@
 "Label":{
     "font":"default",
     "text":"label...",
-    "background-image":"base2.png",
+    "background-image":"label_back.png",
     "font-color":(1,1,1,1),
     "font-color-inactive":(1,1,1,.5),
     "font-underline":False,

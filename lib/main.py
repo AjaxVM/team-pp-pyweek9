@@ -97,7 +97,7 @@ def play_level(level, player_data):
 
         #Now events!
         event.update()
-        if K_ESCAPE in event.keyboard.hit:
+        if K_ESCAPE in event.keyboard.hit or event.quit:
             return ["back"]
 
         if not game_hud.grab_events:

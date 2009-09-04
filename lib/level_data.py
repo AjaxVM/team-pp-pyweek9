@@ -16,7 +16,7 @@ class LevelData(object):
         self.width = len(data[0])
         self.tsize = tsize
 
-        self.collidable = ["#"]
+        self.collidable = ["#", "@"]
 
     def get_data_at(self, x, y):
         try:
