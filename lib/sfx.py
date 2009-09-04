@@ -86,6 +86,8 @@ class SFX(object):
             self.player_walk.stop()
 
     def play_player_hit(self):
+        if self.player_one_playing and not self.player_one_playing.running:
+            self.player_one_playing = None
         if self.player_one_playing in self.player_kill_sounds:
             self.player_one_playing.stop()
             self.player_one_playing = random.choice(self.player_hit_sounds)
