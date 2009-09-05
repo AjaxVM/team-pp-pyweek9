@@ -152,7 +152,7 @@ def play_level(level, player_data):
                 do_move = True
             if K_s in event.keyboard.active:
                 new = pyggel.math3d.move_with_rotation(new,
-                                                       (camera.rotx,camera.roty*-1, camera.rotz), -0.10*run_mod)
+                                                       (camera.rotx,camera.roty*-1, camera.rotz), -0.10)
                 future = pyggel.math3d.move_with_rotation(future,
                                                           (camera.rotx,camera.roty*-1, camera.rotz), -1.25)
                 do_move = True
@@ -160,7 +160,7 @@ def play_level(level, player_data):
             if K_a in event.keyboard.active:
                 new = pyggel.math3d.move_with_rotation(new,
                                                        (camera.rotx,camera.roty*-1+90, camera.rotz),
-                                                       0.10*run_mod)
+                                                       0.10)
                 future = pyggel.math3d.move_with_rotation(future,
                                                        (camera.rotx,camera.roty*-1+90, camera.rotz),
                                                        1.25)
@@ -168,7 +168,7 @@ def play_level(level, player_data):
             if K_d in event.keyboard.active:
                 new = pyggel.math3d.move_with_rotation(new,
                                                        (camera.rotx,camera.roty*-1-90, camera.rotz),
-                                                       0.10*run_mod)
+                                                       0.10)
                 future = pyggel.math3d.move_with_rotation(future,
                                                        (camera.rotx,camera.roty*-1-90, camera.rotz),
                                                        1.25)
