@@ -87,6 +87,8 @@ class SFX(object):
             self.all_sounds.extend(xx)
 
         self.alien_shot = SoundWrapper(data.character_sound_path("gun", "alien-lazer.wav"))
+        self.alien_hit = SoundWrapper(data.character_sound_path("alien", "alien-hit.wav"))
+        self.alien_die = SoundWrapper(data.character_sound_path("alien", "alien-die.wav"))
 
         self.door_open = SoundWrapper(data.sound_path("door-open.wav"))
         self.level_warp = SoundWrapper(data.sound_path("levelwarp.wav"))
@@ -99,6 +101,9 @@ class SFX(object):
         self.win_sound = SoundWrapper(data.character_sound_path("bob", "bob-win.wav"))
 
         self.all_sounds.append(self.alien_shot)
+        self.all_sounds.append(self.alien_hit)
+        self.all_sounds.append(self.alien_die)
+
         self.all_sounds.append(self.door_open)
         self.all_sounds.append(self.level_warp)
 
@@ -162,6 +167,11 @@ class SFX(object):
         else:
             self.player_one_playing = random.choice(self.player_hit_sounds)
             self.player_one_playing.play()
+
+    def play_alien_hit(self):
+        self.alien_hit.play()
+    def play_alien_die(self):
+        self.alien_die.play()
 
     def play_alien_alert(self):
         if self.alien_one_playing and not self.alien_one_playing.running:

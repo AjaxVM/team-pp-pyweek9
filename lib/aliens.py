@@ -234,11 +234,13 @@ class Alien(pyggel.scene.BaseSceneObject):
             self.shot_count = 45
 
     def hit(self, damage):
+        self.game_hud.sfx.play_alien_hit()
         self.make_aware()
         self.stored_LOS = True
         self.got_hit = True
         self.hp -= damage
         if self.hp <= 0:
+            self.game_hud.sfx.play_alien_die()
             self.dead = True
 
     def render(self, camera=None):
