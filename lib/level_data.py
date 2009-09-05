@@ -46,6 +46,9 @@ class VertDoor(pyggel.geometry.Cube):
                                          mirror=True)
         self.band.scale = (1.5,2,5)
         self.hide = False
+        self.opened = False
+
+        self.collision_body = pyggel.math3d.AABox(self.pos, size)
 
         self.off_height = 0
         self.orig_pos = _pos
@@ -73,6 +76,9 @@ class VertDoor(pyggel.geometry.Cube):
             self.off_height -= 0.1
         if self.off_height < 0:
             self.off_height = 0
+            self.opened = False
+        else:
+            self.opened = True
         if self.off_height > self.size-self.size/4:
             self.off_height = self.size-self.size/4
 
@@ -93,8 +99,11 @@ class HorzDoor(VertDoor, pyggel.geometry.Cube):
         self.band = pyggel.geometry.Cube(size/5, pos=(x,size/2,z),
                                          colorize=(0.75,0,0.75,1),
                                          texture=bar_tex, mirror=True)
+        self.collision_body = pyggel.math3d.AABox(self.pos, size)
+        
         self.band.scale = (5,2,1.5)
         self.hide = False
+        self.opened = False
 
         self.off_height = 0
         self.orig_pos = _pos
@@ -203,6 +212,8 @@ def get_geoms(level):
     map_grid = None
     last_level = False
 
+    doors = []
+
     chick = None
 
     camera_pos = (2,0,2)
@@ -246,8 +257,10 @@ def get_geoms(level):
                         static.append(cube)
                     if cur == "|":
                         dynamic.append(VertDoor(tsize, door_tex, (x*tsize, -tsize/11, y*tsize)))
+                        doors.append(dynamic[-1])
                     if cur == "_":
                         dynamic.append(HorzDoor(tsize, door_tex, (x*tsize, -tsize/11, y*tsize)))
+                        doors.append(dynamic[-1])
                     if cur == "*":
                         camera_pos = x*tsize, 0, y*tsize
                     if cur == "~":
@@ -278,10 +291,10 @@ def get_geoms(level):
         dynamic.append(Weapon((i[0]*tsize, 0, i[1]*tsize), i[2]))
     if possible_boost_locations:
         t = 0
-        for i in possible_boost_locations:
+        while possible_boost_locations:
             pick = random.choice(possible_boost_locations)
-            t = 1-t
             possible_boost_locations.remove(pick)
+            t = 1-t
             if t == 0: #health
                 dynamic.append(HPBuff((pick[0]*tsize, 0, pick[1]*tsize)))
             else:
@@ -294,4 +307,4 @@ def get_geoms(level):
             camera_pos,
             fog_color, tile_set,
             l, tsize, last_level,
-            chick)
+            chick, doors)

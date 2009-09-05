@@ -16,7 +16,7 @@ class AlienShot(pyggel.scene.BaseSceneObject):
         if far:
             dis = -3
         else:
-            dis = -0.5
+            dis = -1
         self.pos = pyggel.math3d.move_with_rotation(pos, rotation, dis)
         self.rotation = rotation
         self.level_data = level_data
@@ -28,13 +28,13 @@ class AlienShot(pyggel.scene.BaseSceneObject):
 
         if self.color == (1,1,0.25,1):
             self.damage = 2
-            self.speed = 8
+            self.speed = 3
         if self.color == (0,1,0,1):
             self.damage = 8
-            self.speed = 4
+            self.speed = 1
         if self.color == (0,0,1,1):
             self.damage = 4
-            self.speed = 6
+            self.speed = 2
 
     def render(self, camera=None):
         if self.scale_up:
@@ -47,7 +47,7 @@ class AlienShot(pyggel.scene.BaseSceneObject):
                 self.scale -= 0.5
             else:
                 self.scale = 0.25
-                self.pos = pyggel.math3d.move_with_rotation(self.pos, self.rotation, -1*self.speed)
+                self.pos = pyggel.math3d.move_with_rotation(self.pos, self.rotation, -.75*self.speed)
         if self.dead_remove_from_scene:
             return
         self.collision_body.set_pos(self.pos)

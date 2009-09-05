@@ -36,7 +36,7 @@ class PlayerData(object):
         self.weapon_bob_rot = 0
         self.weapon_bob_count = 20
 
-        self.collision_body = pyggel.math3d.Sphere((0,0,0), 1)
+        self.collision_body = pyggel.math3d.Sphere((0,0,0), 2)
 
     def next_weapon(self, scene):
         if self.weapons:

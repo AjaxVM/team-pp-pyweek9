@@ -24,7 +24,7 @@ def play_level(level, player_data):
 
     (static, dynamic, baddies, feathers, camera_pos,
      fog_color, tile_set, level_data, tsize, last_level,
-     chick) = get_geoms(level)
+     chick, doors) = get_geoms(level)
     shots = []
     badshots = []
     camera.set_pos(camera_pos)
@@ -201,6 +201,9 @@ def play_level(level, player_data):
         player_data.update_weapon(camera)
 
         for i in shots:
+            for x in doors:
+                if i.collision_body.collide(x.collision_body) and not x.opened:
+                    i.dead_remove_from_scene = True
             if i.dead_remove_from_scene:
                 shots.remove(i)
             else:
@@ -211,6 +214,9 @@ def play_level(level, player_data):
                         break
 
         for i in badshots:
+            for x in doors:
+                if i.collision_body.collide(x.collision_body) and not x.opened:
+                    i.dead_remove_from_scene = True
             if i.dead_remove_from_scene:
                 badshots.remove(i)
             else:
