@@ -96,6 +96,9 @@ class SFX(object):
         self.pickup_ammo = SoundWrapper(data.sound_path("pickup-ammo.wav"))
         self.pickup_hp = SoundWrapper(data.sound_path("pickup-health.wav"))
         self.pickup_feather = SoundWrapper(data.sound_path("pickup-feather.wav"))
+        self.no_ammo = SoundWrapper(data.sound_path("pickup-ammo.wav"))
+        self.no_ammo.obj.set_volume(0.25)
+        self.no_ammo.length *= 2
 
         self.loss_sound = SoundWrapper(data.character_sound_path("bob", "bob-fail.wav"))
         self.win_sound = SoundWrapper(data.character_sound_path("bob", "bob-win.wav"))
@@ -108,6 +111,7 @@ class SFX(object):
         self.all_sounds.append(self.level_warp)
 
         self.all_sounds.append(self.pickup_ammo)
+        self.all_sounds.append(self.no_ammo)
         self.all_sounds.append(self.pickup_hp)
         self.all_sounds.append(self.pickup_feather)
 
@@ -126,6 +130,10 @@ class SFX(object):
     def stop_walk(self):
         if self.player_walk.running:
             self.player_walk.stop()
+
+    def play_no_ammo(self):
+        if not self.no_ammo.running:
+            self.no_ammo.play()
 
     def play_loss(self):
         self.loss_sound.play()

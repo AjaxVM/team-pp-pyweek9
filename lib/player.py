@@ -254,3 +254,5 @@ class PlayerData(object):
                     return ChaingunShot(self.weapons[self.cur_weapon].pos,
                                        self.weapons[self.cur_weapon].rotation,
                                        level_data, scene)
+        else:
+            self.game_hud.sfx.play_no_ammo()
