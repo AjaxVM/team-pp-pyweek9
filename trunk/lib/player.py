@@ -205,6 +205,8 @@ class PlayerData(object):
                             -20-self.weapon_changes[1]+self.weapon_bob_rot)
 
     def fire(self, scene, level_data):
+        if not self.cur_weapon:
+            return
         if self.ammos[self.cur_weapon]:
             if self.cur_weapon == "shotgun":
                 if self.weapon_buck_done: #other types maybe don't need this

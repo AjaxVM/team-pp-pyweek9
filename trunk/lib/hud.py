@@ -90,8 +90,7 @@ class Hud(pyggel.scene.BaseSceneObject):
                    ("Your mission, please pay attention.", "*whispers* should have stayed in the house...")]
         cont_qa = [("Your objectives are simple, destroy the alien ship\nand rescue Chicken.",
                     "Blow the ship? How am I supposed to do that?"),
-                   ("The ship is controlled by one very powerful alien,\nChicken will probably be kept near him.\n"+\
-                    "Once the alien controller is dead,\nthe ship will lose control and start falling apart.",
+                   ("Chicken will know what to do...",
                     "Wow, that sounds pretty easy..."),
                    ('"Easier said than done" could never be more true,\nthe controller is exceedinly strong.',
                     "Umm, then how am I supposed to kill it?"),
@@ -107,14 +106,29 @@ class Hud(pyggel.scene.BaseSceneObject):
                     "So, we aren't gonna let this opportunity\nescape us!\n"+\
                     "Not to mention, you and Chicken\nare linked... somehow.\nGood luck soldier.", "ok... better get moving...")]
 
+        chick_qa = [("Ahh, you did find my trail of\nfeathers then!","Umm, yes - nice to see you too"),
+                   ("Of course...\nthank you for rescuing me", "...uhm, no problem..."),
+                   ("OK, well then, let's blow this joint!", "Yeah, oh wait..."),
+                   ("What?", "The commander guy said the ship would\nfall apart once the controller\nwas killed"),
+                   ("Yes... well, he was incorrect...\nbut no problem...\nI've already laid some charges...", "How - weren't you captured?"),
+                   ("Haha - yes, but I escaped once\nyou came in and started shooting\n"+\
+                    "and laid the charges as you fought...", "I didn't see you..."),
+                   ("You never saw me training either...\nnot surprising you missed me\nin the heat of battle", "Oh... right..."),
+                    ("Alrighty then, let's go home, Farmer...", "<continue>")]
+
         self.console_app_discussions_intro = intro_qa + cont_qa
         self._console_swap_point = len(intro_qa)
         self.console_last_index = 0
         self._console_repeat_stor = {} #so we don't have this issue again!
 
+        self.chick_app_discussions = chick_qa
+        self.chick_last_index = 0
+        self.played_chick = False
+
         self.active_app = None
 
-        self.app_binding = {"console":self.console_app_discussions_intro[0]}
+        self.app_binding = {"console":self.console_app_discussions_intro[0],
+                            "chicken":self.chick_app_discussions[0]}
         self.grab_events = False
 
 
@@ -174,6 +188,29 @@ class Hud(pyggel.scene.BaseSceneObject):
             self.console_last_index = self._console_swap_point
             self.gui_inactive()
 
+    def _set_active_app_internal_chick_next(self):
+        app = self.chick_last_index
+        if app < len(self.chick_app_discussions):
+            self.chick_last_index += 1
+
+            label = self.chick_app_discussions[app]
+
+            app = pyggel.gui.App(self.event_handler)
+            app.theme = self.core_theme
+            app.update_fonts(self.core_fonts)
+            app.packer.packtype = "center"
+            pyggel.gui.Label(app, label[0], font_color=(0,0,0,1), font_color_inactive=(0,0,0,1))
+            pyggel.gui.NewLine(app)
+
+            pyggel.gui.Button(app, label[1], callbacks=[lambda:self._set_active_app_internal_chick_next()])
+
+            self.active_app = app
+            app.activate()
+        else:
+            self.console_last_index = 0
+            self.gui_inactive()
+            self.played_chick = True
+
     def gui_inactive(self):
         pygame.event.set_grab(1)
         pygame.mouse.set_visible(0)
@@ -193,11 +230,12 @@ class Hud(pyggel.scene.BaseSceneObject):
             if name == "console":
                 self._set_active_app_internal_cadi_next()
                 self.gui_active()
+            elif name == "chicken":
+                self._set_active_app_internal_chick_next()
             else:
                 self.active_app = self.app_binding[name]
-                self.gui_active()
+            self.gui_active()
         else:
-            print name, "not in bindings!"
             self.gui_inactive()
 
     def set_hover_status(self, text):

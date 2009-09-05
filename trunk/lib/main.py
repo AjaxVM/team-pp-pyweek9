@@ -94,16 +94,17 @@ def play_level(level, player_data):
                 scene.render(camera) #make sure we only pick the center!
                 return ["next", transition_buffer]
             elif good:
-##                #TODO: hack
-##                #this won't return win - only when you finish talking to chicken do you win!
-##                pyggel.view.clear_screen()
-##                scene.render_buffer = transition_buffer
-##                scene.pick = False
-##                game_hud.visible = False
-##                scene.render(camera) #make sure we only pick the center!
-##                return ["win", transition_buffer]
                 if not chick in scene.graph.render_3d:
                     scene.add_3d(chick)
+
+        if game_hud.played_chick:
+            game_hud.played_chick = False #in case they replay!
+            pyggel.view.clear_screen()
+            scene.render_buffer = transition_buffer
+            scene.pick = False
+            game_hud.visible = False
+            scene.render(camera) #make sure we only pick the center!
+            return ["win", transition_buffer]
 
         pyggel.view.clear_screen()
 
@@ -259,6 +260,8 @@ def play_level(level, player_data):
                         player_data.boost_ammo()
                     if isinstance(pick, Console):
                         game_hud.set_gui_app("console")
+                    if isinstance(pick, Chicken):
+                        game_hud.set_gui_app("chicken")
             if "left" in event.mouse.active:
                 shot = player_data.fire(scene, level_data)
                 if shot:
