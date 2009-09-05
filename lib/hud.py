@@ -27,6 +27,7 @@ class Hud(pyggel.scene.BaseSceneObject):
         self.hover_status["feather"] = self.font.make_text_image("A feather! Get close to it and Right-click to take", color=(0,0,0,1))
         self.hover_status["shotgun"] = self.font.make_text_image("A shotgun! Better grab that - Right-click to take", color=(0,0,0,1))
         self.hover_status["handgun"] = self.font.make_text_image("A handgun, better than nothing - Right-click to take", color=(0,0,0,1))
+        self.hover_status["plasma gun"] = self.font.make_text_image("A plasma gun, same energy as the aliens use! - Right-click", color=(0,0,0,1))
         self.hover_status["hp"] = self.font.make_text_image("A +20 {health} pack! Right-click to take", color=(0,0,0,1))
         self.hover_status["ammo"] = self.font.make_text_image("A +25 {ammo} pack! Right-click to take", color=(0,0,0,1))
         self.hover_status["starting_console"] = self.font.make_text_image("Alien Console - move to and Right-click to use!", color=(0,0,0,1))

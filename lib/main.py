@@ -244,8 +244,7 @@ def play_level(level, player_data):
             if "left" in event.mouse.active:
                 shot = player_data.fire(scene, level_data)
                 if shot:
-                    game_hud.sfx.player_shoot(player_data.cur_weapon)
-                    scene.add_3d(shot)
+                    scene.add_3d_blend(shot)
                     shots.append(shot)
 
 def do_transition(buf, player_data, out=True):
