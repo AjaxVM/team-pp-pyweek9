@@ -11,12 +11,12 @@ class AlienShot(pyggel.scene.BaseSceneObject):
             AlienShot.obj = pyggel.image.Image3D(data.image_path("flash.png"))
         pyggel.scene.BaseSceneObject.__init__(self)
 
-        self.collision_body = pyggel.math3d.AABox(pos, 0.15)
+        self.collision_body = pyggel.math3d.Sphere(pos, 1)
 
         if far:
-            dis = -3.5
+            dis = -3
         else:
-            dis = -1.25
+            dis = -0.5
         self.pos = pyggel.math3d.move_with_rotation(pos, rotation, dis)
         self.rotation = rotation
         self.level_data = level_data

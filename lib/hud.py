@@ -136,6 +136,9 @@ class Hud(pyggel.scene.BaseSceneObject):
 
         #for 3d sounds...
         self.sfx = sfx.SFX()
+        self.blink_count = 0
+        self.blink_ammo = False
+        self.blink_hp = False
 
     def reset(self):
         self.ouch_image.colorize = (1,1,1,0)
@@ -205,11 +208,23 @@ class Hud(pyggel.scene.BaseSceneObject):
             self.feathers.text = text
 
     def update_hp(self, amount):
+        if amount <= 20:
+            self.blink_hp = True
+            self.hp.color = (1,0,0,1)
+        else:
+            self.blink_hp = False
+            self.hp.color = (0,0,0,1)
         text = "{health} %s"%amount
         if not self.hp.text == text:
             self.hp.text = text
 
     def update_ammo(self, amount):
+        if amount <= 10:
+            self.blink_ammo = True
+            self.ammo.color = (1,0,0,1)
+        else:
+            self.blink_ammo = False
+            self.ammo.color = (0,0,0,1)
         text = "{ammo} %s"%amount
         if not self.ammo.text == text:
             self.ammo.text = text
@@ -225,6 +240,22 @@ class Hud(pyggel.scene.BaseSceneObject):
             self.active_app.render()
 
         else:
+            self.blink_count += 1
+            if self.blink_count >= 15:
+                self.blink_count = 0
+            if self.blink_count >= 5:
+                blink = True
+            else:
+                blink = False
+
+            if self.blink_ammo:
+                self.ammo.visible = blink
+            else:
+                self.ammo.visible = True
+            if self.blink_hp:
+                self.hp.visible = blink
+            else:
+                self.hp.visible = True
             a,b,c,d = self.ouch_image.colorize
             if d <= 0:
                 d = 0
@@ -247,9 +278,11 @@ class Hud(pyggel.scene.BaseSceneObject):
                 self.target.render()
 
             self.feathers.render()
-            self.hp.render()
+            if self.hp.visible:
+                self.hp.render()
+            if self.ammo.visible:
+                self.ammo.render()
             self.weapon.render()
-            self.ammo.render()
 
             if self.paused.visible:
                 self.paused.render()
