@@ -83,7 +83,7 @@ class Hud(pyggel.scene.BaseSceneObject):
                     "<continue>"),
                    ("Your chicken is an advanced mutated commando,\nand was fowl-napped while investigating\nthat crop-circle.\n"+\
                     "Oh, btw - that crop circle was actually\nthe outline of the alien mothership.\n"+\
-                    "Anyway, we lost communication with Chicken\nshortly after he got on board.\nok...\n"+\
+                    "Anyway, we lost communication with Chicken\nshortly after she got on board.\nok...\n"+\
                     "Now to explain your mission.",
                     "My WHAT?!?!"),
                    ("Your mission, please pay attention.", "*whispers* should have stayed in the house...")]
@@ -94,11 +94,11 @@ class Hud(pyggel.scene.BaseSceneObject):
                     "Wow, that sounds pretty easy..."),
                    ('"Easier said than done" could never be more true,\nthe controller is exceedinly strong.',
                     "Umm, then how am I supposed to kill it?"),
-                   ("Chicken had several weapons when he entered the ship,\nand would not have gone down without a fight.\n"+\
-                    "He probably dropped weapons throughout the ship.\nLuckily, the aliens don't understand\n"+\
+                   ("Chicken had several weapons when she entered the ship,\nand would not have gone down without a fight.\n"+\
+                    "She probably dropped weapons throughout the ship.\nLuckily, the aliens don't understand\n"+\
                     "the concept of our weapons, and probably ignored them.",
                     "Nice, an enemy even dumber than me!\nSo how do I find Chicken and the controller?"),
-                   ("Ahem, Chicken probably lost a few feathers\nfighting his captors.\nFollow and collect them.\n"+\
+                   ("Ahem, Chicken probably lost a few feathers\nfighting her captors.\nFollow and collect them.\n"+\
                     "Once you have all the feathers in an area\na teleporter chip will be activated\nto the next level.",
                     "Interesting... anything else I should know?"),
                    ("That should be plenty - good luck Farmer!", "Then let's do this!\n...\nhey! wait a second\nwhy do I have to do this?"),
