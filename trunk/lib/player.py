@@ -205,9 +205,9 @@ class PlayerData(object):
                             -20-self.weapon_changes[1]+self.weapon_bob_rot)
 
     def fire(self, scene, level_data):
-        if self.cur_weapon == "shotgun":
-            if self.weapon_buck_done: #other types maybe don't need this
-                if self.ammos[self.cur_weapon]:
+        if self.ammos[self.cur_weapon]:
+            if self.cur_weapon == "shotgun":
+                if self.weapon_buck_done: #other types maybe don't need this
                     self.game_hud.sfx.player_shoot(self.cur_weapon)
                     self.ammos[self.cur_weapon] -= 1
                     self.weapon_bucked = True
@@ -218,9 +218,8 @@ class PlayerData(object):
                     return ShotgunShot(self.weapons[self.cur_weapon].pos,
                                        self.weapons[self.cur_weapon].rotation,
                                        level_data, scene)
-        if self.cur_weapon == "handgun":
-            if self.weapon_buck_done:
-                if self.ammos[self.cur_weapon]:
+            if self.cur_weapon == "handgun":
+                if self.weapon_buck_done:
                     self.game_hud.sfx.player_shoot(self.cur_weapon)
                     self.ammos[self.cur_weapon] -= 1
                     self.weapon_bucked = True
@@ -231,9 +230,8 @@ class PlayerData(object):
                     return HandgunShot(self.weapons[self.cur_weapon].pos,
                                        self.weapons[self.cur_weapon].rotation,
                                        level_data, scene)
-        if self.cur_weapon == "plasma gun":
-            if self.weapon_buck_done:
-                if self.ammos[self.cur_weapon]:
+            if self.cur_weapon == "plasma gun":
+                if self.weapon_buck_done:
                     self.game_hud.sfx.player_shoot(self.cur_weapon) #since it is same kind of weapon...
                     self.ammos[self.cur_weapon] -= 1
                     self.weapon_bucked = True
@@ -244,9 +242,8 @@ class PlayerData(object):
                     return PlasmaShot(self.weapons[self.cur_weapon].pos,
                                        self.weapons[self.cur_weapon].rotation,
                                        level_data, scene)
-        if self.cur_weapon == "chaingun":
-            if self.weapon_buck_done:
-                if self.ammos[self.cur_weapon]:
+            if self.cur_weapon == "chaingun":
+                if self.weapon_buck_done:
                     self.game_hud.sfx.player_shoot(self.cur_weapon) #since it is same kind of weapon...
                     self.ammos[self.cur_weapon] -= 1
                     self.weapon_bucked = True
