@@ -2,36 +2,20 @@
 geometric
 
 :fog_color:
-0.5,0,0,0.5
-
-:last_level:
-True
+0.93,0.9,0.52,0.5
 
 :map:
 #########################
-#,,,,,,,,,,,,,,,,,,,,,,,#
-#,,,,,,,,,,,,,,,,,,,,,,,#
-#,,,,,,,,,,,,,,,,,,,,,,,#
-#,,,,,,,,,,^,,,,,,,,,,,,#
-#,,,,,,,,,,,,,,,,,,,,,,,#
-#,,,,,,,,,,,,,,,,,,,,,,,#
-#,,,,,,,,,,7,,,,,,,,,,,,#
-#,,,,,,,,,,,,,,,,,,,,,,,#
-#,,,,,,,,,,,,,,,,,,,,,,,#
-#,,,,,,,,,,,,,,,,,,,,,,,#
-#,,,,,,,,,,,,,,,,,,,,,,,#
-#,,,,,,,#,,,,#,,,,,,,,,,#
-#,,,,,,,#,,,,#,,,,,,,,,,#
-#,,,,,,,#,,,,###,,,,,,,,#
-####_####,,,,,,,,,,,,,,,#
-#,,,,,,,,,,,,############
-#,,,,,,,,,,,,,,,,,,,,,,,#
-#,,,,,,,,,,,,,,,,,,,,,,,#
-#,,,,,,,,,,,,,,,,,,,,,,,#
-#,,,,,,,,,,,,,,,,,,,,,,,#
-#,,,,#,,,,,,,#,,,,,,,,,,#
-#,,*,#,,,,,,,#,,,,,,,,,,#
-#,,,,#,,,,,,,,,,,,,,,,,,#
+#*,#$,,#,,,#,,,,#,,,#,~,#
+#,,#,,,|,3,#,,3,|,,3#,,,#
+#_##,3,#,3,#,,,,#,,2#4,3#
+#,,,,,,#,,,#,,,,#,,3#,,,#
+########,,,#,,,,#,,,#,,,#
+#$,,,,,,,~##,####,,,#,,,#
+####_######,,#c$#,,,#,,,#
+#,,,,,,,,,,,,#,,#,,,#,,,#
+#,,,,,,,,,####,,|,,,$,,,#
+#~,,,3,,,,#$,,,,#,,,,,,,#
 #########################
 
 
@@ -41,7 +25,7 @@ True
 //_ - is a "vertical" door
 //| - is a horizontal door
 //$ - is a possible boost item (health, ammo, etc.) location
-//a,b,c,d,e - handgun, shotgun, chaingun, lightning gun, plasma gun
+//a,b,c,d - handgun, shotgun, chaingun, plasma gun
 //1,2,3,4,5,6,7 - are locations for different kinds of units (7 being boss)
 //	0 being the boss, and others being whatever, if needed
 //* - is the players start location
@@ -50,7 +34,6 @@ True
 //@ - is the starting command prompt
 //	when you go here it triggers the communication with command
 //~ - a feather location, collect all on a level and you teleport to next level...
-//^ - is the chicken pos!
 //
 //Due to the collision checking being as cheap as possible - there must not be any diagonal walls
 //If you want diagonal, make sure it is double diagonal:
