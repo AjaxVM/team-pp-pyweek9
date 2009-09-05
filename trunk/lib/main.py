@@ -189,6 +189,9 @@ def play_level(level, player_data):
 
             if do_move:
                 player_data.move(camera)
+                if run_mod == 2:
+                    player_data.move(camera)
+                    player_data.move(camera)
                 x = camera.posx + future[0]
                 y = camera.posz + future[2]
                 if not level_data.get_at_uncon(x, camera.posz) in level_data.collidable:
@@ -349,6 +352,7 @@ def main():
     core_story_menu = StoryMenu()
     core_death_menu = DeathMenu()
     core_win_menu = WinMenu()
+    core_LP_menu = LevelPickMenu()
 
     while 1:
         pyggel.view.set_title("Chickenstein - Team [insert name] - Pyweek #9")
@@ -371,10 +375,25 @@ def main():
             pData.reset()
             retval = core_win_menu.run()
             command = retval[0]
+        elif mode == "level_pick":
+            pData.reset()
+            retval = core_LP_menu.run()
+            command = retval[0]
+
+        if command == "play warp":
+            level = int(retval[1])
+            mode = "game"
+            pick = Weapon((0,0,0), "handgun")
+            pData.reset()
+            pData.add_weapon(None, pick.name, pick.obj)
+            pData.game_hud.sfx.set_track("play")
+            continue
 
         if command == "menu":
             mode = "menu"
             pData.game_hud.sfx.set_track("menu")
+        if command == "level_pick":
+            mode = "level_pick"
         if command == "story":
             mode = "story"
             pData.game_hud.sfx.set_track("menu")
