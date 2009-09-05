@@ -15,7 +15,7 @@ mouse wheel for weapon swap
 w/s for forward/back movement
 a/d for strafing left/right
 p to pause
-left shift hold while pressing movement keys to run
+leftshift+w to run forward
 
 
 Members:
