@@ -104,8 +104,16 @@ class PlayerData(object):
             self.cur_hp = self.max_hp
         self.game_hud.update_hp(self.cur_hp)
 
-    def boost_ammo(self, amount):
+    def boost_ammo(self):
         for i in self.ammos:
+            if i == "handgun":
+                amount = 25
+            if i == "shotgun":
+                amount = 25
+            if i == "chaingun":
+                amount = 75
+            if i == "plasma gun":
+                amount = 15
             self.ammos[i] += amount
             if self.ammos[i] > self.max_ammos[i]:
                 self.ammos[i] = self.max_ammos[i]

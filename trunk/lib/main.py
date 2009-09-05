@@ -245,7 +245,7 @@ def play_level(level, player_data):
                     if isinstance(pick, AmmoBuff):
                         scene.remove_3d(pick)
                         game_hud.sfx.play_pickup_ammo()
-                        player_data.boost_ammo(25)
+                        player_data.boost_ammo()
                     if isinstance(pick, Console):
                         game_hud.set_gui_app("console")
             if "left" in event.mouse.active:
