@@ -72,8 +72,7 @@ def play_level(level, player_data):
     paused = False
 
     while 1:
-        clock.tick(999)
-        pyggel.view.set_title("Chickenstein - Team [insert name] - Pyweek #9 - FPS: %s"%clock.get_fps())
+        clock.tick(30)
 
         #Render first, since picking is done at this time, and we need that later!
 
@@ -148,13 +147,13 @@ def play_level(level, player_data):
             future = (0,0,0)
             if K_w in event.keyboard.active:
                 new = pyggel.math3d.move_with_rotation(new,
-                                                       (camera.rotx,camera.roty*-1, camera.rotz), 0.15*run_mod)
+                                                       (camera.rotx,camera.roty*-1, camera.rotz), 0.25*run_mod)
                 future = pyggel.math3d.move_with_rotation(future,
                                                           (camera.rotx,camera.roty*-1, camera.rotz), 1.25)
                 do_move = True
             if K_s in event.keyboard.active:
                 new = pyggel.math3d.move_with_rotation(new,
-                                                       (camera.rotx,camera.roty*-1, camera.rotz), -0.10)
+                                                       (camera.rotx,camera.roty*-1, camera.rotz), -0.2)
                 future = pyggel.math3d.move_with_rotation(future,
                                                           (camera.rotx,camera.roty*-1, camera.rotz), -1.25)
                 do_move = True
@@ -162,7 +161,7 @@ def play_level(level, player_data):
             if K_a in event.keyboard.active:
                 new = pyggel.math3d.move_with_rotation(new,
                                                        (camera.rotx,camera.roty*-1+90, camera.rotz),
-                                                       0.10)
+                                                       0.2)
                 future = pyggel.math3d.move_with_rotation(future,
                                                        (camera.rotx,camera.roty*-1+90, camera.rotz),
                                                        1.25)
@@ -170,7 +169,7 @@ def play_level(level, player_data):
             if K_d in event.keyboard.active:
                 new = pyggel.math3d.move_with_rotation(new,
                                                        (camera.rotx,camera.roty*-1-90, camera.rotz),
-                                                       0.10)
+                                                       0.2)
                 future = pyggel.math3d.move_with_rotation(future,
                                                        (camera.rotx,camera.roty*-1-90, camera.rotz),
                                                        1.25)

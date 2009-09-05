@@ -55,7 +55,7 @@ class ShotgunShot(pyggel.scene.BaseSceneObject):
     def render(self, camera=None):
         if self.dead_remove_from_scene:
             return
-        self.pos = pyggel.math3d.move_with_rotation(self.pos, self.rotation, -.75)
+        self.pos = pyggel.math3d.move_with_rotation(self.pos, self.rotation, -1)
         self.collision_body.set_pos(self.pos)
         if self.level_data.get_at_uncon(self.pos[0], self.pos[2]) in self.level_data.collidable:
             self.dead_remove_from_scene = True #kills object
@@ -113,7 +113,7 @@ class HandgunShot(pyggel.scene.BaseSceneObject):
     def render(self, camera=None):
         if self.dead_remove_from_scene:
             return
-        self.pos = pyggel.math3d.move_with_rotation(self.pos, self.rotation, -.5)
+        self.pos = pyggel.math3d.move_with_rotation(self.pos, self.rotation, -.75)
         self.collision_body.set_pos(self.pos)
         if self.level_data.get_at_uncon(self.pos[0], self.pos[2]) in self.level_data.collidable:
             self.dead_remove_from_scene = True #kills object
@@ -161,12 +161,12 @@ class PlasmaShot(pyggel.scene.BaseSceneObject):
 
         self.collision_body = pyggel.math3d.AABox(pos, 0.15)
 
-        self.pos = pyggel.math3d.move_with_rotation(pos, rotation, -1)
+        self.pos = pyggel.math3d.move_with_rotation(pos, rotation, -1.5)
         self.rotation = rotation
         self.level_data = level_data
 
         self.scale_up = True
-        self.scale = 0.5
+        self.scale = 1
         self.twist = 0
 
         self.speed = 2
@@ -174,16 +174,16 @@ class PlasmaShot(pyggel.scene.BaseSceneObject):
 
     def render(self, camera=None):
         if self.scale_up:
-            self.scale += 0.4
+            self.scale += 0.6
             if self.scale >= 3:
                 self.scale = 3
                 self.scale_up = False
         else:
             if self.scale > 0.25:
-                self.scale -= 0.5
+                self.scale -= 1
             else:
                 self.scale = 0.25
-                self.pos = pyggel.math3d.move_with_rotation(self.pos, self.rotation, -.5*self.speed)
+                self.pos = pyggel.math3d.move_with_rotation(self.pos, self.rotation, -1*self.speed)
         if self.dead_remove_from_scene:
             return
         self.collision_body.set_pos(self.pos)
@@ -217,7 +217,7 @@ class ChaingunShot(pyggel.scene.BaseSceneObject):
     def render(self, camera=None):
         if self.dead_remove_from_scene:
             return
-        self.pos = pyggel.math3d.move_with_rotation(self.pos, self.rotation, -1)
+        self.pos = pyggel.math3d.move_with_rotation(self.pos, self.rotation, -1.25)
         self.collision_body.set_pos(self.pos)
         if self.level_data.get_at_uncon(self.pos[0], self.pos[2]) in self.level_data.collidable:
             self.dead_remove_from_scene = True #kills object

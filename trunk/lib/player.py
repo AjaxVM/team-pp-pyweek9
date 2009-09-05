@@ -154,9 +154,9 @@ class PlayerData(object):
                 x, y = self.weapon_changes
                 x += self.weapon_buck_back
                 y += self.weapon_buck_twist
-                if self.cur_weapon == "shotgun" and x >= self.weapon_buck_back*7:
-                    x = self.weapon_buck_back * 7
-                    y = self.weapon_buck_twist * 7
+                if self.cur_weapon == "shotgun" and x >= self.weapon_buck_back*5:
+                    x = self.weapon_buck_back * 5
+                    y = self.weapon_buck_twist * 5
                     self.weapon_bucked = False
                 if self.cur_weapon == "handgun" and x >= self.weapon_buck_back*3:
                     x = self.weapon_buck_back * 3
@@ -174,10 +174,10 @@ class PlayerData(object):
             elif not self.weapon_buck_done:
                 x, y = self.weapon_changes
                 if x:
-                    x -= self.weapon_buck_back/4
+                    x -= self.weapon_buck_back/2
                     if x <= 0:
                         x = 0
-                    y -= self.weapon_buck_twist/4
+                    y -= self.weapon_buck_twist/2
                 else:
                     y = 0
                     self.weapon_buck_done = True
