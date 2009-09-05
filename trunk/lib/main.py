@@ -320,6 +320,7 @@ def main():
 
     level = 1
     mode = "menu"
+    pData.game_hud.sfx.set_track("menu")
 
     core_menu = Menu()
     core_story_menu = StoryMenu()
@@ -350,8 +351,10 @@ def main():
 
         if command == "menu":
             mode = "menu"
+            pData.game_hud.sfx.set_track("menu")
         if command == "story":
             mode = "story"
+            pData.game_hud.sfx.set_track("menu")
         if command == "quit":
             pyggel.quit()
             return None
@@ -359,18 +362,22 @@ def main():
             mode = "game"
             level = 1
             pData.reset()
+            pData.game_hud.sfx.set_track(None)
         if command == "next":
             mode = "game"
             do_transition(retval[1], pData)
             level += 1
+            pData.game_hud.sfx.set_track(None)
             continue
         if command == "win":
             mode = "win"
             do_transition(retval[1], pData)
             level = 1
             pData.reset()
+            pData.game_hud.sfx.set_track("menu")
         if command == "death":
             mode = "death"
             do_transition(retval[1], pData)
             level = 1
             pData.reset()
+            pData.game_hud.sfx.set_track("menu")
