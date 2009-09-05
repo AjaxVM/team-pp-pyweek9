@@ -13,7 +13,9 @@ class PlayerData(object):
 
         self.weapons = {}
         self.ammos = {"shotgun":25,
-                      "handgun":50}
+                      "handgun":50,
+                      "plasma gun":25,
+                      "chaingun":150}
 
         self.weapon_scroll_list = ["handgun", "shotgun", "chaingun", "plasma gun"]
         self.kills = 0
@@ -61,7 +63,9 @@ class PlayerData(object):
         self.cur_hp = 100
         self.weapons = {}
         self.ammos = {"shotgun":25,
-                      "handgun":50}
+                      "handgun":50,
+                      "plasma gun":25,
+                      "chaingun":150}
         self.kills = 0
         self.cur_weapon = None
 
@@ -155,6 +159,10 @@ class PlayerData(object):
                     x = self.weapon_buck_back * 3
                     y = self.weapon_buck_twist * 3
                     self.weapon_bucked = False
+                if self.cur_weapon == "plasma gun" and x >= self.weapon_buck_back*8:
+                    x = self.weapon_buck_back * 8
+                    y = self.weapon_buck_twist * 8
+                    self.weapon_bucked = False
                 self.weapon_changes = x, y
             elif not self.weapon_buck_done:
                 x, y = self.weapon_changes
@@ -182,6 +190,7 @@ class PlayerData(object):
         if self.cur_weapon == "shotgun":
             if self.weapon_buck_done: #other types maybe don't need this
                 if self.ammos[self.cur_weapon]:
+                    self.game_hud.sfx.player_shoot(self.cur_weapon)
                     self.ammos[self.cur_weapon] -= 1
                     self.weapon_bucked = True
                     self.weapon_buck_back = 0.1
@@ -194,6 +203,7 @@ class PlayerData(object):
         if self.cur_weapon == "handgun":
             if self.weapon_buck_done:
                 if self.ammos[self.cur_weapon]:
+                    self.game_hud.sfx.player_shoot(self.cur_weapon)
                     self.ammos[self.cur_weapon] -= 1
                     self.weapon_bucked = True
                     self.weapon_buck_back = 0.2
@@ -201,5 +211,18 @@ class PlayerData(object):
                     self.weapon_buck_done = False
                     self.game_hud.update_ammo(self.ammos[self.cur_weapon])
                     return HandgunShot(self.weapons[self.cur_weapon].pos,
+                                       self.weapons[self.cur_weapon].rotation,
+                                       level_data, scene)
+        if self.cur_weapon == "plasma gun":
+            if self.weapon_buck_done:
+                if self.ammos[self.cur_weapon]:
+                    self.game_hud.sfx.player_shoot(self.cur_weapon) #since it is same kind of weapon...
+                    self.ammos[self.cur_weapon] -= 1
+                    self.weapon_bucked = True
+                    self.weapon_buck_back = 0.2
+                    self.weapon_buck_twist = -4
+                    self.weapon_buck_done = False
+                    self.game_hud.update_ammo(self.ammos[self.cur_weapon])
+                    return PlasmaShot(self.weapons[self.cur_weapon].pos,
                                        self.weapons[self.cur_weapon].rotation,
                                        level_data, scene)

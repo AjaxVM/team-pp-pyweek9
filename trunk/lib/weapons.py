@@ -10,6 +10,7 @@ class Weapon(pyggel.scene.BaseSceneObject):
         if not self.objs:
             self.objs["shotgun"] = pyggel.mesh.OBJ(data.mesh_path("shotgun.obj"))
             self.objs["handgun"] = pyggel.mesh.OBJ(data.mesh_path("handgun.obj"))
+            self.objs["plasma gun"] = pyggel.mesh.OBJ(data.mesh_path("PlasmaGun.obj"))
         pyggel.scene.BaseSceneObject.__init__(self)
         self.pos = pos
 
@@ -147,3 +148,48 @@ class HandgunPuff(pyggel.scene.BaseSceneObject):
         self.obj.render(camera)
 
         self.dead_remove_from_scene = True
+
+
+class PlasmaShot(pyggel.scene.BaseSceneObject):
+    obj = None
+    def __init__(self, pos, rotation, level_data, scene):
+        if not PlasmaShot.obj:
+            PlasmaShot.obj = pyggel.image.Image3D(data.image_path("flash.png"))
+            PlasmaShot.obj.colorize=(1,0,1,1)
+        pyggel.scene.BaseSceneObject.__init__(self)
+
+        self.collision_body = pyggel.math3d.AABox(pos, 0.15)
+
+        self.pos = pyggel.math3d.move_with_rotation(pos, rotation, -1)
+        self.rotation = rotation
+        self.level_data = level_data
+
+        self.scale_up = True
+        self.scale = 0.5
+        self.twist = 0
+
+        self.speed = 2
+        self.damage = 10
+
+    def render(self, camera=None):
+        if self.scale_up:
+            self.scale += 0.4
+            if self.scale >= 3:
+                self.scale = 3
+                self.scale_up = False
+        else:
+            if self.scale > 0.25:
+                self.scale -= 0.5
+            else:
+                self.scale = 0.25
+                self.pos = pyggel.math3d.move_with_rotation(self.pos, self.rotation, -.5*self.speed)
+        if self.dead_remove_from_scene:
+            return
+        self.collision_body.set_pos(self.pos)
+        if self.level_data.get_at_uncon(self.pos[0], self.pos[2]) in self.level_data.collidable:
+            self.dead_remove_from_scene = True #kills object
+        self.obj.pos = self.pos
+        self.obj.scale = self.scale
+        self.twist += 15
+        self.obj.rotation = (0,0,self.twist)
+        self.obj.render(camera)
