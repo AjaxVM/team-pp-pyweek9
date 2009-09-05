@@ -46,7 +46,7 @@ class ShotgunShot(pyggel.scene.BaseSceneObject):
 
         self.collision_body = pyggel.math3d.AABox(pos, 0.15)
 
-        self.pos = pos
+        self.pos = self.pos = pos
         self.rotation = rotation
         self.level_data = level_data
         self.puff_tick = 1
@@ -104,7 +104,7 @@ class HandgunShot(pyggel.scene.BaseSceneObject):
 
         self.collision_body = pyggel.math3d.Sphere(pos, 0.1)
 
-        self.pos = pos
+        self.pos = self.pos = pos
         self.rotation = rotation
         self.level_data = level_data
         self.puff_tick = 1
@@ -161,7 +161,7 @@ class PlasmaShot(pyggel.scene.BaseSceneObject):
 
         self.collision_body = pyggel.math3d.AABox(pos, 0.15)
 
-        self.pos = pyggel.math3d.move_with_rotation(pos, rotation, -1.5)
+        self.pos = pyggel.math3d.move_with_rotation((pos[0], 0, pos[2]), rotation, -1.5)
         self.rotation = rotation
         self.level_data = level_data
 
