@@ -168,7 +168,7 @@ def get_geoms(level):
 
     commands = _data.split(":")
     commands = [i.strip() for i in commands if i]
-    tile_set = "dungeon"
+    tile_set = "geometric"
     fog_color = (1,1,1)
     map_grid = None
     last_level = False
