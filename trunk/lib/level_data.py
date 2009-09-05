@@ -103,7 +103,7 @@ class Feather(pyggel.scene.BaseSceneObject):
     objs = []
     def __init__(self, pos):
         if not self.objs:
-            self.objs.append(pyggel.mesh.OBJ(data.mesh_path("feather_test.obj")))
+            self.objs.append(pyggel.mesh.OBJ(data.mesh_path("Feather.obj")))
         pyggel.scene.BaseSceneObject.__init__(self)
         self.pos = pos
 
@@ -239,6 +239,8 @@ def get_geoms(level):
                         baddies.append(Alien((x*tsize, 0, y*tsize), weights[cur]))
                     if cur == "@":
                         dynamic.append(Console((x*tsize, 0, y*tsize)))
+                    if cur == "^":
+                        pass #chicken!
 
     for i in possible_gun_locations:
         dynamic.append(Weapon((i[0]*tsize, 0, i[1]*tsize), i[2]))
