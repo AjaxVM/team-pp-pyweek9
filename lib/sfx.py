@@ -14,7 +14,7 @@ class SoundWrapper(object):
     def play(self):
         self.running = True
         self.play_start = time.time()
-        self.obj.play()
+        self.obj.play(1)
 
     def update(self):
         if self.running:
@@ -153,13 +153,12 @@ class SFX(object):
 
     def player_shoot(self, kind):
         s = random.choice(self.human_weapons[kind])
-        ok = True
         for i in self.human_weapons[kind]:
             if i.running:
-                ok = False
-                break
-        if ok:
-            s.play()
+                if not i == s:
+                    return
+        s.stop()
+        s.play()
 
     def alien_shoot(self):
         self.alien_shot.play()
