@@ -124,6 +124,36 @@ class Feather(pyggel.scene.BaseSceneObject):
         self.obj.rotation = self.rotation
         self.obj.render(camera)
 
+class Chicken(pyggel.scene.BaseSceneObject):
+    obj = []
+    def __init__(self, pos):
+        if not Chicken.obj:
+            Chicken.obj = pyggel.mesh.OBJ(data.mesh_path("chick.obj"))
+            Chicken.obj.rotation = (0,180,0)
+        pyggel.scene.BaseSceneObject.__init__(self)
+        self.pos = pos
+
+        self.scale = (1.75,1.5,1.5)
+
+        self.jump = 0
+        self.jump_dir = 0.35
+
+    def picked(self):
+        self.game_hud.set_hover_status("chicken")
+
+    def update(self):
+        self.jump += self.jump_dir
+        self.jump_dir -= 0.025
+        if self.jump <= 0:
+            self.jump_dir = 0.1
+            self.jump = 0
+
+    def render(self, camera=None):
+        self.update()
+        self.obj.scale = self.scale[0]+self.jump, self.scale[1]-self.jump*0.5, self.scale[2]
+        self.obj.pos = self.pos[0], -2+self.jump*2, self.pos[2]
+        self.obj.render(camera)
+
 class Console(pyggel.scene.BaseSceneObject):
     obj = None
     def __init__(self, pos):
@@ -172,6 +202,8 @@ def get_geoms(level):
     fog_color = (1,1,1)
     map_grid = None
     last_level = False
+
+    chick = None
 
     camera_pos = (2,0,2)
 
@@ -240,7 +272,7 @@ def get_geoms(level):
                     if cur == "@":
                         dynamic.append(Console((x*tsize, 0, y*tsize)))
                     if cur == "^":
-                        pass #chicken!
+                        chick = Chicken((x*tsize, 0, y*tsize))
 
     for i in possible_gun_locations:
         dynamic.append(Weapon((i[0]*tsize, 0, i[1]*tsize), i[2]))
@@ -261,4 +293,5 @@ def get_geoms(level):
             baddies, feathers,
             camera_pos,
             fog_color, tile_set,
-            l, tsize, last_level)
+            l, tsize, last_level,
+            chick)
