@@ -202,19 +202,20 @@ class Alien(pyggel.scene.BaseSceneObject):
         if self.noticed and self.stored_LOS:
             # increment shot counter
             self.shot_count += 1
+
+            if not self.kind == "boss":
+                # move toward the player every X ticks
+                engage_distance = 15    # aliens stop moving toward you when they get this close
+                movement = 0.5         # movement speed of the aliens
+                if self.shot_count % 5 == 0 and math.hypot(player_pos[0]-self.pos[0], player_pos[2]-self.pos[2]) > engage_distance:
+                    # move toward the player a little bit -- skip pathing  :)
+                    # could inject bugs that get you stuck in walls though probably, depending
+                    # on how the LOS raycast works
+                    # should probably implement A* pathing when I have more time and have looked at how the level data works
             
-            # move toward the player every X ticks
-            engage_distance = 15    # aliens stop moving toward you when they get this close
-            movement = 0.5         # movement speed of the aliens
-            if self.shot_count % 5 == 0 and math.hypot(player_pos[0]-self.pos[0], player_pos[2]-self.pos[2]) > engage_distance:
-                # move toward the player a little bit -- skip pathing  :)
-                # could inject bugs that get you stuck in walls though probably, depending
-                # on how the LOS raycast works
-                # should probably implement A* pathing when I have more time and have looked at how the level data works
-        
-                x,y,z = self.pos
-                self.pos = x - (math.cos(math.radians(angle+90)) * movement), y, z - (math.sin(math.radians(angle+90)) * movement)
-                self.collision_body.set_pos(self.pos)
+                    x,y,z = self.pos
+                    self.pos = x - (math.cos(math.radians(angle+90)) * movement), y, z - (math.sin(math.radians(angle+90)) * movement)
+                    self.collision_body.set_pos(self.pos)
                 
             # boss shoots a little faster
             if self.kind == "boss" and self.shot_count >= 50:
