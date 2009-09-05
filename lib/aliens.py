@@ -100,7 +100,7 @@ class Alien(pyggel.scene.BaseSceneObject):
                   "cube":10,
                   "sphere":15,
                   "ellipsoid":20,
-                  "boss":200}
+                  "boss":20}
 
         self.hp = all_hp[self.kind]
         self.dead = False

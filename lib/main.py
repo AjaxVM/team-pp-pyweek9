@@ -23,7 +23,8 @@ def play_level(level, player_data):
     scene.add_light(light)
 
     (static, dynamic, baddies, feathers, camera_pos,
-     fog_color, tile_set, level_data, tsize, last_level) = get_geoms(level)
+     fog_color, tile_set, level_data, tsize, last_level,
+     chick) = get_geoms(level)
     shots = []
     badshots = []
     camera.set_pos(camera_pos)
@@ -46,6 +47,8 @@ def play_level(level, player_data):
     scene.add_2d(game_hud)
     for i in dynamic + feathers + baddies:
         i.game_hud = game_hud
+    if chick:
+        chick.game_hud = game_hud
 
     game_hud.update_feathers(0, len(feathers))
     have_feathers = 0
@@ -90,15 +93,17 @@ def play_level(level, player_data):
                 game_hud.visible = False
                 scene.render(camera) #make sure we only pick the center!
                 return ["next", transition_buffer]
-            else:
-                #TODO: hack
-                #this won't return win - only when you finish talking to chicken do you win!
-                pyggel.view.clear_screen()
-                scene.render_buffer = transition_buffer
-                scene.pick = False
-                game_hud.visible = False
-                scene.render(camera) #make sure we only pick the center!
-                return ["win", transition_buffer]
+            elif good:
+##                #TODO: hack
+##                #this won't return win - only when you finish talking to chicken do you win!
+##                pyggel.view.clear_screen()
+##                scene.render_buffer = transition_buffer
+##                scene.pick = False
+##                game_hud.visible = False
+##                scene.render(camera) #make sure we only pick the center!
+##                return ["win", transition_buffer]
+                if not chick in scene.graph.render_3d:
+                    scene.add_3d(chick)
 
         pyggel.view.clear_screen()
 
@@ -126,7 +131,12 @@ def play_level(level, player_data):
         if "p" in event.keyboard.hit:
             paused = not paused
             game_hud.paused.visible = paused
-
+            if paused:
+                pygame.event.set_grab(0)
+                pygame.mouse.set_visible(1)
+            else:
+                pygame.event.set_grab(1)
+                pygame.mouse.set_visible(0)
         if paused:
             continue
 
