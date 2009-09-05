@@ -23,18 +23,18 @@ class AlienShot(pyggel.scene.BaseSceneObject):
         self.color = color
 
         self.scale_up = True
-        self.scale = 0.5
+        self.scale = 0.75
         self.twist = 0
 
         if self.color == (1,1,0.25,1):
             self.damage = 2
-            self.speed = 4
+            self.speed = 8
         if self.color == (0,1,0,1):
             self.damage = 8
-            self.speed = 2
+            self.speed = 4
         if self.color == (0,0,1,1):
             self.damage = 4
-            self.speed = 3
+            self.speed = 6
 
     def render(self, camera=None):
         if self.scale_up:
@@ -47,7 +47,7 @@ class AlienShot(pyggel.scene.BaseSceneObject):
                 self.scale -= 0.5
             else:
                 self.scale = 0.25
-                self.pos = pyggel.math3d.move_with_rotation(self.pos, self.rotation, -.5*self.speed)
+                self.pos = pyggel.math3d.move_with_rotation(self.pos, self.rotation, -1*self.speed)
         if self.dead_remove_from_scene:
             return
         self.collision_body.set_pos(self.pos)
@@ -204,8 +204,8 @@ class Alien(pyggel.scene.BaseSceneObject):
             self.shot_count += 1
             
             # move toward the player every X ticks
-            engage_distance = 10    # aliens stop moving toward you when they get this close
-            movement = 0.3         # movement speed of the aliens
+            engage_distance = 15    # aliens stop moving toward you when they get this close
+            movement = 0.5         # movement speed of the aliens
             if self.shot_count % 5 == 0 and math.hypot(player_pos[0]-self.pos[0], player_pos[2]-self.pos[2]) > engage_distance:
                 # move toward the player a little bit -- skip pathing  :)
                 # could inject bugs that get you stuck in walls though probably, depending
