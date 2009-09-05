@@ -153,7 +153,13 @@ class SFX(object):
 
     def player_shoot(self, kind):
         s = random.choice(self.human_weapons[kind])
-        s.play()
+        ok = True
+        for i in self.human_weapons[kind]:
+            if i.running:
+                ok = False
+                break
+        if ok:
+            s.play()
 
     def alien_shoot(self):
         self.alien_shot.play()
