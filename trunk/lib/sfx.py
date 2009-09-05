@@ -74,7 +74,7 @@ class SFX(object):
 
         self.alien_one_playing = None
 
-        human_weapons = {"shotgun":["shotgun1.wav", "shotgun2.wav"],
+        human_weapons = {"shotgun":["shotgun1.wav"],
                          "handgun":["handgun2.wav"],
                          "plasma gun":["plasma.wav"]}
         self.human_weapons = {}
