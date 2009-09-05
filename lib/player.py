@@ -90,7 +90,10 @@ class PlayerData(object):
 
     def add_weapon(self, scene, wep_type, mesh):
         self.weapons[wep_type] = mesh
-        self.swap_weapon(scene, wep_type)
+        if scene:
+            self.swap_weapon(scene, wep_type)
+        else:
+            self.cur_weapon = wep_type
 
     def hit(self, damage):
         self.game_hud.sfx.play_player_hit()
