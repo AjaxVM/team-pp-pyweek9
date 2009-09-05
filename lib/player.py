@@ -7,7 +7,6 @@ class PlayerData(object):
     def __init__(self, hud):
         self.max_hp = 100
         self.cur_hp = 100
-        self.max_ammo = 100
 
         self.game_hud = hud
 
@@ -16,6 +15,10 @@ class PlayerData(object):
                       "handgun":50,
                       "plasma gun":25,
                       "chaingun":150}
+        self.max_ammos = {"shotgun":30,
+                          "handgun":60,
+                          "plasma gun":50,
+                          "chaingun":225}
 
         self.weapon_scroll_list = ["handgun", "shotgun", "chaingun", "plasma gun"]
         self.kills = 0
@@ -104,8 +107,8 @@ class PlayerData(object):
     def boost_ammo(self, amount):
         for i in self.ammos:
             self.ammos[i] += amount
-            if self.ammos[i] > self.max_ammo:
-                self.ammos[i] = self.max_ammo
+            if self.ammos[i] > self.max_ammos[i]:
+                self.ammos[i] = self.max_ammos[i]
         if self.cur_weapon:
             self.game_hud.update_ammo(self.ammos[self.cur_weapon])
 
