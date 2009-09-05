@@ -265,11 +265,12 @@ def get_geoms(level):
                         camera_pos = x*tsize, 0, y*tsize
                     if cur == "~":
                         feathers.append(Feather((x*tsize, 0, y*tsize)))
-                    if cur in ("a","b","c","d"):
+                    if cur in ("a","b","c","d","e"):
                         weights = {"a":"handgun",
                                    "b":"shotgun",
                                    "c":"chaingun",
-                                   "d":"plasma gun"}
+                                   "d":"plasma gun",
+                                   "e":"chicken gun"}
                         possible_gun_locations.append((x, y, weights[cur]))
                     if cur == "$":
                         possible_boost_locations.append((x, y))

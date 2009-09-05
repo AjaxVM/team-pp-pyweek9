@@ -12,6 +12,7 @@ class Weapon(pyggel.scene.BaseSceneObject):
             self.objs["handgun"] = pyggel.mesh.OBJ(data.mesh_path("handgun.obj"))
             self.objs["plasma gun"] = pyggel.mesh.OBJ(data.mesh_path("PlasmaGun.obj"))
             self.objs["chaingun"] = pyggel.mesh.OBJ(data.mesh_path("chaingun.obj"))
+            self.objs["chicken gun"] = pyggel.mesh.OBJ(data.mesh_path("chickenGun.obj"))
         pyggel.scene.BaseSceneObject.__init__(self)
         self.pos = pos
 
@@ -50,7 +51,7 @@ class ShotgunShot(pyggel.scene.BaseSceneObject):
         self.rotation = rotation
         self.level_data = level_data
         self.puff_tick = 1
-        self.damage = 5
+        self.damage = 4
 
     def render(self, camera=None):
         if self.dead_remove_from_scene:
@@ -170,7 +171,7 @@ class PlasmaShot(pyggel.scene.BaseSceneObject):
         self.twist = 0
 
         self.speed = 2
-        self.damage = 10
+        self.damage = 8
 
     def render(self, camera=None):
         if self.scale_up:
@@ -249,3 +250,33 @@ class ChaingunPuff(pyggel.scene.BaseSceneObject):
         self.age += 1
         if self.age >= 3:
             self.dead_remove_from_scene = True
+
+
+class ChickenGunShot(pyggel.scene.BaseSceneObject):
+    obj = None
+    def __init__(self, pos, rotation, level_data, scene):
+        if not PlasmaShot.obj:
+            ChickenGunShot.obj = pyggel.geometry.Sphere(0.125)
+            ChickenGunShot.obj.scale = (1,1,2)
+            ChickenGunShot.obj.colorize = (0.85,0.8,0.7)
+        pyggel.scene.BaseSceneObject.__init__(self)
+
+        self.collision_body = pyggel.math3d.AABox(pos, 0.5)
+
+        self.pos = pos
+        self.rotation = rotation
+        self.level_data = level_data
+
+        self.speed = 1
+        self.damage = 12
+
+    def render(self, camera=None):
+        self.pos = pyggel.math3d.move_with_rotation(self.pos, self.rotation, -0.5*self.speed)
+        if self.dead_remove_from_scene:
+            return
+        self.collision_body.set_pos(self.pos)
+        if self.level_data.get_at_uncon(self.pos[0], self.pos[2]) in self.level_data.collidable:
+            self.dead_remove_from_scene = True #kills object
+        self.obj.pos = self.pos
+        self.obj.rotation = self.rotation
+        self.obj.render(camera)
