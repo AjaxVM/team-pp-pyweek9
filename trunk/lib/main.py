@@ -240,6 +240,7 @@ def play_level(level, player_data):
             if "left" in event.mouse.active:
                 shot = player_data.fire(scene, level_data)
                 if shot:
+                    game_hud.sfx.player_shoot(player_data.cur_weapon)
                     scene.add_3d(shot)
                     shots.append(shot)
 
@@ -291,6 +292,7 @@ def do_transition(buf, player_data, out=True):
     glClearColor(*pyggel.view.screen.clear_color)
 
 def main():
+    pygame.mixer.pre_init(22050,-16,4,1024)
     pyggel.init()
     try:
         i = pygame.image.load(data.image_path("chickenstein_logo_small.png"))
