@@ -489,7 +489,7 @@ class Pyramid(BaseSceneObject):
         for i in tpoints:
             coords = ((0.5,1), (0,0), (1,0))
 
-            glNormal3f(*math3d.calcTriNormal(i[0],i[1],i[2],True))
+            glNormal3f(*math3d.calcTriNormal(i[0],i[1],i[2],False))
 
             for p in xrange(3):
                 glTexCoord2fv(coords[p])
