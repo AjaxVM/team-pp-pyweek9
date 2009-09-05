@@ -278,7 +278,7 @@ def get_geoms(level):
         dynamic.append(Weapon((i[0]*tsize, 0, i[1]*tsize), i[2]))
     if possible_boost_locations:
         t = 0
-        for i in xrange(len(possible_boost_locations)/2):
+        for i in possible_boost_locations:
             pick = random.choice(possible_boost_locations)
             t = 1-t
             possible_boost_locations.remove(pick)
