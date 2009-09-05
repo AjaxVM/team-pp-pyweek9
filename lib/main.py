@@ -292,7 +292,10 @@ def do_transition(buf, player_data, out=True):
     glClearColor(*pyggel.view.screen.clear_color)
 
 def main():
-    pygame.mixer.pre_init(22050,-16,4,1024)
+    try:
+        pygame.mixer.pre_init(22050,-16,4,1024)
+    except:
+        pass
     pyggel.init()
     try:
         i = pygame.image.load(data.image_path("chickenstein_logo_small.png"))
