@@ -103,12 +103,25 @@ class SFX(object):
         self.all_sounds.append(self.pickup_hp)
         self.all_sounds.append(self.pickup_feather)
 
+        menu_track = data.character_sound_path("music", "menu.ogg")
+        self.track_states = {"menu":menu_track}
+        self.track_state = None
+
     def play_walk(self):
         if not self.player_walk.running:
             self.player_walk.play()
     def stop_walk(self):
         if self.player_walk.running:
             self.player_walk.stop()
+
+    def set_track(self, state):
+        if state == None:
+            self.track_state = None
+            pygame.mixer.music.stop()
+        elif state != self.track_state:
+            self.track_state = state
+            pygame.mixer.music.load(self.track_states[state])
+            pygame.mixer.music.play(-1)
 
     def open_door(self):
         if not self.door_open.running:
