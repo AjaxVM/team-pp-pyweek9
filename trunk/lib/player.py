@@ -163,6 +163,10 @@ class PlayerData(object):
                     x = self.weapon_buck_back * 8
                     y = self.weapon_buck_twist * 8
                     self.weapon_bucked = False
+                if self.cur_weapon == "chaingun" and x >= self.weapon_buck_back:
+                    x = self.weapon_buck_back
+                    y = self.weapon_buck_twist
+                    self.weapon_bucked = False
                 self.weapon_changes = x, y
             elif not self.weapon_buck_done:
                 x, y = self.weapon_changes
@@ -224,5 +228,18 @@ class PlayerData(object):
                     self.weapon_buck_done = False
                     self.game_hud.update_ammo(self.ammos[self.cur_weapon])
                     return PlasmaShot(self.weapons[self.cur_weapon].pos,
+                                       self.weapons[self.cur_weapon].rotation,
+                                       level_data, scene)
+        if self.cur_weapon == "chaingun":
+            if self.weapon_buck_done:
+                if self.ammos[self.cur_weapon]:
+                    self.game_hud.sfx.player_shoot(self.cur_weapon) #since it is same kind of weapon...
+                    self.ammos[self.cur_weapon] -= 1
+                    self.weapon_bucked = True
+                    self.weapon_buck_back = 0.1
+                    self.weapon_buck_twist = -1
+                    self.weapon_buck_done = False
+                    self.game_hud.update_ammo(self.ammos[self.cur_weapon])
+                    return ChaingunShot(self.weapons[self.cur_weapon].pos,
                                        self.weapons[self.cur_weapon].rotation,
                                        level_data, scene)

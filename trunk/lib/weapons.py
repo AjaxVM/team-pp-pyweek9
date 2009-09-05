@@ -11,6 +11,7 @@ class Weapon(pyggel.scene.BaseSceneObject):
             self.objs["shotgun"] = pyggel.mesh.OBJ(data.mesh_path("shotgun.obj"))
             self.objs["handgun"] = pyggel.mesh.OBJ(data.mesh_path("handgun.obj"))
             self.objs["plasma gun"] = pyggel.mesh.OBJ(data.mesh_path("PlasmaGun.obj"))
+            self.objs["chaingun"] = pyggel.mesh.OBJ(data.mesh_path("chaingun.obj"))
         pyggel.scene.BaseSceneObject.__init__(self)
         self.pos = pos
 
@@ -193,3 +194,58 @@ class PlasmaShot(pyggel.scene.BaseSceneObject):
         self.twist += 15
         self.obj.rotation = (0,0,self.twist)
         self.obj.render(camera)
+
+
+class ChaingunShot(pyggel.scene.BaseSceneObject):
+    obj = None
+    def __init__(self, pos, rotation, level_data, scene):
+        if not ChaingunShot.obj:
+            ChaingunShot.obj = pyggel.geometry.Sphere(0.075)
+            ChaingunShot.obj.colorize = (0.075,0.075,0.1)
+        pyggel.scene.BaseSceneObject.__init__(self)
+
+        self.scene = scene
+
+        self.collision_body = pyggel.math3d.Sphere(pos, 0.10)
+
+        self.pos = pos
+        self.rotation = rotation
+        self.level_data = level_data
+        self.damage = 1.5
+        self.scene.add_3d_blend(ChaingunPuff(self.pos, self.rotation))
+
+    def render(self, camera=None):
+        if self.dead_remove_from_scene:
+            return
+        self.pos = pyggel.math3d.move_with_rotation(self.pos, self.rotation, -1)
+        self.collision_body.set_pos(self.pos)
+        if self.level_data.get_at_uncon(self.pos[0], self.pos[2]) in self.level_data.collidable:
+            self.dead_remove_from_scene = True #kills object
+        self.obj.pos = self.pos
+        self.obj.rotation = self.rotation
+        self.obj.render(camera)
+
+class ChaingunPuff(pyggel.scene.BaseSceneObject):
+    obj = None
+    def __init__(self, pos, rotation):
+        if not ChaingunPuff.obj:
+            ChaingunPuff.obj = pyggel.image.Image3D(data.image_path("flash.png"))
+            ChaingunPuff.obj.colorize = 1,1,0.25,1
+        pyggel.scene.BaseSceneObject.__init__(self)
+
+        self.pos = pos
+        self.rotation = rotation
+
+        self.pos = pyggel.math3d.move_with_rotation(self.pos, self.rotation, -2)
+        self.age = 0
+        self.scale = 1.5
+
+    def render(self, camera=None):
+        self.scale -= 0.10
+        self.obj.pos = self.pos
+        self.obj.scale = self.scale
+        self.obj.render(camera)
+
+        self.age += 1
+        if self.age >= 3:
+            self.dead_remove_from_scene = True
