@@ -9,6 +9,12 @@ Pygame (1.8.1 +)
 Numpy (latest)
 
 
+Starting the game:
+NOTE: you must have 3d opengl support to play this game!
+
+on windows "double-click" run_game.py, run_game.pyw or run_game.exe
+everywhere else: python run_game.py
+
 Controls:
 mouse motion for rotation
 mouse wheel for weapon swap

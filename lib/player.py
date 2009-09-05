@@ -118,6 +118,9 @@ class PlayerData(object):
         except:
             pass
 
+        if "left" in self.game_hud.event_handler.mouse.active:
+            self.game_hud.event_handler.mouse.active.remove("left")
+
         self.cur_weapon = new
         self.game_hud.update_weapon(new)
         if new:
