@@ -239,10 +239,10 @@ def get_geoms(level):
             mwh = max((width, height))
             floor = pyggel.geometry.Plane(mwh*tsize, pos=(width*tsize/2,-tsize/2,height*tsize/2),
                                           texture=pyggel.data.Texture(data.image_path(tile_set+"_"+"floor.png")),
-                                          tile=mwh*tsize)
+                                          tile=mwh*tsize*0.5)
             ceiling = pyggel.geometry.Plane(mwh*tsize, pos=(width*tsize/2,tsize/2,height*tsize/2),
                                           texture=pyggel.data.Texture(data.image_path(tile_set+"_"+"ceiling.png")),
-                                          tile=mwh*tsize)
+                                          tile=mwh*tsize*0.5)
             static.append(floor)
             static.append(ceiling)
             for y in xrange(height):
