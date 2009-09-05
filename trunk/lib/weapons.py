@@ -159,7 +159,7 @@ class PlasmaShot(pyggel.scene.BaseSceneObject):
             PlasmaShot.obj.colorize=(1,0,1,1)
         pyggel.scene.BaseSceneObject.__init__(self)
 
-        self.collision_body = pyggel.math3d.AABox(pos, 0.15)
+        self.collision_body = pyggel.math3d.AABox(pos, 0.25)
 
         self.pos = pyggel.math3d.move_with_rotation((pos[0], 0, pos[2]), rotation, -1.5)
         self.rotation = rotation
