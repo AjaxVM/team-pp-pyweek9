@@ -88,7 +88,7 @@ class Alien(pyggel.scene.BaseSceneObject):
         if self.kind == "boss":
             self.collision_body = pyggel.math3d.AABox(self.pos, 3.5)
         else:
-            self.collision_body = pyggel.math3d.AABox(self.pos, 1.5)
+            self.collision_body = pyggel.math3d.AABox(self.pos, (1.5,5,1.5))
 
         self.got_hit = False
         self.hit_grow = True
@@ -241,7 +241,8 @@ class Alien(pyggel.scene.BaseSceneObject):
         self.hp -= damage
         if self.hp <= 0:
             self.game_hud.sfx.play_alien_die()
-            self.game_hud.sfx.play_player_kill()
+            if random.randint(0,1):
+                self.game_hud.sfx.play_player_kill()
             self.dead = True
 
     def render(self, camera=None):
