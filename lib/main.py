@@ -129,6 +129,10 @@ def play_level(level, player_data):
             continue
 
         if not game_hud.grab_events:
+            if "wheel-up" in event.mouse.hit:
+                player_data.next_weapon(scene)
+            if "wheel-down" in event.mouse.hit:
+                player_data.prev_weapon(scene)
             if event.mouse.motion[0]:
                 camera.roty += event.mouse.motion[0] * 0.2
 

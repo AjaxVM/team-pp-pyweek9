@@ -14,6 +14,8 @@ class PlayerData(object):
         self.weapons = {}
         self.ammos = {"shotgun":25,
                       "handgun":50}
+
+        self.weapon_scroll_list = ["handgun", "shotgun", "chaingun", "plasma gun"]
         self.kills = 0
         self.cur_weapon = None
 
@@ -30,6 +32,30 @@ class PlayerData(object):
         self.weapon_bob_count = 20
 
         self.collision_body = pyggel.math3d.Sphere((0,0,0), 1)
+
+    def next_weapon(self, scene):
+        if self.weapons:
+            cur = self.weapon_scroll_list.index(self.cur_weapon)
+            cur += 1
+            if cur >= 4:
+                cur = 0
+            while not self.weapon_scroll_list[cur] in self.weapons:
+                cur += 1
+                if cur >= 4:
+                    cur = 0
+            self.swap_weapon(scene, self.weapon_scroll_list[cur])
+
+    def prev_weapon(self, scene):
+        if self.weapons:
+            cur = self.weapon_scroll_list.index(self.cur_weapon)
+            cur -= 1
+            if cur < 0:
+                cur = 3
+            while not self.weapon_scroll_list[cur] in self.weapons:
+                cur -= 1
+                if cur < 0:
+                    cur = 3
+            self.swap_weapon(scene, self.weapon_scroll_list[cur])
 
     def reset(self):
         self.cur_hp = 100
