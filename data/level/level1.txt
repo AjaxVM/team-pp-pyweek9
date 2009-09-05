@@ -19,7 +19,7 @@ geometric
 #$,,,,,,#,,,,#,,1,,,,,,,#
 #,,,~,,,#,,,,#,~,,,,,,22#
 #,,,,,,,#,,,,#,,,,,,,,,,#
-#1,,,,,b#,,,,###,,,,,,,,#
+#1,,,,,,#,,,,###,,,,,,,,#
 ####_####,,,,,,,,,,,,,,$#
 #2,,,,,,,,,,,############
 #,1,,,,,,,,,,,,,,,,,,,,,#
@@ -28,7 +28,7 @@ geometric
 #@,,a|,,,,,,$#,,,,,,21,,#
 #,,,,#,,,,,,,#,,,,,,,,,,#
 #,,,d#,,,,,1,#,,,,,,,,,,#
-#*,,,#,,2,,,,,,,,,,,,,,,#
+#*,b,#,,2,,,,,,,,,,,,,,,#
 #########################
 
 
@@ -56,3 +56,5 @@ geometric
 //For badguys to group they must starting out touching, they must be on adjacent tiles (diagonal accepted)
 //
 //If last_level, set last_level to True
+//
+//Only ever create one instance of any given weapon on all levels - otherwise bad thigns can happen
