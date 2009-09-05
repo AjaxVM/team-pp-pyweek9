@@ -5,7 +5,7 @@ geometric
 0.5,0,0,0.5
 
 :last_level:
-False
+True
 
 :map:
 #########################
@@ -14,20 +14,20 @@ False
 #,,,,,,,,,,,,,,,,,,,,,,,#
 #,,,,,,,,,,,,,,,,,,,,,,,#
 #,,,,,,,,,,,,,,,,,,,,,,,#
+#,,,,,,,,,,^,,,,,,,,,,,,#
+#,,,,,,,,,,7,,,,,,,,,,,,#
 #,,,,,,,,,,,,,,,,,,,,,,,#
 #,,,,,,,,,,,,,,,,,,,,,,,#
 #,,,,,,,,,,,,,,,,,,,,,,,#
 #,,,,,,,,,,,,,,,,,,,,,,,#
-#,,,,,,,,,,,,,,,,,,,,,,,#
-#,,,,,,,,,,,,,,,,,,,,,,,#
-#,,,~,,,#,,,,#~,,,,,,,,,#
+#,,,,,,,#,,,,#,,,,,,,,,,#
 #,,,,,,,#,,,,#,,,,,,,,,,#
 #,,,,,,,#,,,,###,,,,,,,,#
 ####_####,,,,,,,,,,,,,,,#
 #,,,,,,,,,,,,############
 #,,,,,,,,,,,,,,,,,,,,,,,#
 #,,,,,,,,,,,,,,,,,,,,,,,#
-#,&,,,,,,,,,,,,,,,,,,,,,#
+#,,,,,,,,,,,,,,,,,,,,,,,#
 #,,,,,,,,,,,,,,,,,,,,,,,#
 #,,,,#,,,,,,,#,,,,,,,,,,#
 #,,*,#,,,,,,,#,,,,,,,,,,#
@@ -50,6 +50,7 @@ False
 //@ - is the starting command prompt
 //	when you go here it triggers the communication with command
 //~ - a feather location, collect all on a level and you teleport to next level...
+//^ - is the chicken pos!
 //
 //Due to the collision checking being as cheap as possible - there must not be any diagonal walls
 //If you want diagonal, make sure it is double diagonal:
