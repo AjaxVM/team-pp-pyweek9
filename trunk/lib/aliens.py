@@ -144,6 +144,9 @@ class Alien(pyggel.scene.BaseSceneObject):
         #if pyggel.math3d.get_distance(topos, self.pos) <= 5:
         #    return True
 
+        if pyggel.math3d.get_distance(topos, self.pos) >= 50:
+            return False
+
         pos = self.pos
         see = True
         for i in xrange(50):
