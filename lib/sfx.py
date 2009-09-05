@@ -110,7 +110,9 @@ class SFX(object):
         self.all_sounds.append(self.win_sound)
 
         menu_track = data.character_sound_path("music", "menu.ogg")
-        self.track_states = {"menu":menu_track}
+        game_track = data.character_sound_path("music", "game.ogg")
+        self.track_states = {"menu":menu_track,
+                             "play":game_track}
         self.track_state = None
 
     def play_walk(self):

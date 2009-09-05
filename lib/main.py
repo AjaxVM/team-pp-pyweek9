@@ -364,12 +364,12 @@ def main():
         if command == "play":
             mode = "game"
             level = 1
-            pData.game_hud.sfx.set_track(None)
+            pData.game_hud.sfx.set_track("play")
         if command == "next":
             mode = "game"
             do_transition(retval[1], pData)
             level += 1
-            pData.game_hud.sfx.set_track(None)
+            pData.game_hud.sfx.set_track("play")
             continue
         if command == "win":
             mode = "win"
