@@ -93,6 +93,7 @@ def play_level(level, player_data):
             else:
                 #TODO: hack
                 #this won't return win - only when you finish talking to chicken do you win!
+                pyggel.view.clear_screen()
                 scene.render_buffer = transition_buffer
                 scene.pick = False
                 game_hud.visible = False
@@ -113,6 +114,7 @@ def play_level(level, player_data):
         #Now events!
         event.update()
         if K_ESCAPE in event.keyboard.hit:
+            pyggel.view.clear_screen()
             scene.render_buffer = transition_buffer
             scene.pick = False
             game_hud.visible = False
@@ -206,6 +208,7 @@ def play_level(level, player_data):
                     player_data.hit(i.damage)
 
         if player_data.cur_hp <= 0:
+            pyggel.view.clear_screen()
             scene.render_buffer = transition_buffer
             scene.pick = False
             game_hud.visible = False
@@ -252,8 +255,9 @@ def play_level(level, player_data):
                     scene.add_3d_blend(shot)
                     shots.append(shot)
 
-def do_transition(buf, player_data, out=True):
-    player_data.game_hud.sfx.play_level_warp()
+def do_transition(buf, player_data, out=True, mute=False):
+    if not mute:
+        player_data.game_hud.sfx.play_level_warp()
     pyggel.view.set_lighting(False) #for now...
     glClearColor(0,0,0,0)
     tex = buf.texture
@@ -341,13 +345,13 @@ def main():
             retval = core_story_menu.run()
             command = retval[0]
         elif mode == "death":
+            pData.reset()
             retval = core_death_menu.run()
             command = retval[0]
         elif mode == "win":
+            pData.reset()
             retval = core_win_menu.run()
             command = retval[0]
-
-        pData.game_hud.sfx.reset()
 
         if command == "menu":
             mode = "menu"
@@ -361,7 +365,6 @@ def main():
         if command == "play":
             mode = "game"
             level = 1
-            pData.reset()
             pData.game_hud.sfx.set_track(None)
         if command == "next":
             mode = "game"
@@ -371,13 +374,12 @@ def main():
             continue
         if command == "win":
             mode = "win"
-            do_transition(retval[1], pData)
             level = 1
-            pData.reset()
             pData.game_hud.sfx.set_track("menu")
         if command == "death":
             mode = "death"
-            do_transition(retval[1], pData)
+            pData.game_hud.sfx.play_loss()
             level = 1
-            pData.reset()
             pData.game_hud.sfx.set_track("menu")
+        if len(retval) == 2:
+            do_transition(retval[1], pData, mute=True)

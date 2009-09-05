@@ -14,7 +14,7 @@ class SoundWrapper(object):
     def play(self):
         self.running = True
         self.play_start = time.time()
-        self.obj.play(1)
+        self.obj.play()
 
     def update(self):
         if self.running:
@@ -95,6 +95,9 @@ class SFX(object):
         self.pickup_hp = SoundWrapper(data.sound_path("pickup-health.wav"))
         self.pickup_feather = SoundWrapper(data.sound_path("pickup-feather.wav"))
 
+        self.loss_sound = SoundWrapper(data.character_sound_path("bob", "bob-fail.wav"))
+        self.win_sound = SoundWrapper(data.character_sound_path("bob", "bob-win.wav"))
+
         self.all_sounds.append(self.alien_shot)
         self.all_sounds.append(self.door_open)
         self.all_sounds.append(self.level_warp)
@@ -102,6 +105,9 @@ class SFX(object):
         self.all_sounds.append(self.pickup_ammo)
         self.all_sounds.append(self.pickup_hp)
         self.all_sounds.append(self.pickup_feather)
+
+        self.all_sounds.append(self.loss_sound)
+        self.all_sounds.append(self.win_sound)
 
         menu_track = data.character_sound_path("music", "menu.ogg")
         self.track_states = {"menu":menu_track}
@@ -113,6 +119,11 @@ class SFX(object):
     def stop_walk(self):
         if self.player_walk.running:
             self.player_walk.stop()
+
+    def play_loss(self):
+        self.loss_sound.play()
+    def play_win(self):
+        self.win_sound.play()
 
     def set_track(self, state):
         if state == None:
@@ -155,7 +166,7 @@ class SFX(object):
             self.alien_one_playing = None
         if self.alien_one_playing in self.alien_chatter_sounds:
             self.alien_one_playing.stop()
-        if not self.alien_one_playing:
+        if not self.alien_one_playing in self.alien_alert_sounds:
             self.alien_one_playing = random.choice(self.alien_alert_sounds)
             self.alien_one_playing.play()
 
