@@ -77,7 +77,8 @@ class SFX(object):
         human_weapons = {"shotgun":["shotgun1.wav"],
                          "handgun":["handgun2.wav"],
                          "plasma gun":["plasma.wav"],
-                         "chaingun":["chain.wav"]}
+                         "chaingun":["chain.wav"],
+                         "chicken gun":["chicken-gun.wav"]}
         self.human_weapons = {}
         for i in human_weapons:
             xx = []

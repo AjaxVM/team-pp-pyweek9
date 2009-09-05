@@ -11,14 +11,16 @@ class PlayerData(object):
         self.game_hud = hud
 
         self.weapons = {}
-        self.ammos = {"shotgun":25,
-                      "handgun":50,
-                      "plasma gun":25,
-                      "chaingun":150}
-        self.max_ammos = {"shotgun":50,
+        self.ammos = {"shotgun":75,
+                      "handgun":125,
+                      "plasma gun":40,
+                      "chaingun":500,
+                      "chicken gun":20}
+        self.max_ammos = {"shotgun":125,
                           "handgun":75,
                           "plasma gun":40,
-                          "chaingun":500}
+                          "chaingun":500,
+                          "chicken gun":20}
 
         self.weapon_scroll_list = ["handgun", "shotgun", "chaingun", "plasma gun"]
         self.kills = 0
@@ -65,10 +67,11 @@ class PlayerData(object):
     def reset(self):
         self.cur_hp = 100
         self.weapons = {}
-        self.ammos = {"shotgun":25,
-                      "handgun":50,
-                      "plasma gun":25,
-                      "chaingun":150}
+        self.ammos = {"shotgun":75,
+                      "handgun":125,
+                      "plasma gun":40,
+                      "chaingun":500,
+                      "chicken gun":20}
         self.kills = 0
         self.cur_weapon = None
 
@@ -184,6 +187,10 @@ class PlayerData(object):
                     x = self.weapon_buck_back
                     y = self.weapon_buck_twist
                     self.weapon_bucked = False
+                if self.cur_weapon == "chicken gun" and x >= self.weapon_buck_back*10:
+                    x = self.weapon_buck_back * 10
+                    y = self.weapon_buck_twist * 10
+                    self.weapon_bucked = False
                 self.weapon_changes = x, y
             elif not self.weapon_buck_done:
                 x, y = self.weapon_changes
@@ -257,6 +264,18 @@ class PlayerData(object):
                     self.weapon_buck_done = False
                     self.game_hud.update_ammo(self.ammos[self.cur_weapon])
                     return ChaingunShot(self.weapons[self.cur_weapon].pos,
+                                       self.weapons[self.cur_weapon].rotation,
+                                       level_data, scene)
+            if self.cur_weapon == "chicken gun":
+                if self.weapon_buck_done:
+                    self.game_hud.sfx.player_shoot(self.cur_weapon) #since it is same kind of weapon...
+                    self.ammos[self.cur_weapon] -= 1
+                    self.weapon_bucked = True
+                    self.weapon_buck_back = 0.05
+                    self.weapon_buck_twist = -3
+                    self.weapon_buck_done = False
+                    self.game_hud.update_ammo(self.ammos[self.cur_weapon])
+                    return ChickenGunShot(self.weapons[self.cur_weapon].pos,
                                        self.weapons[self.cur_weapon].rotation,
                                        level_data, scene)
         else:
