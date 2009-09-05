@@ -29,3 +29,9 @@ RB[0] - project lead/programmer/art
 timinge - sfx/music
 nicolas - 3d models
 Keeyai - programming
+
+
+Special thanks:
+Pymike - tile sets and game testing
+Ian Mallet - math, GL help
+Red_HamsterX - playtesting
