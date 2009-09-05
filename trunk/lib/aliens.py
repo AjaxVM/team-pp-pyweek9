@@ -241,6 +241,7 @@ class Alien(pyggel.scene.BaseSceneObject):
         self.hp -= damage
         if self.hp <= 0:
             self.game_hud.sfx.play_alien_die()
+            self.game_hud.sfx.play_player_kill()
             self.dead = True
 
     def render(self, camera=None):

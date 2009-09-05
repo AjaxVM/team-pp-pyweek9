@@ -158,14 +158,15 @@ class SFX(object):
     def play_player_hit(self):
         if self.player_one_playing and not self.player_one_playing.running:
             self.player_one_playing = None
-        if self.player_one_playing in self.player_kill_sounds:
-            self.player_one_playing.stop()
+        if not self.player_one_playing:
             self.player_one_playing = random.choice(self.player_hit_sounds)
             self.player_one_playing.play()
-        elif self.player_one_playing in self.player_hit_sounds:
-            pass
-        else:
-            self.player_one_playing = random.choice(self.player_hit_sounds)
+
+    def play_player_kill(self):
+        if self.player_one_playing and not self.player_one_playing.running:
+            self.player_one_playing = None
+        if not self.player_one_playing:
+            self.player_one_playing = random.choice(self.player_kill_sounds)
             self.player_one_playing.play()
 
     def play_alien_hit(self):
