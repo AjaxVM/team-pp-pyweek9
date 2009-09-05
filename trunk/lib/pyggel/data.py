@@ -9,6 +9,12 @@ like textures, display lists and vertex arrays.
 from include import *
 import view
 
+#Pyweek change - anisotropic filtering!
+try:
+    from OpenGL.GL.EXT.texture_filter_anisotropic import *
+except:
+    pass
+
 class Texture(object):
     """An object to load and store an OpenGL texture"""
     bound = None
@@ -72,6 +78,12 @@ class Texture(object):
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, xx, xy, 0, GL_RGBA,
                      GL_UNSIGNED_BYTE, tdata)
+
+        #Pyweek change - anisotropic filtering!
+        try:
+            glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAX_ANISOTROPY_EXT,glGetFloat(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT))
+        except:
+            pass
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE)
