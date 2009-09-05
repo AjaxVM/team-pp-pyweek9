@@ -69,6 +69,8 @@ def play_level(level, player_data):
 
     event.update() #so the camera doesn't wig out the first time...
 
+    paused = False
+
     while 1:
         clock.tick(999)
         pyggel.view.set_title("Chickenstein - Team [insert name] - Pyweek #9 - FPS: %s"%clock.get_fps())
@@ -118,6 +120,13 @@ def play_level(level, player_data):
             return ["menu", transition_buffer]
         if event.quit:
             return ["quit"]
+
+        if "p" in event.keyboard.hit:
+            paused = not paused
+            game_hud.paused.visible = paused
+
+        if paused:
+            continue
 
         if not game_hud.grab_events:
             if event.mouse.motion[0]:

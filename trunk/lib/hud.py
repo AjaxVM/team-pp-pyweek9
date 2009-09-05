@@ -128,6 +128,10 @@ class Hud(pyggel.scene.BaseSceneObject):
         self.ouch_image = pyggel.image.Image(data.image_path("ouch.png"))
         self.ouch_image.colorize = (1,1,1,0)
 
+        self.paused = self.big_font.make_text_image("Paused - hit 'p' to start again...", color=(0,0,0,1))
+        self.paused.pos = 320-self.paused.get_width()/2, 240-self.paused.get_height()/2
+        self.paused.visible = False
+
         #for 3d sounds...
         self.sfx = sfx.SFX()
 
@@ -244,3 +248,6 @@ class Hud(pyggel.scene.BaseSceneObject):
             self.hp.render()
             self.weapon.render()
             self.ammo.render()
+
+            if self.paused.visible:
+                self.paused.render()
