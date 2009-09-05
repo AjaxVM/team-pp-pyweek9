@@ -15,10 +15,10 @@ class PlayerData(object):
                       "handgun":50,
                       "plasma gun":25,
                       "chaingun":150}
-        self.max_ammos = {"shotgun":30,
-                          "handgun":60,
-                          "plasma gun":50,
-                          "chaingun":225}
+        self.max_ammos = {"shotgun":50,
+                          "handgun":75,
+                          "plasma gun":40,
+                          "chaingun":500}
 
         self.weapon_scroll_list = ["handgun", "shotgun", "chaingun", "plasma gun"]
         self.kills = 0
