@@ -1,0 +1,43 @@
+:tile_set:
+geometric
+
+:fog_color:
+0.93,0.9,0.52,0.5
+
+:map:
+######################################
+#$,$#,$,,,11,,,,,,,33,,,$,,,,,,55,,,,#
+#,*,#,,,,,,,,$,,,,,,,,,,,,,,,,,,,,$,,#
+#,,,#,,,,,,,,,,,,,,,,,,,4,,,,$,,,6,,~#
+#,,,#,,,,,,,,,,,,,,$,,,,4,,,,,,,,,,,~#
+##_##,,,,,,$,,,,,,,,,,,,,,,,,,,,,6,,,#
+#,,,,,,,,,,,,,,22,,,,,,,$,,,,,,,$,,,,#
+######################################
+
+
+//comments
+//# - is a wall
+//, - is blank
+//_ - is a "vertical" door
+//| - is a horizontal door
+//$ - is a possible boost item (health, ammo, etc.) location
+//a,b,c,d - handgun, shotgun, chaingun, plasma gun
+//1,2,3,4,5,6,7 - are locations for different kinds of units (7 being boss)
+//	0 being the boss, and others being whatever, if needed
+//* - is the players start location
+//% - is the final "win" goal - will only appear once there are no more boss baddies on this level
+//	when the player touches it the game ends...
+//@ - is the starting command prompt
+//	when you go here it triggers the communication with command
+//~ - a feather location, collect all on a level and you teleport to next level...
+//
+//Due to the collision checking being as cheap as possible - there must not be any diagonal walls
+//If you want diagonal, make sure it is double diagonal:
+//	#   Not  #
+//   ##       #
+//
+//For badguys to group they must starting out touching, they must be on adjacent tiles (diagonal accepted)
+//
+//If last_level, set last_level to True
+//
+//Only ever create one instance of any given weapon on all levels - otherwise bad thigns can happen
