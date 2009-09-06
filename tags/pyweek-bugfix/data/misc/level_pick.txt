@@ -1,0 +1,5 @@
+Pick the level to start on.
+When you level warp you start with only the handgun...
+So if you skip weapons you're stuck.
+
+Hit any number 1-7 to pick level
