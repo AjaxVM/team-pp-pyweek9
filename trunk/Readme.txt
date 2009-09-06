@@ -33,5 +33,5 @@ Keeyai - programming
 
 Special thanks:
 Pymike - tile sets and game testing
-Ian Mallet - math, GL help
+Ian Mallett - math, GL help
 Red_HamsterX - playtesting
