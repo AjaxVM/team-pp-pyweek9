@@ -7,6 +7,10 @@ import random, math
 class Weapon(pyggel.scene.BaseSceneObject):
     objs = {}
     def __init__(self, pos, name):
+        for i in Weapon.objs:
+            if Weapon.objs[i] == None:
+                Weapon.objs = {}
+                break
         if not Weapon.objs:
             Weapon.objs["shotgun"] = pyggel.mesh.OBJ(data.mesh_path("shotgun.obj"))
             Weapon.objs["handgun"] = pyggel.mesh.OBJ(data.mesh_path("handgun.obj"))
