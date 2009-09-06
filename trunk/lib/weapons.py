@@ -7,12 +7,12 @@ import random, math
 class Weapon(pyggel.scene.BaseSceneObject):
     objs = {}
     def __init__(self, pos, name):
-        if not self.objs:
-            self.objs["shotgun"] = pyggel.mesh.OBJ(data.mesh_path("shotgun.obj"))
-            self.objs["handgun"] = pyggel.mesh.OBJ(data.mesh_path("handgun.obj"))
-            self.objs["plasma gun"] = pyggel.mesh.OBJ(data.mesh_path("PlasmaGun.obj"))
-            self.objs["chaingun"] = pyggel.mesh.OBJ(data.mesh_path("chaingun.obj"))
-            self.objs["chicken gun"] = pyggel.mesh.OBJ(data.mesh_path("chickenGun.obj"))
+        if not Weapon.objs:
+            Weapon.objs["shotgun"] = pyggel.mesh.OBJ(data.mesh_path("shotgun.obj"))
+            Weapon.objs["handgun"] = pyggel.mesh.OBJ(data.mesh_path("handgun.obj"))
+            Weapon.objs["plasma gun"] = pyggel.mesh.OBJ(data.mesh_path("PlasmaGun.obj"))
+            Weapon.objs["chaingun"] = pyggel.mesh.OBJ(data.mesh_path("chaingun.obj"))
+            Weapon.objs["chicken gun"] = pyggel.mesh.OBJ(data.mesh_path("chickenGun.obj"))
         pyggel.scene.BaseSceneObject.__init__(self)
         self.pos = pos
 
@@ -30,9 +30,12 @@ class Weapon(pyggel.scene.BaseSceneObject):
 
     def render(self, camera=None):
         self.update()
-        self.obj.pos = self.pos
-        self.obj.rotation = self.rotation
-        self.obj.render(camera)
+        if self.obj:
+            self.obj.pos = self.pos
+            self.obj.rotation = self.rotation
+            self.obj.render(camera)
+        else:
+            self.dead_remove_from_scene = True
 
 class ShotgunShot(pyggel.scene.BaseSceneObject):
     obj = None

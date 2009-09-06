@@ -22,7 +22,7 @@ class PlayerData(object):
                           "chaingun":500,
                           "chicken gun":20}
 
-        self.weapon_scroll_list = ["handgun", "shotgun", "chaingun", "plasma gun"]
+        self.weapon_scroll_list = ["handgun", "shotgun", "chaingun", "plasma gun", "chicken gun"]
         self.kills = 0
         self.cur_weapon = None
 
@@ -88,7 +88,6 @@ class PlayerData(object):
         self.weapon_bob_count = 20
 
         self.game_hud.update_ammo(0)
-        self.game_hud.update_weapon("None")
         self.game_hud.update_hp(100)
 
     def add_weapon(self, scene, wep_type, mesh):
