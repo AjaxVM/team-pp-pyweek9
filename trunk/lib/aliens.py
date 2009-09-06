@@ -14,9 +14,9 @@ class AlienShot(pyggel.scene.BaseSceneObject):
         self.collision_body = pyggel.math3d.Sphere(pos, 1)
 
         if far:
-            dis = -3
+            dis = -3.5
         else:
-            dis = -1
+            dis = -1.25
         self.pos = pyggel.math3d.move_with_rotation(pos, rotation, dis)
         self.rotation = rotation
         self.level_data = level_data
@@ -86,7 +86,7 @@ class Alien(pyggel.scene.BaseSceneObject):
         self.color = random.choice(((1,1,0.25,1), (0,1,0,1), (0,0,1,1)))
 
         if self.kind == "boss":
-            self.collision_body = pyggel.math3d.AABox(self.pos, 3.5)
+            self.collision_body = pyggel.math3d.AABox(self.pos, 5)
         else:
             self.collision_body = pyggel.math3d.AABox(self.pos, (1.5,5,1.5))
 
