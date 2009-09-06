@@ -411,6 +411,7 @@ def main():
             continue
         if command == "win":
             mode = "win"
+            pData.game_hud.sfx.play_win()
             level = 1
             pData.game_hud.sfx.set_track("menu")
         if command == "death":

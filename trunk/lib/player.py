@@ -16,8 +16,8 @@ class PlayerData(object):
                       "plasma gun":40,
                       "chaingun":500,
                       "chicken gun":20}
-        self.max_ammos = {"shotgun":125,
-                          "handgun":75,
+        self.max_ammos = {"shotgun":75,
+                          "handgun":125,
                           "plasma gun":40,
                           "chaingun":500,
                           "chicken gun":20}
@@ -120,6 +120,8 @@ class PlayerData(object):
                 amount = 75
             if i == "plasma gun":
                 amount = 15
+            if i == "chicken gun":
+                amount = 10
             self.ammos[i] += amount
             if self.ammos[i] > self.max_ammos[i]:
                 self.ammos[i] = self.max_ammos[i]
