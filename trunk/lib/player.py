@@ -189,9 +189,9 @@ class PlayerData(object):
                     x = self.weapon_buck_back
                     y = self.weapon_buck_twist
                     self.weapon_bucked = False
-                if self.cur_weapon == "chicken gun" and x >= self.weapon_buck_back*10:
-                    x = self.weapon_buck_back * 10
-                    y = self.weapon_buck_twist * 10
+                if self.cur_weapon == "chicken gun" and x >= self.weapon_buck_back*8:
+                    x = self.weapon_buck_back * 8
+                    y = self.weapon_buck_twist * 8
                     self.weapon_bucked = False
                 self.weapon_changes = x, y
             elif not self.weapon_buck_done:
