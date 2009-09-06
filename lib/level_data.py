@@ -69,7 +69,7 @@ class VertDoor(pyggel.geometry.Cube):
             else:
                 if self.off_height < self.size-self.size/4:
                     self.game_hud.sfx.open_door()
-                self.off_height += 0.1
+                self.off_height += 0.25
         else:
             self.sphere.colorize = (0.25,0.25,0.25,1)
             self.band.colorize = (0.2,0.2,0.2,1)
