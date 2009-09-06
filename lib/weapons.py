@@ -267,10 +267,13 @@ class ChickenGunShot(pyggel.scene.BaseSceneObject):
         self.rotation = rotation
         self.level_data = level_data
 
-        self.speed = 1
+        self.rot_x = 0
+
+        self.speed = 1.5
         self.damage = 12
 
     def render(self, camera=None):
+        self.rot_x += 10
         self.pos = pyggel.math3d.move_with_rotation(self.pos, self.rotation, -0.5*self.speed)
         if self.dead_remove_from_scene:
             return
@@ -278,5 +281,5 @@ class ChickenGunShot(pyggel.scene.BaseSceneObject):
         if self.level_data.get_at_uncon(self.pos[0], self.pos[2]) in self.level_data.collidable:
             self.dead_remove_from_scene = True #kills object
         self.obj.pos = self.pos
-        self.obj.rotation = self.rotation
+        self.obj.rotation = self.rotation[0]+self.rot_x, self.rotation[1], self.rotation[2]
         self.obj.render(camera)
