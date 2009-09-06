@@ -1,0 +1,21 @@
+# Exported from Wings 3D 0.99.04a
+newmtl None_Aluminum_Brush.jpg
+Ns 100.0
+d 1.0
+illum 2
+Kd 0.8 0.8 0.8
+Ka 0.0 0.0 0.0
+Ks 0.8 0.8 0.8
+Ke 0.0 0.0 0.0
+map_Kd brushed_metal3.jpg
+
+newmtl None_Handle.png
+Ns 100.0
+d 1.0
+illum 2
+Kd 0.8 0.8 0.8
+Ka 0.0 0.0 0.0
+Ks 0.8 0.8 0.8
+Ke 0.0 0.0 0.0
+map_Kd Handle.png
+
