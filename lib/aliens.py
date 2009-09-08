@@ -67,11 +67,11 @@ class Alien(pyggel.scene.BaseSceneObject):
     def __init__(self, pos, kind="quad"):
         if not Alien.objs:
             Alien.objs["quad"] = pyggel.geometry.Quad(1)
-            Alien.objs["cube"] = pyggel.geometry.Cube(1, mirror=True)
+            Alien.objs["cube"] = pyggel.geometry.Cube(1, mirror=True, hide_faces=["top", "bottom"])
             Alien.objs["sphere"] = pyggel.geometry.Sphere(1)
             Alien.objs["ellipsoid"] = pyggel.geometry.Sphere(1)
             Alien.objs["ellipsoid"].scale = 1,2,1
-            Alien.objs["pyramid"] = pyggel.geometry.Pyramid(2)
+            Alien.objs["pyramid"] = pyggel.geometry.Pyramid(2, hide_faces=["bottom"])
             Alien.objs["dpyramid"] = pyggel.geometry.DoublePyramid(2)
             Alien.objs["boss"] = pyggel.geometry.DoublePyramid(5)
             Alien.objs["boss"].scale = 1,0.5,1
