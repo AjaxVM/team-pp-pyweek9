@@ -239,10 +239,12 @@ def get_geoms(level):
             mwh = max((width, height))
             floor = pyggel.geometry.Plane(mwh*tsize, pos=(width*tsize/2,-tsize/2,height*tsize/2),
                                           texture=pyggel.data.Texture(data.image_path(tile_set+"_"+"floor.png")),
-                                          tile=mwh*tsize*0.5)
+                                          tile=mwh*tsize*0.5,
+                                          hide_faces=["front"])
             ceiling = pyggel.geometry.Plane(mwh*tsize, pos=(width*tsize/2,tsize/2,height*tsize/2),
                                           texture=pyggel.data.Texture(data.image_path(tile_set+"_"+"ceiling.png")),
-                                          tile=mwh*tsize*0.5)
+                                          tile=mwh*tsize*0.5,
+                                            hide_faces=["back"])
             static.append(floor)
             static.append(ceiling)
             for y in xrange(height):
@@ -251,9 +253,27 @@ def get_geoms(level):
                     wall_tex = pyggel.data.Texture(data.image_path(tile_set+"_"+"wall.png")) #will want a few different later!
                     door_tex = pyggel.data.Texture(data.image_path(tile_set+"_"+"door.png"))
                     if cur == "#":
+                        ignore = ["top", "bottom"]
+                        if x-1 >= 0:
+                            cur2 = val[height-1-y][x-1]
+                            if cur2 == "#":
+                                ignore.append("left")
+                        if x+1 < width:
+                            cur2 = val[height-1-y][x+1]
+                            if cur2 == "#":
+                                ignore.append("right")
+                        if height-2-y >= 0:
+                            cur2 = val[height-2-y][x]
+                            if cur2 == "#":
+                                ignore.append("back")
+                        if height-y < height:
+                            cur2 = val[height-y][x]
+                            if cur2 == "#":
+                                ignore.append("front")
                         cube = pyggel.geometry.Cube(tsize,
                                                     texture=wall_tex,
-                                                    pos=(x*tsize,0,y*tsize))
+                                                    pos=(x*tsize,0,y*tsize),
+                                                    hide_faces=ignore)
                         static.append(cube)
                     if cur == "|":
                         dynamic.append(VertDoor(tsize, door_tex, (x*tsize, -tsize/11, y*tsize)))
