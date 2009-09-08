@@ -75,7 +75,8 @@ def play_level(level, player_data):
     paused = False
 
     while 1:
-        clock.tick(30)
+        clock.tick(999)
+        pyggel.view.set_title(str(clock.get_fps()))
 
         #Render first, since picking is done at this time, and we need that later!
 
