@@ -144,7 +144,7 @@ class Alien(pyggel.scene.BaseSceneObject):
         #if pyggel.math3d.get_distance(topos, self.pos) <= 5:
         #    return True
 
-        if pyggel.math3d.get_distance(topos, self.pos) >= 50:
+        if pyggel.math3d.get_distance(topos, self.pos) >= 60:
             return False
 
         pos = self.pos
@@ -267,6 +267,9 @@ class Alien(pyggel.scene.BaseSceneObject):
                     self.hit_grow = True
         else:
             self.obj.outline = False
+
+        if not self.stored_LOS:
+            return
         self.obj.pos = self.pos
         x, y, z = self.rotation
         self.obj.rotation = x, y, z
