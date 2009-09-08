@@ -44,11 +44,11 @@ class PlayerData(object):
         if self.weapons:
             cur = self.weapon_scroll_list.index(self.cur_weapon)
             cur += 1
-            if cur >= 4:
+            if cur >= len(self.weapon_scroll_list):
                 cur = 0
             while not self.weapon_scroll_list[cur] in self.weapons:
                 cur += 1
-                if cur >= 4:
+                if cur >= len(self.weapon_scroll_list):
                     cur = 0
             self.swap_weapon(scene, self.weapon_scroll_list[cur])
 
@@ -57,11 +57,11 @@ class PlayerData(object):
             cur = self.weapon_scroll_list.index(self.cur_weapon)
             cur -= 1
             if cur < 0:
-                cur = 3
+                cur = len(self.weapon_scroll_list)-1
             while not self.weapon_scroll_list[cur] in self.weapons:
                 cur -= 1
                 if cur < 0:
-                    cur = 3
+                    cur = len(self.weapon_scroll_list)-1
             self.swap_weapon(scene, self.weapon_scroll_list[cur])
 
     def reset(self):
